@@ -1,11 +1,11 @@
-import './App.css'
+import './index.css'
 
 function App() {
 
   return (
     <>
       <div>
-        <h1>The performance enhancement platform for learning calculus</h1>
+        <h1>Calculus</h1>
       </div>
     </>
   )
