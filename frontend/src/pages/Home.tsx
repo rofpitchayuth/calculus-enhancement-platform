@@ -1,11 +1,9 @@
-import Navbar from '../features/navbar/components/NavBar'
-import './index.css'
+import './App.css'
 
 function App() {
 
   return (
     <>
-    <Navbar />
       <div>
         <h1>The performance enhancement platform for learning calculus</h1>
       </div>
