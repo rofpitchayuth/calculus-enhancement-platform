@@ -1,13 +1,14 @@
 import "./index.css";
 import { Layout } from "./shared/components/layout/Layout";
+import { HomePage } from "./pages/HomePage";
 
 function App() {
   return (
-    <Layout>
-      <div className="app-content">
-        This is the main content area.
-      </div>
-    </Layout>
+    <div>
+      <Layout>
+        <HomePage />
+      </Layout>
+    </div>
   );
 }
 
