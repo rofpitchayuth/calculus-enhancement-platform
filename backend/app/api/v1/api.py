@@ -1,6 +1,7 @@
 from fastapi import APIRouter
-from .endpoints import auth
 
 api_router = APIRouter()
 
-api_router.include_router(auth.router, prefix="/auth", tags=["Authentication"])
+@api_router.get("/test")
+async def test_endpoint():
+    return {"message": "API v1 is working!", "status": "success"}
