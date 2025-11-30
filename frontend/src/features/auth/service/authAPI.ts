@@ -1,6 +1,6 @@
 import type { LoginCredentials, SignUpData, AuthResponse, User } from '../types/auth.type';
 
-const API_BASE_URL = 'http://localhost:3001/api'; // ปรับตาม backend
+const API_BASE_URL = 'http://localhost:8000/api/v1';
 
 class AuthApiService {
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
@@ -15,10 +15,14 @@ class AuthApiService {
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message || 'Login failed');
+        throw new Error(error.detail || 'Login failed');
       }
 
-      return await response.json();
+      const data = await response.json();
+      
+      localStorage.setItem('authToken', data.token.access_token);
+      
+      return data;
     } catch (error) {
       throw error;
     }
@@ -26,20 +30,31 @@ class AuthApiService {
 
   async signUp(data: SignUpData): Promise<AuthResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/signup`, {
+      const backendData = {
+        email: data.email,
+        password: data.password,
+        fullName: (data as any).fullName || "",
+        role: (data as any).role
+      };
+
+      const response = await fetch(`${API_BASE_URL}/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(backendData),
       });
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message || 'Sign up failed');
+        throw new Error(error.detail || 'Registration failed');
       }
 
-      return await response.json();
+      const responseData = await response.json();
+      
+      localStorage.setItem('authToken', responseData.token.access_token);
+      
+      return responseData;
     } catch (error) {
       throw error;
     }
@@ -70,21 +85,21 @@ class AuthApiService {
   }
 
   async logout(): Promise<void> {
-    const token = localStorage.getItem('authToken');
-    
     try {
-      await fetch(`${API_BASE_URL}/auth/logout`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-    } catch (error) {
-      console.warn('Logout request failed:', error);
-    } finally {
       localStorage.removeItem('authToken');
       localStorage.removeItem('refreshToken');
+    } catch (error) {
+      console.warn('Logout failed:', error);
     }
+  }
+
+  isAuthenticated(): boolean {
+    const token = localStorage.getItem('authToken');
+    return !!token;
+  }
+  
+  getToken(): string | null {
+    return localStorage.getItem('authToken');
   }
 }
 

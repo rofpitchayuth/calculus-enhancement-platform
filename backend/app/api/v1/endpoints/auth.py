@@ -1,42 +1,58 @@
-from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from ....core.database import get_db
-from ....services.auth_service import AuthService
-from ....repositories.user_repository import UserRepository
-from ....schemas.auth import LoginRequest, RegisterRequest, LoginResponse, UserResponse
-from ....api.deps import get_auth_service, get_current_user
+from core.database import get_db
+from core.security import get_current_user_id
+from schemas.auth import RegisterRequest, LoginRequest, AuthResponse, UserResponse
+from services.auth_service import AuthService
 
 router = APIRouter()
 
-@router.post("/login", response_model=LoginResponse)
+@router.post("/register", response_model=AuthResponse)
+async def register(
+    user_data: RegisterRequest,
+    db: Session = Depends(get_db)
+):
+    auth_service = AuthService(db)
+    return await auth_service.register_user(user_data)
+
+@router.post("/login", response_model=AuthResponse)
 async def login(
     login_data: LoginRequest,
-    auth_service: Annotated[AuthService, Depends(get_auth_service)]
+    db: Session = Depends(get_db)
 ):
-    """Login endpoint"""
-    return await auth_service.authenticate_user(
-        email=login_data.email,
-        password=login_data.password
-    )
-
-@router.post("/register", response_model=LoginResponse)
-async def register(
-    register_data: RegisterRequest,
-    auth_service: Annotated[AuthService, Depends(get_auth_service)]
-):
-    """Register endpoint"""
-    return await auth_service.create_user(
-        email=register_data.email,
-        password=register_data.password,
-        full_name=register_data.full_name,
-        role=register_data.role
-    )
+    """Login user"""
+    auth_service = AuthService(db)
+    return await auth_service.login_user(login_data)
 
 @router.get("/me", response_model=UserResponse)
-async def get_me(
-    current_user: Annotated[UserResponse, Depends(get_current_user)]
+async def get_current_user(
+    current_user_id: int = Depends(get_current_user_id),
+    db: Session = Depends(get_db)
 ):
-    """Get current user info"""
-    return current_user
+    """Get current user profile"""
+    auth_service = AuthService(db)
+    return await auth_service.get_current_user(current_user_id)
+
+@router.get("/users", response_model=list[UserResponse])
+async def get_all_users(
+    skip: int = 0,
+    limit: int = 100,
+    current_user_id: int = Depends(get_current_user_id),
+    db: Session = Depends(get_db)
+):
+    """Get all users (admin only)"""
+    from repositories.user_repository import UserRepository
+    
+    user_repo = UserRepository(db)
+    current_user = user_repo.get_user_by_id(current_user_id)
+    
+    # Check if user is admin
+    if current_user.role != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not enough permissions"
+        )
+    
+    users = user_repo.get_all_users(skip=skip, limit=limit)
+    return [UserResponse.model_validate(user) for user in users]

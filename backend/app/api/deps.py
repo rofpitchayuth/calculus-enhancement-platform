@@ -21,7 +21,6 @@ async def get_current_user(
     credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)],
     auth_service: Annotated[AuthService, Depends(get_auth_service)]
 ) -> UserResponse:
-    """ดึงข้อมูลผู้ใช้ปัจจุบันจาก token"""
     token = credentials.credentials
     user_id = verify_token(token)
     

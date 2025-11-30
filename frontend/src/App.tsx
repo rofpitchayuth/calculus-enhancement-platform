@@ -1,29 +1,45 @@
 import "./index.css";
-import { Layout } from "./shared/components/layout/Layout";
-import { HomePage } from "./features/home/pages/HomePage";
-import { LoginPage } from "./features/auth/pages/LoginPage";
+import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
 import { AuthProvider } from "./features/auth/hooks/useAuth";
+import { LoginPage } from "./features/auth/pages/LoginPage";
+import { SignUpPage } from "./features/auth/pages/SignUpPage";
+import { HomePage } from "./features/home/pages/HomePage";
+import { Layout } from "./shared/components/layout/Layout";
+import { ProtectedRoute } from "./shared/components/ProtectedRoute";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Navigate to="/home" replace />,
+  },
+  {
+    path: "/auth/login",
+    element: <LoginPage />,
+  },
+  {
+    path: "/auth/signup",
+    element: <SignUpPage />,
+  },
+  {
+    path: "/home",
+    element: (
+      <ProtectedRoute>
+        <Layout>
+          <HomePage />
+        </Layout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "*",
+    element: <Navigate to="/auth/login" replace />,
+  },
+]);
 
 function App() {
-  const currentPath = window.location.pathname;
-
-  const renderCurrentPage = () => {
-    switch (currentPath) {
-      case '/login':
-        return <LoginPage />;
-      case '/':
-      default:
-        return (
-          <Layout>
-            <HomePage />
-          </Layout>
-        );
-    }
-  };
-
   return (
     <AuthProvider>
-      {renderCurrentPage()}
+      <RouterProvider router={router} />
     </AuthProvider>
   );
 }
