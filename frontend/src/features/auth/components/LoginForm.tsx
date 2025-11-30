@@ -1,26 +1,29 @@
-import { useState } from 'react';
-import { Card } from '../../../shared/components/ui/Card';
-import { FormField } from '../../../shared/components/ui/FormField';
-import { Button } from '../../../shared/components/ui/Button';
-import { ErrorMessage } from '../../../shared/components/ui/ErrorMessage';
-import { useAuth } from '../hooks/useAuth';
-import type { LoginCredentials } from '../types/auth.type';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Card } from "../../../shared/components/ui/Card.tsx";
+import { FormField } from "../../../shared/components/ui/FormField.tsx";
+import { Button } from "../../../shared/components/ui/Button.tsx";
+import { ErrorMessage } from "../../../shared/components/ui/ErrorMessage.tsx";
+import { useAuth } from "../hooks/useAuth.tsx";
+import type { LoginCredentials } from "../types/auth.type";
 
 interface LoginFormProps {
   onToggleMode?: () => void;
   onSuccess?: () => void;
 }
 
-export function LoginForm({ onToggleMode, onSuccess }: LoginFormProps) {
+export function LoginForm({ onSuccess }: LoginFormProps) {
   const { login, isLoading, error } = useAuth();
+  const navigate = useNavigate();
+  
   const [credentials, setCredentials] = useState<LoginCredentials>({
-    email: '',
-    password: '',
+    email: "",
+    password: "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       await login(credentials);
       onSuccess?.();
@@ -30,14 +33,12 @@ export function LoginForm({ onToggleMode, onSuccess }: LoginFormProps) {
   };
 
   const handleFieldChange = (name: string, value: string) => {
-    setCredentials(prev => ({ ...prev, [name]: value }));
+    setCredentials((prev) => ({ ...prev, [name]: value }));
   };
 
   return (
     <div className="max-w-md mx-auto">
-      <Card
-        title="Welcome Back"
-      >
+      <Card title="Welcome Back">
         <form onSubmit={handleSubmit} className="space-y-6">
           <FormField
             name="email"
@@ -68,7 +69,7 @@ export function LoginForm({ onToggleMode, onSuccess }: LoginFormProps) {
             disabled={isLoading}
             className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg hover:from-blue-700 hover:to-purple-700"
           >
-            {isLoading ? 'Signing In...' : 'Sign In'}
+            {isLoading ? "Signing In..." : "Sign In"}
           </Button>
 
           <div className="text-center pt-4">
@@ -77,7 +78,7 @@ export function LoginForm({ onToggleMode, onSuccess }: LoginFormProps) {
               type="button"
               variant="ghost"
               size="md"
-              onClick={onToggleMode}
+              onClick={() => navigate("/auth/signup")}
               className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 font-medium"
             >
               Create New Account

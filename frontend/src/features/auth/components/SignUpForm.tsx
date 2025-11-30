@@ -1,83 +1,47 @@
-import { useState } from 'react';
-import { Button, FormField, Card, ErrorMessage } from '../../../shared/components/ui';
-import { useAuth } from '../hooks/useAuth';
-import type { SignUpData } from '../types/auth.type';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Card } from "../../../shared/components/ui/Card.tsx";
+import { FormField } from "../../../shared/components/ui/FormField.tsx";
+import { Button } from "../../../shared/components/ui/Button.tsx";
+import { ErrorMessage } from "../../../shared/components/ui/ErrorMessage.tsx";
+import { useAuth } from "../hooks/useAuth.tsx";
+import type { SignUpData } from "../types/auth.type";
 
-interface SignUpFormProps {
-  onToggleMode?: () => void;
-  onSuccess?: () => void;
-}
-
-export function SignUpForm({ onToggleMode, onSuccess }: SignUpFormProps) {
+export function SignUpForm() {
   const { signUp, isLoading, error } = useAuth();
+  const navigate = useNavigate();
+  
   const [formData, setFormData] = useState<SignUpData>({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
+    email: "",
+    password: "",
+    fullName: "",
+    role: "student",
   });
-  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
-
-  const validateForm = (): boolean => {
-    const errors: Record<string, string> = {};
-
-    if (formData.name.trim().length < 2) {
-      errors.name = 'Name must be at least 2 characters';
-    }
-
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      errors.email = 'Please enter a valid email address';
-    }
-
-    if (formData.password.length < 8) {
-      errors.password = 'Password must be at least 8 characters';
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      errors.confirmPassword = 'Passwords do not match';
-    }
-
-    setValidationErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!validateForm()) {
-      return;
-    }
 
     try {
       await signUp(formData);
-      onSuccess?.();
+      navigate("/home");
     } catch (error) {
-      // Error handled by useAuth hook
+      
     }
   };
 
   const handleFieldChange = (name: string, value: string) => {
-    setFormData(prev => ({ ...prev, [name]: value }));
-    
-    // Clear validation error for this field
-    if (validationErrors[name]) {
-      setValidationErrors(prev => ({ ...prev, [name]: '' }));
-    }
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   return (
     <div className="max-w-md mx-auto">
-      <Card 
-        title="Create Account"
-        subtitle="Join thousands of calculus learners"
-      >
+      <Card title="Create Account">
         <form onSubmit={handleSubmit} className="space-y-6">
           <FormField
-            name="name"
+            name="fullName"
             type="text"
             label="Full Name"
-            value={formData.name}
-            error={validationErrors.name}
+            value={formData.fullName||""}
             onValueChange={handleFieldChange}
             placeholder="Enter your full name"
             required
@@ -88,7 +52,6 @@ export function SignUpForm({ onToggleMode, onSuccess }: SignUpFormProps) {
             type="email"
             label="Email Address"
             value={formData.email}
-            error={validationErrors.email}
             onValueChange={handleFieldChange}
             placeholder="Enter your email"
             required
@@ -99,23 +62,25 @@ export function SignUpForm({ onToggleMode, onSuccess }: SignUpFormProps) {
             type="password"
             label="Password"
             value={formData.password}
-            error={validationErrors.password}
             onValueChange={handleFieldChange}
-            placeholder="Create a password"
-            helperText="Must be at least 8 characters"
+            placeholder="Enter your password (min 6 characters)"
             required
           />
 
-          <FormField
-            name="confirmPassword"
-            type="password"
-            label="Confirm Password"
-            value={formData.confirmPassword}
-            error={validationErrors.confirmPassword}
-            onValueChange={handleFieldChange}
-            placeholder="Confirm your password"
-            required
-          />
+          <div className="form-group">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Role
+            </label>
+            <select
+              name="role"
+              value={formData.role}
+              onChange={(e) => handleFieldChange("role", e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="student">Student</option>
+              <option value="teacher">Teacher</option>
+            </select>
+          </div>
 
           <ErrorMessage message={error} />
 
@@ -123,9 +88,10 @@ export function SignUpForm({ onToggleMode, onSuccess }: SignUpFormProps) {
             type="submit"
             variant="primary"
             size="lg"
-            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg hover:from-blue-700 hover:to-purple-700"
+            disabled={isLoading}
+            className="w-full bg-gradient-to-r from-green-600 to-blue-600 text-white py-3 rounded-lg hover:from-green-700 hover:to-blue-700"
           >
-            {isLoading ? 'Signing Up...' : 'Sign Up'}
+            {isLoading ? "Creating Account..." : "Sign Up"}
           </Button>
 
           <div className="text-center pt-4">
@@ -134,10 +100,10 @@ export function SignUpForm({ onToggleMode, onSuccess }: SignUpFormProps) {
               type="button"
               variant="ghost"
               size="md"
-              onClick={onToggleMode}
+              onClick={() => navigate("/auth/login")}
               className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 font-medium"
             >
-              Sign In Instead
+              Sign In
             </Button>
           </div>
         </form>
