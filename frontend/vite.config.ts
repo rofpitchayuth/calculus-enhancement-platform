@@ -12,8 +12,17 @@ export default defineConfig({
     }),
     tailwindcss(),
   ],
+
   resolve: {
-    dedupe: ['react', 'react-dom'] 
-  }
+    dedupe: ["react", "react-dom"],
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      loader: {
+        ".js": "jsx",
+      },
+    },
+  },
+
 
 })

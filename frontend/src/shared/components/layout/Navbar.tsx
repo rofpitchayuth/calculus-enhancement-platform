@@ -40,11 +40,15 @@ export function Navbar({ className = "" }: NavbarProps) {
           </a>
         </li>
         <li>
-          <a href="/" className="hover:text-blue-600 transition-colors">
+          <a href="/course" className="hover:text-blue-600 transition-colors">
             Course
           </a>
         </li>
-
+        <li>
+          <a href="/dashboard" className="hover:text-blue-600 transition-colors">
+            Dashboard
+          </a>
+        </li>
         {isAuthenticated && (
           <li>
             <a
@@ -56,6 +60,7 @@ export function Navbar({ className = "" }: NavbarProps) {
           </li>
         )}
       </ul>
+      
 
       <div className="flex space-x-3">
         {isAuthenticated ? (

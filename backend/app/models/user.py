@@ -15,7 +15,7 @@ class User(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
     fullName = Column(String, nullable=False)
-    role = Column(Enum(UserRole), default=UserRole.STUDENT)
+    role = Column(Enum(UserRole, native_enum=False, values_callable=lambda x: [str(e.value) for e in x]), default=UserRole.STUDENT)
     is_active = Column(Boolean, default=True)
     is_verified = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
