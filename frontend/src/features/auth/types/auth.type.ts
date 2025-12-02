@@ -6,14 +6,14 @@ export interface LoginCredentials {
 export interface SignUpData {
   email: string;
   password: string;
-  fullName?: string;
+  full_name?: string;
   role?: 'student' | 'teacher' | 'admin';
 }
 
 export interface User {
   id: number;
   email: string;
-  fullName: string;
+  full_name: string;
   role: 'student' | 'teacher' | 'admin';
   is_active: boolean;
   is_verified: boolean;

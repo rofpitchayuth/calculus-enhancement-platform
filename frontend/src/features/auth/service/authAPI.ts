@@ -33,7 +33,7 @@ class AuthApiService {
       const backendData = {
         email: data.email,
         password: data.password,
-        fullName: (data as any).fullName || "",
+        full_name: (data as any).full_name || "",
         role: (data as any).role
       };
 

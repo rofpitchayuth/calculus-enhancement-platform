@@ -11,7 +11,7 @@ class LoginRequest(BaseModel):
 class RegisterRequest(BaseModel):
     email: EmailStr
     password: str = Field(min_length=6, max_length=70, description="Password 6-70 characters")
-    fullName: str = Field(min_length=1, max_length=100)
+    full_name: str = Field(min_length=1, max_length=100)
     role: UserRole = UserRole.STUDENT
     
     @field_validator('password')
@@ -29,7 +29,7 @@ class Token(BaseModel):
 class UserResponse(BaseModel):
     id: int
     email: str
-    fullName: str
+    full_name: str
     role: UserRole
     is_active: bool
     is_verified: bool 
