@@ -14,7 +14,7 @@ export function SignUpForm() {
   const [formData, setFormData] = useState<SignUpData>({
     email: "",
     password: "",
-    fullName: "",
+    full_name: "",
     role: "student",
   });
 
@@ -38,10 +38,10 @@ export function SignUpForm() {
       <Card title="Create Account">
         <form onSubmit={handleSubmit} className="space-y-6">
           <FormField
-            name="fullName"
+            name="full_name"
             type="text"
             label="Full Name"
-            value={formData.fullName||""}
+            value={formData.full_name||""}
             onValueChange={handleFieldChange}
             placeholder="Enter your full name"
             required

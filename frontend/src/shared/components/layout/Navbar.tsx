@@ -62,7 +62,7 @@ export function Navbar({ className = "" }: NavbarProps) {
           <>
             <div className="flex items-center space-x-3">
               <span className="text-sm text-gray-600">
-                Hello, {user?.fullName}
+                Hello, {user?.full_name}
               </span>
               <Button
                 variant="outline"
