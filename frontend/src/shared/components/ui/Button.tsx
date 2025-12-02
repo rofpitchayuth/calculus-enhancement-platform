@@ -17,7 +17,7 @@ export function Button({
   const baseClasses = 'font-medium rounded transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2';
   
   const variantClasses = {
-    primary: 'bg-blue-600 text-white-100 hover:bg-blue-700 focus:ring-blue-500',
+    primary: 'bg-blue-900 hover:bg-blue-950 text-white rounded-lg font-semibold focus:ring-blue-500',
     secondary: 'bg-yellow-600 text-white hover:bg-yellow-700 focus:ring-yellow-500',
     outline: 'border-2 border-current bg-transparent hover:bg-current hover:bg-opacity-10 focus:ring-current',
     ghost: 'bg-transparent hover:bg-current hover:bg-opacity-10 focus:ring-current'
