@@ -1,5 +1,6 @@
 import { Card } from "../../../shared/components/ui/Card";
 import { Button } from "../../../shared/components/ui/Button";
+import { useNavigate } from "react-router-dom";
 
 interface CourseCardProps {
   id?: string | number;
@@ -8,7 +9,6 @@ interface CourseCardProps {
   questionCount: number;
   duration: number;
   thumbnail?: string;
-  onStart?: () => void;
 }
 
 export function CourseCard({
@@ -18,8 +18,13 @@ export function CourseCard({
   questionCount,
   duration,
   thumbnail,
-  onStart,
 }: CourseCardProps) {
+  const navigate = useNavigate();
+
+  const handleStart = () => {
+    navigate(`/quiz`);
+  };
+
   return (
     <Card className="shadow-lg hover:shadow-xl transition-shadow overflow-hidden">
       {/* Image */}
@@ -61,7 +66,7 @@ export function CourseCard({
           variant="primary"
           size="lg"
           className="w-full bg-blue-900 hover:bg-blue-950 text-white rounded-lg font-semibold"
-          onClick={onStart}
+          onClick={handleStart}
         >
           เริ่มทำแบบทดสอบ
         </Button>

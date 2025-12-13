@@ -5,7 +5,7 @@ import sys
 
 sys.path.append(os.path.dirname(__file__))
 
-from core.config import settings
+from app.core.config import settings
 from api.v1.api import api_router
 
 app = FastAPI(

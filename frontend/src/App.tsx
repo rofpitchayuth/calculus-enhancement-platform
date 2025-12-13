@@ -6,6 +6,7 @@ import { SignUpPage } from "./features/auth/pages/SignUpPage";
 import { HomePage } from "./features/home/pages/HomePage";
 import { Layout } from "./shared/components/layout/Layout";
 import { ProtectedRoute } from "./shared/components/ProtectedRoute";
+import QuizPage from "./features/exam/pages/QuizPage";
 
 const router = createBrowserRouter([
   {
@@ -26,6 +27,16 @@ const router = createBrowserRouter([
       <ProtectedRoute>
         <Layout>
           <HomePage />
+        </Layout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/quiz",
+    element: (
+      <ProtectedRoute>
+        <Layout>
+          <QuizPage />
         </Layout>
       </ProtectedRoute>
     ),

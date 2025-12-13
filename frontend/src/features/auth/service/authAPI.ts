@@ -19,9 +19,9 @@ class AuthApiService {
       }
 
       const data = await response.json();
-      
-      localStorage.setItem('authToken', data.token.access_token);
-      
+
+      localStorage.setItem('access_token', data.token.access_token);
+
       return data;
     } catch (error) {
       throw error;
@@ -51,9 +51,9 @@ class AuthApiService {
       }
 
       const responseData = await response.json();
-      
-      localStorage.setItem('authToken', responseData.token.access_token);
-      
+
+      localStorage.setItem('access_token', responseData.token.access_token);
+
       return responseData;
     } catch (error) {
       throw error;
@@ -61,8 +61,8 @@ class AuthApiService {
   }
 
   async getCurrentUser(): Promise<User> {
-    const token = localStorage.getItem('authToken');
-    
+    const token = localStorage.getItem('access_token');
+
     if (!token) {
       throw new Error('No token found');
     }
@@ -86,7 +86,7 @@ class AuthApiService {
 
   async logout(): Promise<void> {
     try {
-      localStorage.removeItem('authToken');
+      localStorage.removeItem('access_token');
       localStorage.removeItem('refreshToken');
     } catch (error) {
       console.warn('Logout failed:', error);
@@ -94,12 +94,12 @@ class AuthApiService {
   }
 
   isAuthenticated(): boolean {
-    const token = localStorage.getItem('authToken');
+    const token = localStorage.getItem('access_token');
     return !!token;
   }
-  
+
   getToken(): string | null {
-    return localStorage.getItem('authToken');
+    return localStorage.getItem('access_token');
   }
 }
 

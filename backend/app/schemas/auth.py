@@ -1,9 +1,7 @@
 from pydantic import BaseModel, EmailStr, Field, field_validator
 from typing import Optional
 from datetime import datetime
-from models.user import UserRole
 
-# Request schemas
 class LoginRequest(BaseModel):
     email: EmailStr
     password: str = Field(max_length=70, description="Password max 70 characters")
@@ -12,7 +10,8 @@ class RegisterRequest(BaseModel):
     email: EmailStr
     password: str = Field(min_length=6, max_length=70, description="Password 6-70 characters")
     full_name: str = Field(min_length=1, max_length=100)
-    role: UserRole = UserRole.STUDENT
+    role: str = Field(default="student", description="User role, always student")
+     
     
     @field_validator('password')
     @classmethod
@@ -30,7 +29,7 @@ class UserResponse(BaseModel):
     id: int
     email: str
     full_name: str
-    role: UserRole
+    role: str
     is_active: bool
     is_verified: bool 
     created_at: datetime

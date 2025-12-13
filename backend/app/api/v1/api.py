@@ -1,5 +1,6 @@
 from fastapi import APIRouter
-from .endpoints import auth
+
+from .endpoints import auth, quiz
 
 api_router = APIRouter()
 
@@ -12,8 +13,8 @@ async def status():
     return {
         "api_version": "v1",
         "status": "operational",
-        "endpoints": ["/test", "/status", "/auth/*"]
+        "endpoints": ["/test", "/status", "/auth/*", "/quiz/*"]
     }
 
-# Include auth router
 api_router.include_router(auth.router, prefix="/auth", tags=["Authentication"])
+api_router.include_router(quiz.router, prefix="/quiz", tags=["Quiz & IBKT"])

@@ -1,12 +1,13 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from fastapi import HTTPException, status
-from datetime import timedelta
+from datetime import datetime, timedelta
+from typing import Optional, Dict
 
-from repositories.user_repository import UserRepository
-from schemas.auth import RegisterRequest, LoginRequest, AuthResponse, UserResponse, Token
-from core.security import verify_password, create_access_token
-from core.config import settings
+from app.repositories.user_repository import UserRepository
+from app.schemas.auth import RegisterRequest, LoginRequest, AuthResponse, UserResponse, Token
+from app.core.security import verify_password, create_access_token
+from app.core.config import settings
 
 class AuthService:
     def __init__(self, db: Session):
