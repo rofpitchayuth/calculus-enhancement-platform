@@ -4,12 +4,14 @@ import { QuestionCard } from '../components/QuestionCard';
 import { QuizResultCard } from '../components/QuizResultCard';
 import { useAuth } from '../../auth/hooks/useAuth';
 import type { SubmitResponse } from '../types/quiz.types';
+import { useNavigate } from 'react-router-dom';
 
 export default function QuizPage() {
   const { user } = useAuth();
   const { quiz, currentIndex, loading, error, startQuiz, submitAnswer, nextQuestion, resetQuiz } = useQuiz();
   const [selectedChoice, setSelectedChoice] = useState('');
   const [result, setResult] = useState<SubmitResponse | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (user?.id) {
@@ -42,7 +44,7 @@ export default function QuizPage() {
     setResult(null);
     
     if (!hasNext) {
-      alert('ทำแบบทดสอบเสร็จสิ้น!');
+      navigate('/home');
       resetQuiz();
       if (user?.id) {
         startQuiz(user.id, 5);

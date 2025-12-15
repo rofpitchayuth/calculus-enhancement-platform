@@ -12,7 +12,6 @@ interface QuestionCardProps {
 
 const renderMathText = (text: string) => {
   try {
-    // Convert common math symbols to LaTeX
     let latex = text
       .replace(/∫/g, '\\int ')
       .replace(/→/g, '\\to ')
@@ -25,11 +24,9 @@ const renderMathText = (text: string) => {
       .replace(/∞/g, '\\infty ')
       .replace(/π/g, '\\pi ')
       .replace(/√/g, '\\sqrt ')
-      // Handle superscripts: x^2 → x^{2}
       .replace(/\^(\d+)/g, '^{$1}')
       .replace(/\^(\w+)/g, '^{$1}');
     
-    // Check if text has math symbols
     const hasMath = /[∫→≤≥×÷±≠∞π√^_\\]|\(|\)|=/.test(text);
     
     if (hasMath) {
