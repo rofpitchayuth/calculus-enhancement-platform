@@ -5,9 +5,6 @@ import re
 
 class Phi2Classifier:
     def __init__(self):
-        print("Loading Phi-2 model... (lighter model for 6GB GPU)")
-        
-        # Phi-2 only needs ~3GB VRAM - perfect for RTX 3060!
         model_name = "microsoft/phi-2"
         self.tokenizer = AutoTokenizer.from_pretrained(
             model_name,
@@ -23,7 +20,6 @@ class Phi2Classifier:
         print("Model loaded successfully!")
     
     def _generate(self, prompt: str, max_new_tokens: int = 50) -> str:
-        # Phi-2 uses simple prompting, no chat template
         inputs = self.tokenizer(prompt, return_tensors="pt").to("cuda")
         
         with torch.no_grad():
@@ -37,7 +33,6 @@ class Phi2Classifier:
             )
         
         full_response = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
-        # Extract only the generated part (after the prompt)
         response = full_response[len(prompt):].strip()
         return response
     
