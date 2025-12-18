@@ -3,9 +3,9 @@ from pydantic import BaseModel
 from typing import List
 import uvicorn
 
-from classifier.mistral_classifier import get_classifier
+from classifier.llama31_classifier import get_classifier
 
-app = FastAPI(title="ML Question Tagger", version="1.0.0")
+app = FastAPI(title="ML Question Tagger - Llama3.1 8B", version="2.0.0")
 
 class QuestionRequest(BaseModel):
     question_text: str

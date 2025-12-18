@@ -1,0 +1,13 @@
+# Calculus Question Classification - Training Dataset Template
+
+question_text,main_topic,skill_tags,bloom_level,difficulty,correct_answer
+"Find d/dx(x^2)","derivatives","power_rule","Apply",0.3,"2x"
+"∫2x dx = ?","integrals","basic_integration","Apply",0.5,"x^2 + C"
+"What is lim(x→0) sin(x)/x?","limits","lhopital,trigonometric","Analyze",0.7,"1"
+"Find the derivative of f(x) = x^3 * sin(x)","derivatives","product_rule,trigonometric","Apply",0.6,"3x^2*sin(x) + x^3*cos(x)"
+"Prove that d/dx(e^x) = e^x","derivatives","exponential,proof","Evaluate",0.9,"e^x"
+"∫(1/x)dx = ?","integrals","logarithmic","Apply",0.4,"ln|x| + C"
+"Find the maximum area of a rectangle with perimeter 100","applications","optimization,related_rates","Analyze",0.8,"625"
+"What is d/dx(ln(x))?","derivatives","logarithmic","Remember",0.2,"1/x"
+"Use substitution to find ∫2x/(x^2+1) dx","integrals","substitution","Apply",0.6,"ln(x^2+1) + C"
+"Find lim(x→∞) (1 + 1/x)^x","limits","exponential,limits_at_infinity","Analyze",0.85,"e"

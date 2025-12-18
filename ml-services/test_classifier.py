@@ -1,7 +1,7 @@
-from classifier.phi2_classifier import get_classifier
+from classifier.LLM_classifier import get_classifier
 
 def test_classifier():
-    print("Testing Phi2 Classifier...\n")
+    print("Testing Llama 3.2 3B Classifier (4-bit quantized)...\n")
     
     clf = get_classifier()
     

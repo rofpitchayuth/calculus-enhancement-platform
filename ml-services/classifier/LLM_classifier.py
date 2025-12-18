@@ -3,24 +3,47 @@ from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 from typing import List
 import re
 
-class Phi2Classifier:
+class Llama32Classifier:
     def __init__(self):
-        model_name = "microsoft/phi-2"
-        self.tokenizer = AutoTokenizer.from_pretrained(
-            model_name,
-            trust_remote_code=True
+        print("Loading Llama 3.2 3B with 4-bit quantization...")
+        
+        # 4-bit quantization config - perfect for RTX 3060 6GB
+        quantization_config = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_compute_dtype=torch.float16,
+            bnb_4bit_use_double_quant=True,
+            bnb_4bit_quant_type="nf4"
         )
+        
+        model_name = "meta-llama/Llama-3.2-3B-Instruct"
+        
+        print("Loading tokenizer...")
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+        self.tokenizer.pad_token = self.tokenizer.eos_token
+        
+        print("Loading model (first run will download ~3.5GB)...")
         self.model = AutoModelForCausalLM.from_pretrained(
             model_name,
-            torch_dtype=torch.float16,  # Use FP16 instead of 4-bit
+            quantization_config=quantization_config,
             device_map="auto",
-            trust_remote_code=True,
-            low_cpu_mem_usage=True
+            low_cpu_mem_usage=True,
+            torch_dtype=torch.float16
         )
-        print("Model loaded successfully!")
+        print("✅ Model loaded! (~3.5GB VRAM - perfect for RTX 3060)")
     
     def _generate(self, prompt: str, max_new_tokens: int = 50) -> str:
-        inputs = self.tokenizer(prompt, return_tensors="pt").to("cuda")
+        messages = [
+            {"role": "system", "content": "You are a helpful assistant that classifies calculus questions."},
+            {"role": "user", "content": prompt}
+        ]
+        
+        formatted_prompt = self.tokenizer.apply_chat_template(
+            messages,
+            tokenize=False,
+            add_generation_prompt=True
+        )
+        
+        inputs = self.tokenizer(formatted_prompt, return_tensors="pt").to("cuda")
         
         with torch.no_grad():
             outputs = self.model.generate(
@@ -33,7 +56,11 @@ class Phi2Classifier:
             )
         
         full_response = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
-        response = full_response[len(prompt):].strip()
+        if "assistant" in full_response:
+            response = full_response.split("assistant")[-1].strip()
+        else:
+            response = full_response[len(formatted_prompt):].strip()
+        
         return response
     
     def classify_topic(self, question_text: str) -> str:
@@ -75,7 +102,7 @@ Answer with a comma-separated list of skills:"""
                        'partial_fractions', 'implicit_differentiation', 
                        'related_rates', 'optimization']
         
-        return [s for s in skills if any(vs in s for vs in valid_skills)][:3]  # Max 3 skills
+        return [s for s in skills if any(vs in s for vs in valid_skills)][:3]
     
     def detect_bloom(self, question_text: str) -> str:
         prompt = f"""Classify this calculus question according to Bloom's Taxonomy:
@@ -134,5 +161,5 @@ _classifier = None
 def get_classifier():
     global _classifier
     if _classifier is None:
-        _classifier = Phi2Classifier()
+        _classifier = Llama32Classifier()
     return _classifier
