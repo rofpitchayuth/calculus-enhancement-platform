@@ -69,3 +69,10 @@ htmlcov/
 venv/
 ENV/
 env/
+
+# Research Paper
+research-paper/
+
+# Data files (but allow bkt_experiments)
+data/
+!backend/bkt_experiments/
