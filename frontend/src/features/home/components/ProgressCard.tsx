@@ -1,5 +1,7 @@
 import { Card } from "../../../shared/components/ui/Card";
 import { Button } from "../../../shared/components/ui/Button";
+import { RadarChartComponent } from "../../dashboard/components";
+import { DASHBOARD_OVERALL_SKILLS_RADAR } from "../../dashboard/data/mockData";
 
 interface ProgressCardProps {
   percentage: number;
@@ -19,24 +21,33 @@ export function ProgressCard({
   onViewDetailed,
 }: ProgressCardProps) {
   return (
-    <Card className="p-8 shadow-lg h-full">
+    <Card className="shadow-lg h-full pr-8">
       <div className="grid grid-cols-2 gap-8">
         {/* Skill Diagram */}
         <div className="flex items-center justify-center">
-          <div className="w-40 h-40 bg-gradient-to-br from-gray-200 to-gray-300 rounded-full flex items-center justify-center">
-            <span className="text-2xl font-bold text-gray-500">Graph</span>
-          </div>
+           <RadarChartComponent
+                   data={DASHBOARD_OVERALL_SKILLS_RADAR}
+                   dataKey="limit"
+                   angleKey="skill"
+                   fill="#3b82f6"
+                   height={230}
+                 />
         </div>
 
         {/* Progress Info */}
         <div className="flex flex-col justify-center">
-          <h3 className="text-sm text-gray-500 mb-2">คะแนนเฉลี่ยรวม</h3>
-          <p className="text-4xl font-bold text-blue-600 mb-4">{percentage}%</p>
-          <p className="text-lg font-semibold text-gray-700 mb-6">
-            ระดับรวม {level}
-          </p>
+        <p className="text-lg text-gray-700 mb-2">
+          คะแนนเฉลี่ยรวม{" "}
+          <span className="font-bold text-gray-900">
+            {percentage}%
+          </span>{" "}
+          ระดับรวม{" "}
+          <span className="font-bold text-gray-900">
+            {level}
+          </span>
+        </p>
 
-          <div className="space-y-3 mb-6">
+          <div className="space-y-3 mb-4">
             <div>
               <p className="text-sm font-medium text-gray-600 mb-2">
                 บทที่ได้:
@@ -72,17 +83,17 @@ export function ProgressCard({
 
           <div className="flex gap-2">
             <Button
-              variant="primary"
-              size="sm"
-              className="flex-1 bg-blue-700 hover:bg-blue-800 text-sm"
+              variant="home1"
+              size="md"
+              className="flex-1 bg-blue-700 hover:bg-blue-900 text-md rounded-full "
               onClick={onViewOverall}
             >
               ดูภาพรวม
             </Button>
             <Button
-              variant="ghost"
-              size="sm"
-              className="flex-1 text-sm"
+              variant="home2"
+              size="md"
+              className="flex-1 text-md rounded-full bg-gray-200"
               onClick={onViewDetailed}
             >
               ดูแยกบท

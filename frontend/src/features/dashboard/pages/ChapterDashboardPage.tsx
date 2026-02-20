@@ -21,9 +21,9 @@ export function ChapterDashboardPage({ chapterId }: ChapterDashboardPageProps) {
   const stats = CHAPTER_STATS;
 
   return (
-    <div className="min-h-screen bg-[#E8F4FF] px-10 py-8"> 
+    <div className="min-h-screen bg-blue-50 px-4  py-4"> 
     <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-extrabold text-[#003B62]">
+        <h1 className="text-4xl font-extrabold text-[#003B62]">
             {chapterName.toUpperCase()} DASHBOARD
         </h1>
         <select
@@ -40,7 +40,7 @@ export function ChapterDashboardPage({ chapterId }: ChapterDashboardPageProps) {
     </div>
 
       {/* top stat cards */}
-      <div className="grid grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-4 gap-4 mb-6 bg-white shadow-md p-4 rounded-3xl">
         <StatCard
           label="คะแนนล่าสุด"
           value={`${stats.latestScore}%`}
@@ -59,7 +59,7 @@ export function ChapterDashboardPage({ chapterId }: ChapterDashboardPageProps) {
 
       {/* graphs row 1 */}
 
-      <div className="grid grid-cols-2 gap-4 mb-4">
+      <div className="grid grid-cols-3 gap-4 mb-4">
         <DashboardCard>
           <RadarChartComponent
             data={CHAPTER_SKILLS_RADAR}
@@ -69,60 +69,72 @@ export function ChapterDashboardPage({ chapterId }: ChapterDashboardPageProps) {
             height={280}
           />
         </DashboardCard>
-
+        <div className="col-span-2">
         <DashboardCard title="กราฟพัฒนาการคะแนน">
           <LineChartComponent
             data={CHAPTER_SCORE_HISTORY}
             dataKey="score"
             xAxisKey="date"
             stroke="#10b981"
-            height={280}
           />
         </DashboardCard>
+        </div>
       </div>
 
 
       {/* graphs row 2 */}
-      <div className="grid grid-cols-2 gap-4 mb-4">
+      <div className="grid grid-cols-3 gap-4 mb-4 ">
+        <div className="col-span-2 h-full">
         <DashboardCard title="กราฟเวลาเฉลี่ยต่อข้อ">
           <LineChartComponent
             data={CHAPTER_TIME_HISTORY}
             dataKey="avgTime"
             xAxisKey="date"
             stroke="#f59e0b"
-            height={280}
           />
         </DashboardCard>
+        </div>
 
         <DashboardCard title="BLOOM'S LEVEL">
-          <div className="h-64 text-sm text-gray-700 space-y-2">
-            <p className="text-xs text-gray-500">
-              แสดงสัดส่วนระดับความรู้ เช่น Remember / Understand / Apply /
-              Analyze / Evaluate
-            </p>
+          <div className=" text-sm text-gray-700 space-y-2">
+           
             <div className="space-y-2">
               {BLOOM_LEVELS.map((level) => (
                 <BloomBar key={level.label} label={level.label} percent={level.percent} />
               ))}
             </div>
 
-            <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+            <div className="mt-3 text-xs">
               <div>
                 <h4 className="font-semibold mb-1">STRENGTHS</h4>
-                <ul className="list-disc list-inside space-y-1">
+                <div className="flex gap-2 flex-wrap mb-2">
                   {CHAPTER_STRENGTHS.map((strength, idx) => (
-                    <li key={idx}>{strength}</li>
+                    <span
+                      key={`${strength}-${idx}`}
+                      className="px-2 py-1 bg-yellow-100 text-gray-600 rounded-full text-xs font-tiny"
+                    >
+                      {strength}
+                    </span>
                   ))}
-                </ul>
+                </div>
               </div>
               <div>
                 <h4 className="font-semibold mb-1">WEAKNESSES</h4>
-                <ul className="list-disc list-inside space-y-1">
+                <div className="flex gap-2 flex-wrap mb-2">
                   {CHAPTER_WEAKNESSES.map((weakness, idx) => (
-                    <li key={idx}>{weakness}</li>
+                    <span
+                      key={`${weakness}-${idx}`}
+                      className="px-2 py-1 bg-blue-100 text-gray-600 rounded-full text-xs font-tiny"
+                    >
+                      {weakness}
+                    </span>
                   ))}
-                </ul>
-              </div>
+                </div>
+            </div>
+            <div className="border text-gray-500 mt-4 px-3 py-2 rounded-lg text-xs">
+             คำแนะนำ : พยายามฝึกทำแบบทดสอบในระดับที่สูงขึ้นเพื่อพัฒนาความเชี่ยวชาญในบทนี้ และเน้นทบทวนหัวข้อที่เป็นจุดอ่อนเพื่อเพิ่มคะแนนในรอบถัดไป
+            </div>
+
             </div>
           </div>
         </DashboardCard>
@@ -130,7 +142,7 @@ export function ChapterDashboardPage({ chapterId }: ChapterDashboardPageProps) {
 
       {/* table */}
       <div className="mt-6">
-        <h2 className="text-xl font-semibold text-[#003B62] mb-3">
+        <h2 className="text-2xl font-semibold text-[#003B62] mb-3">
           รายละเอียดในการทำแบบทดสอบแต่ละครั้ง
         </h2>
         <DashboardCard>

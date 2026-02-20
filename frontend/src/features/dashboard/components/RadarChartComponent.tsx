@@ -35,14 +35,14 @@ export function RadarChartComponent({
   height = 260,
 }: RadarChartComponentProps) {
   return (
-    <div className="p-5">
+    <div className="w-full h-full flex flex-col items-center">
       {title && (
-        <p className="text-sm font-semibold text-gray-700 mb-3">
+        <p className="text-sm font-semibold text-gray-700">
           {title}
         </p>
       )}
-
-      <ResponsiveContainer width="100%" height={height}>
+      <div style={{ width: "100%", height }}>
+        <ResponsiveContainer width="100%" height="100%">
         <RadarChart
           data={data}
           outerRadius="70%" // ให้กราฟอยู่กลาง card สวย ๆ
@@ -86,7 +86,8 @@ export function RadarChartComponent({
             itemStyle={{ fontSize: "12px" }}
           />
         </RadarChart>
-      </ResponsiveContainer>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 }

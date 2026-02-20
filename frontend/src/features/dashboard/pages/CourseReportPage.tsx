@@ -14,8 +14,8 @@ export function CourseReportPage({ attemptId }: CourseReportPageProps) {
   const displayAttemptId = attemptId || "ล่าสุด";
 
   return (
-    <div className="min-h-screen bg-[#E8F4FF] px-10 py-8">
-      <h1 className="text-3xl font-extrabold text-[#003B62] mb-2">
+    <div className="min-h-screen bg-blue-50 px-4 py-4">
+      <h1 className="text-4xl font-extrabold text-[#003B62] mb-2">
         COURSE REPORT
       </h1>
       <p className="text-sm text-gray-600 mb-6">

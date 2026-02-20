@@ -32,18 +32,17 @@ export function LineChartComponent({
   title,
   xAxisKey = "attempt",
   stroke = "#3b82f6",
-  height = 300,
 }: LineChartComponentProps) {
   return (
 
-    <div className="w-full">
+    <div className="w-full h-full pb-6">
   {title && (
     <p className="text-lg font-semibold text-right text-gray-900 mb-2">
       {title}
     </p>
   )}
 
-  <ResponsiveContainer width="100%" height={height}>
+  <ResponsiveContainer width="100%" height="100%" >
     <LineChart
       data={data}
       margin={{ top: 8, right: 16, left: 0, bottom: 8 }}

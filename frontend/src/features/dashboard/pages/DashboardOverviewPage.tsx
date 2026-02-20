@@ -10,14 +10,11 @@ import {
 
 export function DashboardOverviewPage() {
   return (
-    <div className="min-h-screen bg-[#E8F4FF] px-10 py-8">
-      <h1 className="text-3xl font-extrabold text-[#003B62] mb-2">
-        LEARNING DASHBOARD
+    <div className="min-h-screen bg-blue-50 px-4 py-4">
+      <h1 className="text-4xl font-extrabold text-[#003B62] mb-6">
+        PUNPUN's DASHBOARD
       </h1>
-      <p className="text-sm text-gray-600 mb-6">
-        ภาพรวมพัฒนาการเรียนรู้ของคุณในแต่ละบทของคอร์ส Calculus
-      </p>
-
+     
       {/* สรุปตัวเลขรวม */}
       <div className="grid grid-cols-3 gap-4 mb-6">
         <StatCard label="จำนวนบททั้งหมด" value={DASHBOARD_OVERVIEW_STATS.totalChapters} />
@@ -31,7 +28,7 @@ export function DashboardOverviewPage() {
       </h2>
       <div className="grid grid-cols-3 gap-4 mb-8">
         {MOCK_CHAPTERS.map((chapter) => (
-          <ChapterCard key={chapter.id} chapter={chapter} />
+          <ChapterCard key={chapter.id} chapter={chapter} stats={DASHBOARD_OVERVIEW_STATS} />
         ))}
       </div>
 

@@ -9,6 +9,7 @@ import { AuthProvider } from "./features/auth/hooks/useAuth";
 import { LoginPage } from "./features/auth/pages/LoginPage";
 import { SignUpPage } from "./features/auth/pages/SignUpPage";
 import { HomePage } from "./features/home/pages/HomePage";
+import { AllDashboard } from "./features/dashboard/pages/AllDashboard";
 
 import {
   DashboardOverviewPage,
@@ -17,7 +18,7 @@ import {
 } from "./features/dashboard";
 
 import { Layout } from "./shared/components/layout/Layout";
-import { ProtectedRoute } from "./shared/components/ProtectedRoute";
+//import { ProtectedRoute } from "./shared/components/ProtectedRoute";
 
 const router = createBrowserRouter([
   {
@@ -39,11 +40,11 @@ const router = createBrowserRouter([
   {
     path: "/home",
     element: (
-      <ProtectedRoute>
+     // <ProtectedRoute>
         <Layout>
           <HomePage />
         </Layout>
-      </ProtectedRoute>
+     // </ProtectedRoute>
     ),
   },
 
@@ -51,33 +52,44 @@ const router = createBrowserRouter([
   {
     path: "/dashboard",
     element: (
-      <ProtectedRoute>
+      //<ProtectedRoute>
         <Layout>
-          <DashboardOverviewPage />
+          <AllDashboard />
         </Layout>
-      </ProtectedRoute>
+     // </ProtectedRoute>
     ),
   },
   {
     path: "/dashboard/chapter/:chapterId",
     element: (
-      <ProtectedRoute>
+     // <ProtectedRoute>
         <Layout>
           <ChapterDashboardPage />
         </Layout>
-      </ProtectedRoute>
+      //</ProtectedRoute>
     ),
   },
   {
     path: "/dashboard/course-report",
     element: (
-      <ProtectedRoute>
+     // <ProtectedRoute>
         <Layout>
           <CourseReportPage />
         </Layout>
-      </ProtectedRoute>
+      //</ProtectedRoute>
     ),
   },
+  {
+    path: "/dashboard/overview",
+    element: (
+     // <ProtectedRoute>
+        <Layout>
+          <DashboardOverviewPage />
+        </Layout>
+      //</ProtectedRoute>
+    ),
+  },
+  
 
   // ===== FALLBACK =====
   {

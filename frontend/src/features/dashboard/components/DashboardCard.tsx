@@ -8,9 +8,9 @@ import type { DashboardCardProps } from "../types/dashboard.type";
  */
 export function DashboardCard({ title, children }: DashboardCardProps) {
   return (
-    <div className="bg-white rounded-2xl shadow-md px-7 py-5">
+    <div className="bg-white rounded-2xl shadow-md px-7 py-5 h-full">
       {title && (
-        <h3 className="text-sm font-semibold text-gray-700 mb-3">{title}</h3>
+        <h3 className="text-md font-semibold text-gray-700 mb-1 mr-2">{title}</h3>
       )}
       {children}
     </div>
