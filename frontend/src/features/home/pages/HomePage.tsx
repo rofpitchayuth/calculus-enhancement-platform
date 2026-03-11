@@ -36,17 +36,41 @@ const mockCourses: Course[] = [
     questionCount: 20,
     duration: 60,
   },
+   {
+    id: "1",
+    title: "Differential",
+    description:
+      "แบบทดสอบบทอนุพันธ์เพื่อวัดความเข้าใจในแนวคิดพื้นฐานและการประยุกต์ใช้อนุพันธ์",
+    questionCount: 20,
+    duration: 60,
+  },
+  {
+    id: "2",
+    title: "Differential",
+    description:
+      "แบบทดสอบบทอนุพันธ์เพื่อวัดความเข้าใจในแนวคิดพื้นฐานและการประยุกต์ใช้อนุพันธ์",
+    questionCount: 20,
+    duration: 60,
+  },
+  {
+    id: "3",
+    title: "Differential",
+    description:
+      "แบบทดสอบบทอนุพันธ์เพื่อวัดความเข้าใจในแนวคิดพื้นฐานและการประยุกต์ใช้อนุพันธ์",
+    questionCount: 20,
+    duration: 60,
+  },
 ];
 
 export function HomePage() {
   const navigate = useNavigate();
 
   const handleViewOverall = () => {
-    console.log("View Overall Progress");
+    navigate("/dashboard/overview");
   };
 
   const handleViewDetailed = () => {
-    console.log("View Detailed Progress");
+    navigate("/dashboard");
   };
 
   const handleViewAllCourses = () => {
@@ -59,16 +83,16 @@ export function HomePage() {
 
   return (
     <div className="homepage bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 pb-12">
+      <div className="max-w-7xl mx-auto px-4 pb-12 bg-blue-50">
         
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-6">
           {/* Progress Section */}
           <div className="lg:col-span-2">
             <ProgressCard
               percentage={75}
               level="ปานกลาง"
               masterTopics={["Limit", "Differential", "Integrate"]}
-              improvementTopics={["Apply", "Graph"]}
+              improvementTopics={["Apply", "Graph","Limit", "Differential", "Integrate"]}
               onViewOverall={handleViewOverall}
               onViewDetailed={handleViewDetailed}
             />
@@ -80,7 +104,6 @@ export function HomePage() {
             subtitle="(Coming Soon)"
           />
         </div>
-
         {/* Courses Section */}
         <CourseSection
           courses={mockCourses}

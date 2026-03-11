@@ -24,7 +24,8 @@ export function CourseSection({
   return (
     <section className="courses">
       <div className="flex items-center justify-between mb-8">
-        <h2 className="text-3xl font-bold text-gray-800">COURSE</h2>
+        <h2 className="text-4xl font-bold text-gray-700">COURSE </h2>
+        <hr className="flex-grow mx-4 border-1 border-gray-800 rounded-full"/>
         <Button
           variant="primary"
           size="md"
