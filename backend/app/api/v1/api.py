@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from .endpoints import auth, quiz
+from .endpoints import auth, quiz, dashboard
 
 api_router = APIRouter()
 
@@ -13,8 +13,9 @@ async def status():
     return {
         "api_version": "v1",
         "status": "operational",
-        "endpoints": ["/test", "/status", "/auth/*", "/quiz/*"]
+        "endpoints": ["/test", "/status", "/auth/*", "/quiz/*", "/dashboard/*"]
     }
 
 api_router.include_router(auth.router, prefix="/auth", tags=["Authentication"])
 api_router.include_router(quiz.router, prefix="/quiz", tags=["Quiz & IBKT"])
+api_router.include_router(dashboard.router, prefix="/dashboard", tags=["Dashboard"])

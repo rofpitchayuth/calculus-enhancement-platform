@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { QuizSession, SubmitResponse, QuizSubmitRequest } from '../types/quiz.types';
+import type { QuizSession, SubmitResponse, QuizEndResponse, QuizSubmitRequest } from '../types/quiz.types';
 
 const API_URL = 'http://localhost:8000/api/v1';
 
@@ -38,7 +38,7 @@ export const quizService = {
         return response.data;
     },
 
-    endQuiz: async (userId: number, sessionId: number): Promise<any> => {
+    endQuizSession: async (userId: number, sessionId: number): Promise<QuizEndResponse> => {
         const headers = getAuthHeaders();
         const response = await axios.post(
             `${API_URL}/quiz/end`,

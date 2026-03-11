@@ -11,7 +11,7 @@ interface NavbarProps {
 export function Navbar({ className = "" }: NavbarProps) {
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
-  
+
 
   return (
     <nav
@@ -33,19 +33,18 @@ export function Navbar({ className = "" }: NavbarProps) {
         </div>
 
 
-        
+
         <ul className="flex items-center space-x-6">
           <li className="relative">
-          <NavLink
-            to="/home"
-            end
-            className={({ isActive }) =>
-              `relative px-1 py-0.1 transition-colors hover:text-blue-600 ${
-                isActive ? "text-gray-900 font-medium" : ""
-              }`
-            }
-          >
-              {({ isActive }) => (
+            <NavLink
+              to="/home"
+              end
+              className={({ isActive }: { isActive: boolean }) =>
+                `relative px-1 py-0.1 transition-colors hover:text-blue-600 ${isActive ? "text-gray-900 font-medium" : ""
+                }`
+              }
+            >
+              {({ isActive }: { isActive: boolean }) => (
                 <>
                   Home
                   {isActive && (
@@ -59,13 +58,12 @@ export function Navbar({ className = "" }: NavbarProps) {
           <li className="relative">
             <NavLink
               to="/course"
-              className={({ isActive }) =>
-                `relative px-1 py-0.1 transition-colors hover:text-blue-600 ${
-                  isActive ? "text-gray-900 font-medium" : ""
+              className={({ isActive }: { isActive: boolean }) =>
+                `relative px-1 py-0.1 transition-colors hover:text-blue-600 ${isActive ? "text-gray-900 font-medium" : ""
                 }`
               }
             >
-              {({ isActive }) => (
+              {({ isActive }: { isActive: boolean }) => (
                 <>
                   Course
                   {isActive && (
@@ -79,13 +77,12 @@ export function Navbar({ className = "" }: NavbarProps) {
           <li className="relative">
             <NavLink
               to="/dashboard"
-              className={({ isActive }) =>
-                `relative px-1 py-0.1 transition-colors hover:text-blue-600 ${
-                  isActive ? "text-gray-900 font-medium" : ""
+              className={({ isActive }: { isActive: boolean }) =>
+                `relative px-1 py-0.1 transition-colors hover:text-blue-600 ${isActive ? "text-gray-900 font-medium" : ""
                 }`
               }
             >
-              {({ isActive }) => (
+              {({ isActive }: { isActive: boolean }) => (
                 <>
                   Dashboard
                   {isActive && (
@@ -98,7 +95,7 @@ export function Navbar({ className = "" }: NavbarProps) {
         </ul>
       </div>
 
-  
+
       <div className="flex space-x-3">
         {isAuthenticated ? (
           <>

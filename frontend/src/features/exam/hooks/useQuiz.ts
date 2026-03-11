@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { quizService } from '../services/quiz.service';
-import type { QuizSession, SubmitResponse } from '../types/quiz.types';
+import type { QuizSession, SubmitResponse, QuizEndResponse } from '../types/quiz.types';
 
 export const useQuiz = () => {
     const [quiz, setQuiz] = useState<QuizSession | null>(null);
@@ -57,11 +57,11 @@ export const useQuiz = () => {
         return false;
     };
 
-    const endQuizSession = async (userId: number) => {
+    const endQuizSession = async (userId: number): Promise<QuizEndResponse | null> => {
         if (!quiz) return null;
         try {
             setLoading(true);
-            const result = await quizService.endQuiz(userId, quiz.session_id);
+            const result = await quizService.endQuizSession(userId, quiz.session_id);
             return result;
         } catch (err: any) {
             console.error('Failed to end quiz:', err);

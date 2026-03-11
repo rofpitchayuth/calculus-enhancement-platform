@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import List, Optional
+from typing import List, Optional, Any
 from datetime import datetime
 
 class QuizStartRequest(BaseModel):
@@ -46,3 +46,4 @@ class QuizEndResponse(BaseModel):
     total_questions: int
     start_time: datetime
     end_time: datetime
+    session_summary: List[Any] = Field(default_factory=list, description="Summary of all questions attempted in this session for the review page")

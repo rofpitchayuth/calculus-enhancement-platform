@@ -14,17 +14,18 @@ const renderMathText = (text: string) => {
   if (!text) return null;
 
   try {
-    // Split the text to separate Thai characters/spaces from math equations
-    const parts = text.split(/([\u0E00-\u0E7F\s]+)/);
+    // Split the text to separate math equations (delimited by $) from regular text
+    const parts = text.split('$');
 
     return parts.map((part, index) => {
       if (!part) return null;
 
-      // If it's pure Thai text and whitespace, render as text
-      if (/^[\u0E00-\u0E7F\s]+$/.test(part)) {
+      // Even indices are regular text
+      if (index % 2 === 0) {
         return <span key={index} className="whitespace-pre-wrap">{part}</span>;
       }
 
+      // Odd indices are math equations
       let latex = part
         .replace(/∫/g, '\\int ')
         .replace(/→/g, '\\to ')
@@ -36,16 +37,14 @@ const renderMathText = (text: string) => {
         .replace(/≠/g, '\\neq ')
         .replace(/∞/g, '\\infty ')
         .replace(/π/g, '\\pi ')
-        .replace(/√/g, '\\sqrt ')
-        .replace(/\^(\d+)/g, '^{$1}')
-        .replace(/\^(\w+)/g, '^{$1}');
+        .replace(/√/g, '\\sqrt ');
 
       // Render as math. Using renderError to gracefully fallback if KaTeX parsing fails
       return (
         <span key={index} className="mx-1">
           <InlineMath
             math={latex}
-            renderError={() => <span>{part}</span>}
+            renderError={() => <span className="text-red-500">${part}$</span>}
           />
         </span>
       );

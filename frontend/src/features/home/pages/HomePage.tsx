@@ -36,30 +36,6 @@ const mockCourses: Course[] = [
     questionCount: 20,
     duration: 60,
   },
-   {
-    id: "1",
-    title: "Differential",
-    description:
-      "แบบทดสอบบทอนุพันธ์เพื่อวัดความเข้าใจในแนวคิดพื้นฐานและการประยุกต์ใช้อนุพันธ์",
-    questionCount: 20,
-    duration: 60,
-  },
-  {
-    id: "2",
-    title: "Differential",
-    description:
-      "แบบทดสอบบทอนุพันธ์เพื่อวัดความเข้าใจในแนวคิดพื้นฐานและการประยุกต์ใช้อนุพันธ์",
-    questionCount: 20,
-    duration: 60,
-  },
-  {
-    id: "3",
-    title: "Differential",
-    description:
-      "แบบทดสอบบทอนุพันธ์เพื่อวัดความเข้าใจในแนวคิดพื้นฐานและการประยุกต์ใช้อนุพันธ์",
-    questionCount: 20,
-    duration: 60,
-  },
 ];
 
 export function HomePage() {
@@ -77,14 +53,14 @@ export function HomePage() {
     navigate("/courses");
   };
 
-  const handleStartCourse = (courseId: string | number) => {
+  const handleStartCourse = (_courseId: string | number) => {
     navigate(`/quiz`);
   };
 
   return (
     <div className="homepage bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 pb-12 bg-blue-50">
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-6">
           {/* Progress Section */}
           <div className="lg:col-span-2">
@@ -92,7 +68,7 @@ export function HomePage() {
               percentage={75}
               level="ปานกลาง"
               masterTopics={["Limit", "Differential", "Integrate"]}
-              improvementTopics={["Apply", "Graph","Limit", "Differential", "Integrate"]}
+              improvementTopics={["Apply", "Graph", "Limit", "Differential", "Integrate"]}
               onViewOverall={handleViewOverall}
               onViewDetailed={handleViewDetailed}
             />

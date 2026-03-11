@@ -35,3 +35,23 @@ export interface QuizSubmitRequest {
     user_answer: string;
     skill_id: string;
 }
+
+export interface QuizSummaryItem {
+    question_number: number;
+    question_text: string;
+    is_correct: boolean;
+    user_answer: string;
+    correct_answer: string;
+    main_topic: string | null;
+    sub_topic: string | null;
+    error_code: string | null;
+}
+
+export interface QuizEndResponse {
+    session_id: number;
+    total_score: number;
+    total_questions: number;
+    start_time: string;
+    end_time: string;
+    session_summary: QuizSummaryItem[];
+}

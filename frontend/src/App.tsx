@@ -41,11 +41,11 @@ const router = createBrowserRouter([
   {
     path: "/home",
     element: (
-     // <ProtectedRoute>
-        <Layout>
-          <HomePage />
-        </Layout>
-     // </ProtectedRoute>
+      // <ProtectedRoute>
+      <Layout>
+        <HomePage />
+      </Layout>
+      // </ProtectedRoute>
     ),
   },
 
@@ -54,19 +54,19 @@ const router = createBrowserRouter([
     path: "/dashboard",
     element: (
       //<ProtectedRoute>
-        <Layout>
-          <AllDashboard />
-        </Layout>
-     // </ProtectedRoute>
+      <Layout>
+        <AllDashboard />
+      </Layout>
+      // </ProtectedRoute>
     ),
   },
   {
     path: "/dashboard/chapter/:chapterId/all",
     element: (
-     // <ProtectedRoute>
-        <Layout>
-          <ChapterDashboardPage />
-        </Layout>
+      // <ProtectedRoute>
+      <Layout>
+        <ChapterDashboardPage />
+      </Layout>
       //</ProtectedRoute>
     ),
   },
@@ -86,16 +86,21 @@ const router = createBrowserRouter([
       <ProtectedRoute>
         <Layout>
           <QuizPage />
+        </Layout>
+      </ProtectedRoute>
+    ),
+  },
+  {
     path: "/dashboard/overview",
     element: (
-     <ProtectedRoute>
+      <ProtectedRoute>
         <Layout>
           <DashboardOverviewPage />
         </Layout>
       </ProtectedRoute>
     ),
   },
-  
+
 
   {
     path: "*",

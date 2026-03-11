@@ -115,7 +115,7 @@ class QuizService:
         if session.end_time:
             raise ValueError(f"QuizSession {session_id} is already ended")
             
-        # Calculate score
+        # Calculate score and build summary
         attempts = self.db.query(QuizAttempt).filter(QuizAttempt.session_id == session_id).all()
         correct_count = sum(1 for a in attempts if a.is_correct)
         total_attempts = len(attempts)
@@ -127,10 +127,34 @@ class QuizService:
         
         self.db.commit()
         
+        # Build session summary
+        session_summary = []
+        for index, attempt in enumerate(attempts):
+            question = self.db.query(Question).filter(Question.id == attempt.question_id).first()
+            if question:
+                error_code = None
+                if not attempt.is_correct and question.choices:
+                    # Find the selected choice to extract its error code
+                    selected_choice = next((c for c in question.choices if str(c.get("id")).lower() == attempt.user_answer.lower()), None)
+                    if selected_choice:
+                        error_code = selected_choice.get("error_code")
+                
+                session_summary.append({
+                    "question_number": index + 1,
+                    "question_text": question.question_text,
+                    "is_correct": attempt.is_correct,
+                    "user_answer": attempt.user_answer,
+                    "correct_answer": question.correct_answer,
+                    "main_topic": question.main_topic,
+                    "sub_topic": question.sub_topic,
+                    "error_code": error_code
+                })
+        
         return {
             "session_id": session.id,
             "total_score": score,
             "total_questions": session.total_questions or total_attempts,
             "start_time": session.start_time,
-            "end_time": session.end_time
+            "end_time": session.end_time,
+            "session_summary": session_summary
         }
