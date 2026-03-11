@@ -1,9 +1,22 @@
 import "./index.css";
-import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Navigate,
+} from "react-router-dom";
+
 import { AuthProvider } from "./features/auth/hooks/useAuth";
 import { LoginPage } from "./features/auth/pages/LoginPage";
 import { SignUpPage } from "./features/auth/pages/SignUpPage";
 import { HomePage } from "./features/home/pages/HomePage";
+import { AllDashboard } from "./features/dashboard/pages/AllDashboard";
+
+import {
+  DashboardOverviewPage,
+  ChapterDashboardPage,
+  CourseReportPage,
+} from "./features/dashboard";
+
 import { Layout } from "./shared/components/layout/Layout";
 import { ProtectedRoute } from "./shared/components/ProtectedRoute";
 import QuizPage from "./features/exam/pages/QuizPage";
@@ -13,6 +26,8 @@ const router = createBrowserRouter([
     path: "/",
     element: <Navigate to="/home" replace />,
   },
+
+  // ===== AUTH =====
   {
     path: "/auth/login",
     element: <LoginPage />,
@@ -21,12 +36,46 @@ const router = createBrowserRouter([
     path: "/auth/signup",
     element: <SignUpPage />,
   },
+
+  // ===== HOME =====
   {
     path: "/home",
     element: (
-      <ProtectedRoute>
+     // <ProtectedRoute>
         <Layout>
           <HomePage />
+        </Layout>
+     // </ProtectedRoute>
+    ),
+  },
+
+  // ===== DASHBOARD =====
+  {
+    path: "/dashboard",
+    element: (
+      //<ProtectedRoute>
+        <Layout>
+          <AllDashboard />
+        </Layout>
+     // </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/dashboard/chapter/:chapterId/all",
+    element: (
+     // <ProtectedRoute>
+        <Layout>
+          <ChapterDashboardPage />
+        </Layout>
+      //</ProtectedRoute>
+    ),
+  },
+  {
+    path: "/dashboard/chapter/:chapterId",
+    element: (
+      <ProtectedRoute>
+        <Layout>
+          <CourseReportPage />
         </Layout>
       </ProtectedRoute>
     ),
@@ -37,10 +86,17 @@ const router = createBrowserRouter([
       <ProtectedRoute>
         <Layout>
           <QuizPage />
+    path: "/dashboard/overview",
+    element: (
+     <ProtectedRoute>
+        <Layout>
+          <DashboardOverviewPage />
         </Layout>
       </ProtectedRoute>
     ),
   },
+  
+
   {
     path: "*",
     element: <Navigate to="/auth/login" replace />,
