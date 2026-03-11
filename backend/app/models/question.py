@@ -1,7 +1,23 @@
 from sqlalchemy import Column, Integer, String, Float, DateTime, Text
+from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import JSONB
 from datetime import datetime
 from app.core.database import Base
+
+class ErrorCode(Base):
+    __tablename__ = "error_codes"
+    
+    code = Column(String, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    category = Column(String, nullable=True)
+    explanation = Column(Text, nullable=True)
+    default_feedback = Column(Text, nullable=True)
+    
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    class Config:
+        from_attributes = True
 
 class Question(Base):
     __tablename__ = "questions"
@@ -15,7 +31,6 @@ class Question(Base):
     
     difficulty = Column(Float, default=0.5)
     discrimination = Column(Float, default=1.0) 
-    guessing = Column(Float, default=0.0)
     
     bloom_level = Column(String, nullable=True)
     main_topic = Column(String, index=True, nullable=True) 
@@ -24,6 +39,9 @@ class Question(Base):
     
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    quiz_attempts = relationship("QuizAttempt", back_populates="question")
+    recommendations = relationship("Recommendation", back_populates="question")
     
     class Config:
         from_attributes = True

@@ -12,7 +12,7 @@ from app.core.config import settings
 from app.core.database import Base
 
 # Import all models so Alembic can detect them
-from app.models import User, Question, QuizAttempt, StudentKnowledge, IBKTResult, Recommendation
+from app.models import User, Question, QuizAttempt, StudentKnowledge, BKTResult, Recommendation
 
 config = context.config
 

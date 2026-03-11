@@ -15,6 +15,7 @@ class User(Base):
     is_verified = Column(Boolean, default=False)
     
     quiz_attempts = relationship("QuizAttempt", back_populates="user", cascade="all, delete-orphan")
+    quiz_sessions = relationship("QuizSession", back_populates="user", cascade="all, delete-orphan")
     student_knowledge = relationship("StudentKnowledge", back_populates="user", uselist=False, cascade="all, delete-orphan")
     recommendations = relationship("Recommendation", back_populates="user", cascade="all, delete-orphan")
 

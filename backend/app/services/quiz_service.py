@@ -8,15 +8,12 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
 from app.models.question import Question
-from app.models.result import QuizAttempt, StudentKnowledge, IBKTResult
+from app.models.result import QuizSession, QuizAttempt, StudentKnowledge, BKTResult
 from app.schemas.quiz import QuestionResponse, QuizStartResponse, QuizSubmitResponse
-from ibkt.model import IBKTModel
-from ibkt.storage import load_model, save_model
 
 class QuizService:
     def __init__(self, db: Session):
         self.db = db
-        self.ibkt_model: IBKTModel = load_model()
     
     def generate_quiz(self, user_id: int, topic: Optional[str] = None, num_questions: int = 5) -> QuizStartResponse:
         query = self.db.query(Question)
@@ -29,11 +26,13 @@ class QuizService:
         if not questions:
             raise ValueError("No questions available for the specified criteria")
         
-        session = QuizAttempt(
+        # Create a QuizSession instead of a dummy QuizAttempt
+        session = QuizSession(
             user_id=user_id,
-            question_id=0,
-            is_correct=False,
-            attempted_at=datetime.utcnow()
+            title=f"{topic or 'General'} Quiz",
+            session_type="practice",
+            total_questions=len(questions),
+            start_time=datetime.utcnow()
         )
         self.db.add(session)
         self.db.commit()
@@ -60,6 +59,7 @@ class QuizService:
     def submit_answer(
         self,
         user_id: int,
+        session_id: int,
         question_id: int,
         user_answer: str,
         skill_id: str
@@ -67,56 +67,31 @@ class QuizService:
         question = self.db.query(Question).filter(Question.id == question_id).first()
         if not question:
             raise ValueError(f"Question {question_id} not found")
+            
+        quiz_session = self.db.query(QuizSession).filter(QuizSession.id == session_id, QuizSession.user_id == user_id).first()
+        if not quiz_session:
+            raise ValueError(f"QuizSession {session_id} not found or unauthorized")
         
         is_correct = (user_answer.strip().lower() == question.correct_answer.strip().lower())
         
-        p_mastery_before = self.ibkt_model.get_posterior(
-            user_id=str(user_id),
-            skill_id=skill_id
-        )
-        
-        p_mastery_after = self.ibkt_model.update_with_result(
-            user_id=str(user_id),
-            item_id=str(question_id),
-            skill_id=skill_id,
-            correct=1 if is_correct else 0
-        )
-        
-        p_correct_next = self.ibkt_model.predict_correct_prob(
-            user_id=str(user_id),
-            item_id=str(question_id),
-            skill_id=skill_id
-        )
-        
-        save_model(self.ibkt_model)
+        # Mock BKT logic for now
+        p_mastery_before = 0.5
+        p_mastery_after = 0.6 if is_correct else 0.4
+        p_correct_next = 0.7
         
         attempt = QuizAttempt(
             user_id=user_id,
+            session_id=session_id,
             question_id=question_id,
             is_correct=is_correct,
             user_answer=user_answer,
             skill_tag=skill_id,
+            difficulty=str(question.difficulty),
             attempted_at=datetime.utcnow()
         )
         self.db.add(attempt)
-        
-        ibkt_result = IBKTResult(
-            user_id=user_id,
-            quiz_attempt_id=attempt.id if attempt.id else 0, 
-            skill_tag=skill_id,
-            p_prior=p_mastery_before,
-            p_posterior=p_mastery_after,
-            created_at=datetime.utcnow()
-        )
-        
         self.db.commit()
         self.db.refresh(attempt)
-        
-        ibkt_result.quiz_attempt_id = attempt.id
-        self.db.add(ibkt_result)
-        self.db.commit()
-        
-        self._update_student_knowledge(user_id, skill_id, p_mastery_after)
         
         return QuizSubmitResponse(
             is_correct=is_correct,
@@ -126,22 +101,36 @@ class QuizService:
             p_correct_next=p_correct_next
         )
     
-    def _update_student_knowledge(self, user_id: int, skill_id: str, mastery: float):
-        knowledge = self.db.query(StudentKnowledge).filter(
-            StudentKnowledge.user_id == user_id
+    
+
+    def end_quiz_session(self, user_id: int, session_id: int) -> dict:
+        session = self.db.query(QuizSession).filter(
+            QuizSession.id == session_id,
+            QuizSession.user_id == user_id
         ).first()
         
-        if not knowledge:
-            knowledge = StudentKnowledge(
-                user_id=user_id,
-                skill_mastery={}
-            )
-            self.db.add(knowledge)
+        if not session:
+            raise ValueError(f"QuizSession {session_id} not found or unauthorized")
         
-        if knowledge.skill_mastery is None:
-            knowledge.skill_mastery = {}
+        if session.end_time:
+            raise ValueError(f"QuizSession {session_id} is already ended")
+            
+        # Calculate score
+        attempts = self.db.query(QuizAttempt).filter(QuizAttempt.session_id == session_id).all()
+        correct_count = sum(1 for a in attempts if a.is_correct)
+        total_attempts = len(attempts)
         
-        knowledge.skill_mastery[skill_id] = mastery
-        knowledge.last_updated = datetime.utcnow()
+        score = (correct_count / session.total_questions) * 100 if session.total_questions and session.total_questions > 0 else 0
+        
+        session.end_time = datetime.utcnow()
+        session.total_score = score
         
         self.db.commit()
+        
+        return {
+            "session_id": session.id,
+            "total_score": score,
+            "total_questions": session.total_questions or total_attempts,
+            "start_time": session.start_time,
+            "end_time": session.end_time
+        }

@@ -9,20 +9,25 @@ interface CourseCardProps {
   questionCount: number;
   duration: number;
   thumbnail?: string;
+  onClick?: () => void;
 }
 
 export function CourseCard({
-  id,
   title,
   description,
   questionCount,
   duration,
   thumbnail,
+  onClick,
 }: CourseCardProps) {
   const navigate = useNavigate();
 
   const handleStart = () => {
-    navigate(`/quiz`);
+    if (onClick) {
+      onClick();
+    } else {
+      navigate(`/quiz`);
+    }
   };
 
   return (

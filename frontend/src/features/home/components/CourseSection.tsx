@@ -12,12 +12,14 @@ interface Course {
 
 interface CourseSectionProps {
   courses: Course[];
+  onViewAll?: () => void;
   onStartCourse?: (courseId: string | number) => void;
 }
 
 export function CourseSection({
   courses,
-  // onStartCourse,
+  onViewAll,
+  onStartCourse,
 }: CourseSectionProps) {
   return (
     <section className="courses">
@@ -27,6 +29,7 @@ export function CourseSection({
           variant="primary"
           size="md"
           className="bg-yellow-500 hover:bg-yellow-600 text-white rounded-full px-6"
+          onClick={onViewAll}
         >
           ดูแบบทดสอบทั้งหมด
         </Button>
@@ -43,7 +46,7 @@ export function CourseSection({
             questionCount={course.questionCount}
             duration={course.duration}
             thumbnail={course.thumbnail}
-            // onClick={() => onStartCourse?.(course.id)}
+            onClick={() => onStartCourse?.(course.id)}
           />
         ))}
       </div>

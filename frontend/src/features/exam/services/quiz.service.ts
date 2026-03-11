@@ -36,5 +36,15 @@ export const quizService = {
             { headers }
         );
         return response.data;
+    },
+
+    endQuiz: async (userId: number, sessionId: number): Promise<any> => {
+        const headers = getAuthHeaders();
+        const response = await axios.post(
+            `${API_URL}/quiz/end`,
+            { user_id: userId, session_id: sessionId },
+            { headers }
+        );
+        return response.data;
     }
 };

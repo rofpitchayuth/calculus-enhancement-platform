@@ -9,6 +9,7 @@ class QuizStartRequest(BaseModel):
 
 class QuizSubmitAnswerRequest(BaseModel):
     user_id: int
+    session_id: int
     question_id: int
     user_answer: str
     skill_id: str = Field(..., description="Main skill for this question (e.g., 'limits', 'derivatives')")
@@ -16,7 +17,7 @@ class QuizSubmitAnswerRequest(BaseModel):
 class QuestionResponse(BaseModel):
     id: int
     question_text: str
-    choices: Optional[List[str]] = None
+    choices: Optional[List[dict]] = None
     bloom_level: Optional[str]
     skill_id: str
     
@@ -34,3 +35,14 @@ class QuizSubmitResponse(BaseModel):
     p_mastery_before: float = Field(..., description="Mastery probability before this answer")
     p_mastery_after: float = Field(..., description="Updated mastery probability")
     p_correct_next: float = Field(..., description="Predicted probability of getting next question correct")
+
+class QuizEndRequest(BaseModel):
+    user_id: int
+    session_id: int
+
+class QuizEndResponse(BaseModel):
+    session_id: int
+    total_score: float
+    total_questions: int
+    start_time: datetime
+    end_time: datetime

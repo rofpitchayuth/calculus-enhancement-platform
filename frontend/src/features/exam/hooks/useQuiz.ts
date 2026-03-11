@@ -29,10 +29,12 @@ export const useQuiz = () => {
         userAnswer: string,
         skillId: string
     ): Promise<SubmitResponse | null> => {
+        if (!quiz) return null;
         try {
             setLoading(true);
             const result = await quizService.submitAnswer({
                 user_id: userId,
+                session_id: quiz.session_id,
                 question_id: questionId,
                 user_answer: userAnswer,
                 skill_id: skillId
@@ -55,6 +57,20 @@ export const useQuiz = () => {
         return false;
     };
 
+    const endQuizSession = async (userId: number) => {
+        if (!quiz) return null;
+        try {
+            setLoading(true);
+            const result = await quizService.endQuiz(userId, quiz.session_id);
+            return result;
+        } catch (err: any) {
+            console.error('Failed to end quiz:', err);
+            return null;
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const resetQuiz = () => {
         setQuiz(null);
         setCurrentIndex(0);
@@ -69,6 +85,7 @@ export const useQuiz = () => {
         startQuiz,
         submitAnswer,
         nextQuestion,
+        endQuizSession,
         resetQuiz
     };
 };

@@ -1,1 +1,0 @@
-"""BKT models module."""

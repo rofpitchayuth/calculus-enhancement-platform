@@ -22,17 +22,17 @@ const mockCourses: Course[] = [
   },
   {
     id: "2",
-    title: "Differential",
+    title: "Integrate",
     description:
-      "แบบทดสอบบทอนุพันธ์เพื่อวัดความเข้าใจในแนวคิดพื้นฐานและการประยุกต์ใช้อนุพันธ์",
+      "แบบทดสอบบทปริพันธ์เพื่อวัดความเข้าใจในแนวคิดพื้นฐานและการประยุกต์ใช้ปริพันธ์",
     questionCount: 20,
     duration: 60,
   },
   {
     id: "3",
-    title: "Differential",
+    title: "Limit",
     description:
-      "แบบทดสอบบทอนุพันธ์เพื่อวัดความเข้าใจในแนวคิดพื้นฐานและการประยุกต์ใช้อนุพันธ์",
+      "แบบทดสอบบทลิมิตเพื่อวัดความเข้มข้นในแนวคิดพื้นฐานของลิมิตของฟังก์ชัน",
     questionCount: 20,
     duration: 60,
   },
@@ -54,14 +54,14 @@ export function HomePage() {
   };
 
   const handleStartCourse = (courseId: string | number) => {
-    navigate(`/course/${courseId}`);
+    navigate(`/quiz`);
   };
 
   return (
     <div className="homepage bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 pb-12">
-        
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16 mt-8">
           {/* Progress Section */}
           <div className="lg:col-span-2">
             <ProgressCard

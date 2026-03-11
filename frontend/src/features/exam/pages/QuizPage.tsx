@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 
 export default function QuizPage() {
   const { user } = useAuth();
-  const { quiz, currentIndex, loading, error, startQuiz, submitAnswer, nextQuestion, resetQuiz } = useQuiz();
+  const { quiz, currentIndex, loading, error, startQuiz, submitAnswer, nextQuestion, endQuizSession, resetQuiz } = useQuiz();
   const [selectedChoice, setSelectedChoice] = useState('');
   const [result, setResult] = useState<SubmitResponse | null>(null);
   const navigate = useNavigate();
@@ -38,17 +38,17 @@ export default function QuizPage() {
     }
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     const hasNext = nextQuestion();
     setSelectedChoice('');
     setResult(null);
-    
+
     if (!hasNext) {
+      if (user?.id) {
+        await endQuizSession(user.id);
+      }
       navigate('/home');
       resetQuiz();
-      if (user?.id) {
-        startQuiz(user.id, 5);
-      }
     }
   };
 
@@ -88,7 +88,7 @@ export default function QuizPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-8">
       <div className="max-w-4xl mx-auto">
-        <QuestionCard 
+        <QuestionCard
           question={currentQuestion}
           currentIndex={currentIndex}
           totalQuestions={quiz.total_questions}
@@ -115,7 +115,7 @@ export default function QuizPage() {
               </button>
             </div>
           ) : (
-            <QuizResultCard 
+            <QuizResultCard
               result={result}
               onNext={handleNext}
               isLastQuestion={currentIndex === quiz.questions.length - 1}

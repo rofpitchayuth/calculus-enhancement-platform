@@ -1,8 +1,14 @@
+export interface Choice {
+    id: string;
+    text: string;
+    error_code?: string | null;
+}
+
 export interface Question {
     id: number;
     question_text: string;
     correct_answer: string;
-    choices: string[];
+    choices: Choice[];
     difficulty: number;
     bloom_level: string | null;
     skill_id: string;
@@ -24,6 +30,7 @@ export interface SubmitResponse {
 
 export interface QuizSubmitRequest {
     user_id: number;
+    session_id: number;
     question_id: number;
     user_answer: string;
     skill_id: string;
