@@ -18,7 +18,7 @@ import {
 } from "./features/dashboard";
 
 import { Layout } from "./shared/components/layout/Layout";
-//import { ProtectedRoute } from "./shared/components/ProtectedRoute";
+import { ProtectedRoute } from "./shared/components/ProtectedRoute";
 
 const router = createBrowserRouter([
   {
@@ -60,7 +60,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/dashboard/chapter/:chapterId",
+    path: "/dashboard/chapter/:chapterId/all",
     element: (
      // <ProtectedRoute>
         <Layout>
@@ -70,23 +70,23 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/dashboard/course-report",
+    path: "/dashboard/chapter/:chapterId",
     element: (
-     // <ProtectedRoute>
+      <ProtectedRoute>
         <Layout>
           <CourseReportPage />
         </Layout>
-      //</ProtectedRoute>
+      </ProtectedRoute>
     ),
   },
   {
     path: "/dashboard/overview",
     element: (
-     // <ProtectedRoute>
+     <ProtectedRoute>
         <Layout>
           <DashboardOverviewPage />
         </Layout>
-      //</ProtectedRoute>
+      </ProtectedRoute>
     ),
   },
   

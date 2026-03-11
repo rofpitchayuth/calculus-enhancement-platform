@@ -1,36 +1,59 @@
 // src/features/dashboard/pages/CourseReportPage.tsx
 
 import type { CourseReportPageProps } from "../types/dashboard.type";
-import { ReportCard, DashboardCard, DonutChartComponent } from "../components";
+import { DashboardCard, DonutChartComponent } from "../components";
 import {
   COURSE_REPORT_SUMMARY,
   COURSE_REPORT_STRENGTHS,
   COURSE_REPORT_WEAKNESSES,
   COURSE_REPORT_SCORE_DISTRIBUTION,
   COURSE_REPORT_ERROR_ANALYSIS,
+  CHAPTER_NAMES
 } from "../data/mockData";
+import { StatCard } from "../components/StatCard";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+
 
 export function CourseReportPage({ attemptId }: CourseReportPageProps) {
-  const displayAttemptId = attemptId || "ล่าสุด";
+ // const displayAttemptId = attemptId || "ล่าสุด";
+  const chapterName =
+    (attemptId && CHAPTER_NAMES[attemptId]) || "Differential";
 
+  const navigate = useNavigate();
+
+  const [chapter] = useState(attemptId || "differential");
+  const [mode, setMode] = useState("attempt1");
+
+  const handleNavigate = (nextChapter = chapter, nextMode = mode) => {
+    if (nextMode === "all") {
+      navigate(`/dashboard/chapter/${nextChapter}/all`);
+    } else if (nextMode === "attempt1") {
+      navigate(`/dashboard/chapter/${nextChapter}`);
+    }
+  };
   return (
-    <div className="min-h-screen bg-blue-50 px-4 py-4">
-      <h1 className="text-4xl font-extrabold text-[#003B62] mb-2">
-        COURSE REPORT
-      </h1>
-      <p className="text-sm text-gray-600 mb-6">
-        รายงานผลการทำแบบทดสอบครั้งที่: {displayAttemptId}
-      </p>
+    <div className="min-h-screen bg-blue-50 px-4 py-4 ">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-4xl font-extrabold text-[#003B62]">
+            {chapterName.toUpperCase()} DASHBOARD
+        </h1>
+        <select
+          className="border rounded-full px-4 py-1 text-sm bg-white"
+          value={mode}
+          onChange={(e) => {
+            const value = e.target.value;
+            setMode(value);
+            handleNavigate(chapter, value);
+          }}
+        >
+          <option value="all">ภาพรวม</option>
+          <option value="attempt1">ครั้งที่ 1</option>
+        </select>
+        </div>
 
-      {/* summary cards */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
-        <ReportCard label="คะแนนรวม" value={COURSE_REPORT_SUMMARY.totalScore} />
-        <ReportCard label="เวลาเฉลี่ยต่อข้อ" value={COURSE_REPORT_SUMMARY.avgTimePerQuestion} />
-        <ReportCard label="ระดับความเชี่ยวชาญภาพรวม" value={COURSE_REPORT_SUMMARY.proficiencyLevel} />
-      </div>
-
-      {/* charts */}
-      <div className="grid grid-cols-2 gap-4 mb-6">
+    <div className="grid grid-cols-2 mb-4">
+      <div>
         <DashboardCard>
           <DonutChartComponent
             data={COURSE_REPORT_SCORE_DISTRIBUTION}
@@ -38,43 +61,52 @@ export function CourseReportPage({ attemptId }: CourseReportPageProps) {
             height={280}
           />
         </DashboardCard>
+      </div>
+      <div className="grid grid-row-3 ml-4 ">
+        <div className="grid grid-cols-2 gap-2 mb-2 bg-white shadow-md p-4 rounded-2xl">
+          <StatCard label="เวลาเฉลี่ยต่อข้อ" value={COURSE_REPORT_SUMMARY.avgTimePerQuestion} />
+          <StatCard label="ระดับความเชี่ยวชาญภาพรวม" value={COURSE_REPORT_SUMMARY.proficiencyLevel} />
+        </div>
 
-        <DashboardCard title="สรุปผลการสอบ">
-          <div className="space-y-4">
-            <div>
-              <h4 className="font-semibold text-gray-700 mb-2">ระดับความเชี่ยวชาญ</h4>
-              <p className="text-lg font-bold text-[#003B62]">ปานกลาง</p>
+        <div className="bg-white shadow-md p-4 rounded-2xl mb-2">
+          <div>
+            <h4 className="font-semibold mb-1">STRENGTHS</h4>
+            <div className="flex gap-2 flex-wrap mb-2">
+              {COURSE_REPORT_STRENGTHS.map((strength, idx) => (
+                <span
+                  key={`${strength}-${idx}`}
+                  className="px-2 py-1 bg-yellow-100 text-gray-600 rounded-full text-xs font-tiny"
+                >
+                  {strength}
+                </span>
+              ))}
             </div>
             <div>
-              <h4 className="font-semibold text-gray-700 mb-2">ข้อสังเกต</h4>
-              <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
-                <li>คะแนนรวม 87% (ผ่านเกณฑ์)</li>
-                <li>พยายามทำแบบทดสอบ 3 ครั้ง</li>
-                <li>พัฒนาการดีขึ้น 8 คะแนน</li>
-              </ul>
+              <h4 className="font-semibold mb-1">WEAKNESSES</h4>
+              <div className="flex gap-2 flex-wrap mb-2">
+                {COURSE_REPORT_WEAKNESSES.map((weakness, idx) => (
+                  <span
+                    key={`${weakness}-${idx}`}
+                    className="px-2 py-1 bg-blue-100 text-gray-600 rounded-full text-xs font-tiny"
+                  >
+                    {weakness}
+                  </span>
+                ))}   
+               </div> 
             </div>
           </div>
-        </DashboardCard>
+        </div>
+        <div className="bg-white shadow-md p-4 rounded-2xl">
+          กราฟ
+        </div>
+
       </div>
 
-      {/* strengths & weaknesses */}
-      <div className="grid grid-cols-2 gap-4 mb-6">
-        <DashboardCard title="จุดเด่น">
-          <ul className="list-disc list-inside text-sm space-y-1">
-            {COURSE_REPORT_STRENGTHS.map((strength, idx) => (
-              <li key={idx}>{strength}</li>
-            ))}
-          </ul>
-        </DashboardCard>
+    </div>
 
-        <DashboardCard title="จุดที่ควรพัฒนา">
-          <ul className="list-disc list-inside text-sm space-y-1">
-            {COURSE_REPORT_WEAKNESSES.map((weakness, idx) => (
-              <li key={idx}>{weakness}</li>
-            ))}
-          </ul>
-        </DashboardCard>
-      </div>
+     
+
+    
 
       {/* table detail */}
       <DashboardCard title="การวิเคราะห์ข้อผิดพลาด (Error Analysis)">

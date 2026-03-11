@@ -29,7 +29,7 @@ export function ChapterCard({
         : "";
 
   return (
-    <a href={`/dashboard/chapter/${chapter.id}`} className="bg-white rounded-2xl shadow-md p-5 flex flex-col justify-between w-full block">
+    <a href={`/dashboard/chapter/${chapter.id}/all`} className="bg-white rounded-2xl shadow-md p-5 flex flex-col justify-between w-full block">
       <div>
         <h3 className="text-3xl  font-semibold text-[#003B62]">
           {chapter.title}

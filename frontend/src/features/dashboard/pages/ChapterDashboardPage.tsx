@@ -13,12 +13,26 @@ import {
   CHAPTER_TIME_HISTORY,
   CHAPTER_SKILLS_RADAR,
 } from "../data/mockData";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 export function ChapterDashboardPage({ chapterId }: ChapterDashboardPageProps) {
   const chapterName =
     (chapterId && CHAPTER_NAMES[chapterId]) || "Differential";
 
   const stats = CHAPTER_STATS;
+  const navigate = useNavigate();
+
+  const [chapter] = useState(chapterId || "differential");
+  const [mode, setMode] = useState("all");
+
+  const handleNavigate = (nextChapter = chapter, nextMode = mode) => {
+    if (nextMode === "all") {
+      navigate(`/dashboard/chapter/${nextChapter}/all`);
+    } else {
+      navigate(`/dashboard/chapter/${nextChapter}`);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-blue-50 px-4  py-4"> 
@@ -26,17 +40,18 @@ export function ChapterDashboardPage({ chapterId }: ChapterDashboardPageProps) {
         <h1 className="text-4xl font-extrabold text-[#003B62]">
             {chapterName.toUpperCase()} DASHBOARD
         </h1>
-        <select
-            className="border rounded-full px-4 py-1 text-sm bg-white"
-            defaultValue={chapterId || "differential"}
-            onChange={(e) => {
-            window.location.href = `/dashboard/chapter/${e.target.value}`;
-            }}
-        >
-            <option value="differential">Differential</option>
-            <option value="limit">Limits</option>
-            <option value="integral">Integral</option>
-        </select>
+    <select
+      className="border rounded-full px-4 py-1 text-sm bg-white"
+      value={mode}
+      onChange={(e) => {
+        const value = e.target.value;
+        setMode(value);
+        handleNavigate(chapter, value);
+      }}
+    >
+      <option value="all">ภาพรวม</option>
+      <option value="attempt1">ครั้งที่ 1</option>
+    </select>
     </div>
 
       {/* top stat cards */}

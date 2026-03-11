@@ -180,8 +180,8 @@ export const CHAPTER_SKILLS_RADAR = [
  * แสดงคะแนนรวมในรูปแบบ donut (87% pass, 13% fail)
  */
 export const COURSE_REPORT_SCORE_DISTRIBUTION = [
-  { name: "Pass", value: 87, color: "#4ade80" },
-  { name: "Fail", value: 13, color: "#ef4444" },
+  { name: "Pass", value: 87, color: "#6693BC" },
+  { name: "Fail", value: 13, color: "#FFDA84" },
 ];
 
 /**

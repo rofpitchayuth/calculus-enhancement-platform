@@ -12,12 +12,12 @@ interface CourseCardProps {
 }
 
 export function CourseCard({
-  id,
+  //id,
   title,
   description,
   questionCount,
   duration,
-  thumbnail,
+ // thumbnail,
   onStart,
 }: CourseCardProps) {
   return (
