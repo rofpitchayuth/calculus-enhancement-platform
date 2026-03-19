@@ -24,7 +24,7 @@ import { useAuth } from "../../auth/hooks/useAuth";
 import { useQuizFlow } from "../hooks/useQuizFlow";
 import { QuestionCard } from "../components/QuestionCard";
 import { GraderLoadingOverlay } from "../components/GraderLoadingOverlay";
-import { FeedbackPanel } from "../components/FeedbackPanel";
+//import { FeedbackPanel } from "../components/FeedbackPanel";
 import { mapErrorCodeToThai } from "../utils/errorMapper";
 import { renderMathText } from "../components/mathRenderer";
 
