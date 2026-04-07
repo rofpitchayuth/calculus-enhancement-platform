@@ -9,6 +9,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
 from app.models.question import Question
 from app.models.result import QuizSession, QuizAttempt
+from app.models.user import User
 from app.schemas.dashboard import (
     DashboardOverviewStats,
     DashboardChapterProgressResponse,
@@ -31,7 +32,7 @@ class DashboardService:
         ).all()
 
         total_attempts = len(sessions)
-        
+
         if total_attempts == 0:
             return DashboardOverviewStats(
                 totalChapters="3 บท",
@@ -42,10 +43,18 @@ class DashboardService:
         # Calculate average score across all sessions
         average_score = sum(session.total_score or 0 for session in sessions) / total_attempts
 
+        # Read AI-generated profile from the users table.
+        # These are updated by ml_client.sync_student_profile() after each quiz end.
+        user = self.db.query(User).filter(User.id == user_id).first()
+        student_profile = getattr(user, "current_profile", "Developing (Average)") or "Developing (Average)"
+        avg_mastery     = float(getattr(user, "avg_mastery", 0.0) or 0.0)
+
         return DashboardOverviewStats(
             totalChapters="3 บท",
             averageScore=f"{round(average_score)}%",
-            totalAttempts=f"{total_attempts} รอบ"
+            totalAttempts=f"{total_attempts} รอบ",
+            studentProfile=student_profile,
+            avgMastery=round(avg_mastery, 4),
         )
         
     def get_chapter_progress(self, user_id: int) -> DashboardChapterProgressResponse:

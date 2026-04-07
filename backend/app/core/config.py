@@ -9,6 +9,10 @@ class Settings(BaseSettings):
     ALGORITHM: str = Field(default="HS256")
     PROJECT_NAME: str = Field(default="Calculus Enhancement Platform")
     API_V1_STR: str = "/api/v1"
+
+    # URL of the KT (Knowledge Tracing) ML microservice.
+    # Overridden by KT_SERVICE_URL in .env; defaults to local dev port.
+    KT_SERVICE_URL: str = Field(default="http://localhost:8001")
     
     class Config:
         env_file = ".env"

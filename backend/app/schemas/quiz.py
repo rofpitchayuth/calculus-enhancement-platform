@@ -47,3 +47,15 @@ class QuizEndResponse(BaseModel):
     start_time: datetime
     end_time: datetime
     session_summary: List[Any] = Field(default_factory=list, description="Summary of all questions attempted in this session for the review page")
+    # AI profile fields populated by the KT microservice.
+    # These are Optional: if the ML service is unavailable they will be null
+    # in the JSON response instead of causing the endpoint to fail.
+    student_profile: Optional[str] = Field(
+        None,
+        description="AI-generated student profile label (e.g. 'High Achiever', 'Struggling')"
+    )
+    avg_mastery: Optional[float] = Field(
+        None,
+        description="Average predicted mastery probability (0.0–1.0) from the DKT-GRU model"
+    )
+

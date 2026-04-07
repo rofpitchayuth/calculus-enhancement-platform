@@ -5,6 +5,12 @@ class DashboardOverviewStats(BaseModel):
     totalChapters: str
     averageScore: str
     totalAttempts: str
+    # AI-generated student profile from the KT microservice.
+    # These fields are read from the users table and reflect the most recent
+    # profile computed after the student's last completed quiz session.
+    studentProfile: str = "Developing (Average)"
+    avgMastery: float = 0.0
+
 
 class ChapterProgress(BaseModel):
     completed: int

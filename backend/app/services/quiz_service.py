@@ -10,6 +10,8 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 from app.models.question import Question
 from app.models.result import QuizSession, QuizAttempt, StudentKnowledge, BKTResult
 from app.schemas.quiz import QuestionResponse, QuizStartResponse, QuizSubmitResponse
+# Import ML client — called at the end of a quiz session to update student profile
+from app.services.ml_client import sync_student_profile
 
 class QuizService:
     def __init__(self, db: Session):
@@ -150,11 +152,27 @@ class QuizService:
                     "error_code": error_code
                 })
         
+
+        # ----------------------------------------------------------------
+        # ML Integration: call the KT microservice to update student profile.
+        # This runs AFTER the quiz session is committed so the student's quiz
+        # result is never lost even if the ML service is unavailable.
+        # sync_student_profile() swallows all exceptions internally.
+        # ----------------------------------------------------------------
+        profile_data = sync_student_profile(
+            user_id=user_id,
+            session_summary=session_summary,
+            db=self.db,
+        )
+
         return {
             "session_id": session.id,
             "total_score": score,
             "total_questions": session.total_questions or total_attempts,
             "start_time": session.start_time,
             "end_time": session.end_time,
-            "session_summary": session_summary
+            "session_summary": session_summary,
+            # AI profile fields — None when the ML service is unavailable
+            "student_profile": profile_data.get("profile_label") if profile_data else None,
+            "avg_mastery":     profile_data.get("avg_mastery")   if profile_data else None,
         }
