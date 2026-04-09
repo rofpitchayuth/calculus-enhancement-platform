@@ -14,6 +14,9 @@ class Settings(BaseSettings):
     # Overridden by KT_SERVICE_URL in .env; defaults to local dev port.
     KT_SERVICE_URL: str = Field(default="http://localhost:8001")
     
+    # URL of the LLM Classifier microservice.
+    LLM_SERVICE_URL: str = Field(default="http://localhost:8002")
+    
     class Config:
         env_file = ".env"
         case_sensitive = True

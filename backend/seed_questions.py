@@ -25,6 +25,7 @@ def seed_db():
     
     db = SessionLocal()
     added_count = 0
+    training_data = []
     
     for _, row in df.iterrows():
         choices_list = []
@@ -74,11 +75,35 @@ def seed_db():
             discrimination=disc_val,
         )
         db.add(q)
+        
+        # Collect question data for training dataset
+        question_record = {
+            "question_text": str(row['question_text']),
+            "correct_answer": correct_answer_id,
+            "choices": choices_list,
+            "main_topic": q.main_topic,
+            "sub_topic": q.sub_topic,
+            "skill_tags": skill_tags,
+            "bloom_level": q.bloom_level,
+            "difficulty": diff_val,
+            "discrimination": disc_val
+        }
+        training_data.append(question_record)
+        
         added_count += 1
         
     db.commit()
     print(f"Successfully inserted {added_count} questions into the database.")
     db.close()
+
+    # Export collected data to JSON for ML training
+    json_output_path = "training_data.json"
+    try:
+        with open(json_output_path, "w", encoding="utf-8") as f:
+            json.dump(training_data, f, indent=4, ensure_ascii=False)
+        print(f"Successfully exported {len(training_data)} records to {json_output_path}.")
+    except Exception as e:
+        print(f"Error exporting JSON: {e}")
 
 if __name__ == "__main__":
     seed_db()

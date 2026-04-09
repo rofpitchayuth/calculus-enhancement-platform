@@ -1,0 +1,3277 @@
+[
+    {
+        "question_text": "กำหนดให้ $f$ เป็นฟังก์ชันที่หาอนุพันธ์ได้ และ $g(x)=(f(x))^{2}$ ถ้า $f(7)=3$ และ $g^{\\\\prime}(7)=1$ แล้วอนุพันธ์ของ $f(2x^{2} + 4x -9) ที่ x =2 มีค่าเท่าใด",
+        "correct_answer": "B",
+        "choices": [
+            {
+                "id": "A",
+                "text": "1",
+                "error_code": "arithmetic_error"
+            },
+            {
+                "id": "B",
+                "text": "2",
+                "error_code": "-"
+            },
+            {
+                "id": "C",
+                "text": "3",
+                "error_code": "forgot_chain_rule_inner"
+            },
+            {
+                "id": "D",
+                "text": "4",
+                "error_code": "algebra_simplification_error"
+            },
+            {
+                "id": "E",
+                "text": "6",
+                "error_code": "composite_evaluation_error"
+            }
+        ],
+        "main_topic": "derivatives",
+        "sub_topic": "advanced_derivative_rules",
+        "skill_tags": [
+            "chain_rule",
+            "evaluating_functions"
+        ],
+        "bloom_level": "Analyzing",
+        "difficulty": 0.7,
+        "discrimination": 0.5
+    },
+    {
+        "question_text": "จงหาค่าของ $\\\\int(3x^{2}-2x+5)dx$",
+        "correct_answer": "A",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$x^{3}-x^{2}+5x+C$",
+                "error_code": "-"
+            },
+            {
+                "id": "B",
+                "text": "$3x^{3}-2x^{2}+5x+C$",
+                "error_code": "forgot_plus_c"
+            },
+            {
+                "id": "C",
+                "text": "$x^{3}-x^{2}+5+C$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "D",
+                "text": "$x^{3}-x^{2}+5x$",
+                "error_code": "derivative_instead_of_integral"
+            },
+            {
+                "id": "E",
+                "text": "$x^{3}-x^{2}+5x+1$",
+                "error_code": "arithmetic_error"
+            }
+        ],
+        "main_topic": "integrals",
+        "sub_topic": "indefinite_integrals",
+        "skill_tags": [
+            "power_rule_integration"
+        ],
+        "bloom_level": "Applying",
+        "difficulty": 0.2,
+        "discrimination": 0.3
+    },
+    {
+        "question_text": "จงหาค่าของ $\\\\lim_{x\\\\rightarrow\\\\infty}\\\\frac{5x^3 - 2x + 1}{2x^3 + 7}$",
+        "correct_answer": "B",
+        "choices": [
+            {
+                "id": "A",
+                "text": "0",
+                "error_code": "indeterminate_form_misconception"
+            },
+            {
+                "id": "B",
+                "text": "$\\\\frac{5}{2}$",
+                "error_code": "-"
+            },
+            {
+                "id": "C",
+                "text": "1",
+                "error_code": "arithmetic_error"
+            },
+            {
+                "id": "D",
+                "text": "หาค่าไม่ได้",
+                "error_code": "conceptual_misunderstanding"
+            },
+            {
+                "id": "E",
+                "text": "5",
+                "error_code": "fraction_operation_error"
+            }
+        ],
+        "main_topic": "limits_and_continuity",
+        "sub_topic": "limits_at_infinity",
+        "skill_tags": [
+            "factoring_and_canceling",
+            "lhopitals_rule"
+        ],
+        "bloom_level": "Applying",
+        "difficulty": 0.4,
+        "discrimination": 0.4
+    },
+    {
+        "question_text": "กำหนดให้ $f(x)$ เป็นพหุนาม ถ้า $f(\\\\sqrt{x} - 1) = x$ เมื่อ $x > 0$ แล้ว $f^{\\\\prime}(1)$ เท่ากับเท่าใด",
+        "correct_answer": "C",
+        "choices": [
+            {
+                "id": "A",
+                "text": "1",
+                "error_code": "composite_evaluation_error"
+            },
+            {
+                "id": "B",
+                "text": "2",
+                "error_code": "forgot_chain_rule_inner"
+            },
+            {
+                "id": "C",
+                "text": "4",
+                "error_code": "-"
+            },
+            {
+                "id": "D",
+                "text": "5",
+                "error_code": "algebra_simplification_error"
+            },
+            {
+                "id": "E",
+                "text": "8",
+                "error_code": "arithmetic_error"
+            }
+        ],
+        "main_topic": "derivatives",
+        "sub_topic": "advanced_derivative_rules",
+        "skill_tags": [
+            "composite_functions",
+            "chain_rule",
+            "power_rule"
+        ],
+        "bloom_level": "Analyzing",
+        "difficulty": 0.75,
+        "discrimination": 0.6
+    },
+    {
+        "question_text": "กำหนด $f$ เป็นพหุนามกำลังสองมีค่าต่ำสุดเป็น -18 และเส้นตรง $4x+y+12=0$ สัมผัส $y=f(x)$ ที่ $x=1$ หาพื้นที่ใต้โค้งกับแกน X เมื่อ $0 \\\\le x \\\\le 3$",
+        "correct_answer": "C",
+        "choices": [
+            {
+                "id": "A",
+                "text": "24",
+                "error_code": "arithmetic_error"
+            },
+            {
+                "id": "B",
+                "text": "32",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "C",
+                "text": "36",
+                "error_code": "-"
+            },
+            {
+                "id": "D",
+                "text": "48",
+                "error_code": "wrong_curve_order_area"
+            },
+            {
+                "id": "E",
+                "text": "54",
+                "error_code": "algebra_simplification_error"
+            }
+        ],
+        "main_topic": "applications_of_integrals",
+        "sub_topic": "area_and_volume",
+        "skill_tags": [
+            "setting_up_area_integral",
+            "power_rule_integration",
+            "first_derivative_test"
+        ],
+        "bloom_level": "Creating",
+        "difficulty": 0.85,
+        "discrimination": 0.65
+    },
+    {
+        "question_text": "ให้ a, b, c เป็นจำนวนจริง ถ้ากราฟ $f(x)=ax^{2}+bx+c$ ผ่านจุด (0, 1), (1, 3), (2, 2) แล้วพื้นที่...",
+        "correct_answer": "C",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$\\\\frac{5}{2}$ ตารางหน่วย",
+                "error_code": "arithmetic_error"
+            },
+            {
+                "id": "B",
+                "text": "$\\\\frac{8}{3}$ ตารางหน่วย",
+                "error_code": "fraction_operation_error"
+            },
+            {
+                "id": "C",
+                "text": "3 ตารางหน่วย",
+                "error_code": "-"
+            },
+            {
+                "id": "D",
+                "text": "$\\\\frac{7}{2}$ ตารางหน่วย",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "E",
+                "text": "5 ตารางหน่วย",
+                "error_code": "conceptual_misunderstanding"
+            }
+        ],
+        "main_topic": "applications_of_integrals",
+        "sub_topic": "area_and_volume",
+        "skill_tags": [
+            "setting_up_area_integral",
+            "evaluating_functions"
+        ],
+        "bloom_level": "Analyzing",
+        "difficulty": 0.65,
+        "discrimination": 0.55
+    },
+    {
+        "question_text": "$\\\\lim_{x\\\\rightarrow1^{-}}\\\\frac{1}{\\\\sqrt{1-x}}(1-\\\\frac{2x^{3}}{x^{2}+1})$",
+        "correct_answer": "A",
+        "choices": [
+            {
+                "id": "A",
+                "text": "0",
+                "error_code": "-"
+            },
+            {
+                "id": "B",
+                "text": "0.5",
+                "error_code": "fraction_operation_error"
+            },
+            {
+                "id": "C",
+                "text": "1",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "D",
+                "text": "2",
+                "error_code": "lhopital_applied_incorrectly"
+            },
+            {
+                "id": "E",
+                "text": "4",
+                "error_code": "arithmetic_error"
+            }
+        ],
+        "main_topic": "limits_and_continuity",
+        "sub_topic": "evaluating_limits",
+        "skill_tags": [
+            "lhopitals_rule",
+            "factoring_and_canceling"
+        ],
+        "bloom_level": "Analyzing",
+        "difficulty": 0.7,
+        "discrimination": 0.5
+    },
+    {
+        "question_text": "กำหนดให้ f เป็นฟังก์ชันพหุนามโดยที่ $f^{\\\\prime}(x)=ax^{2}+bx+c$ เมื่อ $f(0)=1$, $f(1)=2$, $f^{\\\\prime}(1)=3$...",
+        "correct_answer": "B",
+        "choices": [
+            {
+                "id": "A",
+                "text": "-1",
+                "error_code": "forgot_plus_c"
+            },
+            {
+                "id": "B",
+                "text": "0",
+                "error_code": "-"
+            },
+            {
+                "id": "C",
+                "text": "1",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "D",
+                "text": "2",
+                "error_code": "arithmetic_error"
+            },
+            {
+                "id": "E",
+                "text": "3",
+                "error_code": "derivative_instead_of_integral"
+            }
+        ],
+        "main_topic": "integrals",
+        "sub_topic": "indefinite_integrals",
+        "skill_tags": [
+            "power_rule_integration",
+            "evaluating_functions"
+        ],
+        "bloom_level": "Analyzing",
+        "difficulty": 0.6,
+        "discrimination": 0.45
+    },
+    {
+        "question_text": "ในการวางแผนระบบการเดินรถไฟระหว่างสถานี ก และ ข ห่างกัน $S$ เมตร รถไฟเริ่มจากหยุดนิ่ง มีความเร่งสูงสุด $A$ โดยแบ่งเป็น 3 ช่วง:\n1. ช่วงแรก (T วินาที): ความเร่งเพิ่มสม่ำเสมอจาก 0 ถึง $A$\n2. ช่วงกลาง: ความเร็วคงตัว\n3. ช่วงท้าย (T วินาที): ความเร่งลดสม่ำเสมอจาก $A$ ถึง 0\nอยากทราบว่าในช่วงที่รถไฟเคลื่อนที่ด้วยความเร็วคงตัวนั้น รถไฟวิ่งด้วยความเร็วกี่เมตรต่อวินาที",
+        "correct_answer": "B",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$A$",
+                "error_code": "conceptual_misunderstanding"
+            },
+            {
+                "id": "B",
+                "text": "$AT$",
+                "error_code": "-"
+            },
+            {
+                "id": "C",
+                "text": "$\\\\frac{AT}{2}$",
+                "error_code": "wrong_integration_formula"
+            },
+            {
+                "id": "D",
+                "text": "$AT^2$",
+                "error_code": "arithmetic_error"
+            },
+            {
+                "id": "E",
+                "text": "$\\\\frac{AT^2}{2}$",
+                "error_code": "fraction_operation_error"
+            }
+        ],
+        "main_topic": "applications_of_calculus",
+        "sub_topic": "kinematics",
+        "skill_tags": [
+            "setting_up_area_integral",
+            "ftc_evaluation"
+        ],
+        "bloom_level": "Analyzing",
+        "difficulty": 0.8,
+        "discrimination": 0.6
+    },
+    {
+        "question_text": "ให้ $a, b, c$ เป็นจำนวนจริง ถ้ากราฟ $f(x) = ax^2 + bx + c$ ผ่านจุด $(0, 1), (1, 3), (2, 2)$ แล้วพื้นที่ที่ปิดล้อมด้วยเส้นโค้ง $y = f(x)$ และเส้นตรง $y = x$ จาก $x = 0$ ถึง $x = 2$ เท่ากับข้อใด",
+        "correct_answer": "C",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$\\\\frac{5}{2}$ ตารางหน่วย",
+                "error_code": "arithmetic_error"
+            },
+            {
+                "id": "B",
+                "text": "$\\\\frac{8}{3}$ ตารางหน่วย",
+                "error_code": "-"
+            },
+            {
+                "id": "C",
+                "text": "$3$ ตารางหน่วย",
+                "error_code": "wrong_curve_order_area"
+            },
+            {
+                "id": "D",
+                "text": "$\\\\frac{7}{2}$ ตารางหน่วย",
+                "error_code": "fraction_operation_error"
+            },
+            {
+                "id": "E",
+                "text": "$5$ ตารางหน่วย",
+                "error_code": "sign_error"
+            }
+        ],
+        "main_topic": "applications_of_integrals",
+        "sub_topic": "area_and_volume",
+        "skill_tags": [
+            "setting_up_area_integral",
+            "power_rule_integration"
+        ],
+        "bloom_level": "Applying",
+        "difficulty": 0.5,
+        "discrimination": 0.4
+    },
+    {
+        "question_text": "กำหนดให้ $f(x)$ เป็นพหุนามดีกรีสาม ซึ่ง $f(0) = 1, f(1) = 2$ และ $f'(0) = 1, f'(1) = 0$ จงหาพื้นที่ที่ปิดล้อมด้วยเส้นโค้ง $y = f(x)$ และเส้นตรง $y = 1$ บนช่วง $[0, 1]$",
+        "correct_answer": "C",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$1/4$",
+                "error_code": "fraction_operation_error"
+            },
+            {
+                "id": "B",
+                "text": "$1/3$",
+                "error_code": "algebra_simplification_error"
+            },
+            {
+                "id": "C",
+                "text": "$7/12$",
+                "error_code": "-"
+            },
+            {
+                "id": "D",
+                "text": "$2/3$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "E",
+                "text": "$17/12$",
+                "error_code": "wrong_curve_order_area"
+            }
+        ],
+        "main_topic": "applications_of_integrals",
+        "sub_topic": "area_between_curves",
+        "skill_tags": [
+            "setting_up_area_integral",
+            "power_rule_integration",
+            "evaluating_functions"
+        ],
+        "bloom_level": "Analyzing",
+        "difficulty": 0.85,
+        "discrimination": 0.65
+    },
+    {
+        "question_text": "จงหาพื้นที่ของบริเวณที่ปิดล้อมด้วยเส้นโค้ง $y = x^2 - 2x$ และเส้นตรง $y = x + 4$",
+        "correct_answer": "A",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$125/6$",
+                "error_code": "-"
+            },
+            {
+                "id": "B",
+                "text": "$112/6$",
+                "error_code": "wrong_curve_order_area"
+            },
+            {
+                "id": "C",
+                "text": "$97/6$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "D",
+                "text": "$125/3$",
+                "error_code": "fraction_operation_error"
+            },
+            {
+                "id": "E",
+                "text": "$13/6$",
+                "error_code": "arithmetic_error"
+            }
+        ],
+        "main_topic": "applications_of_integrals",
+        "sub_topic": "area_between_curves",
+        "skill_tags": [
+            "setting_up_area_integral",
+            "factoring_polynomials",
+            "evaluating_ftc"
+        ],
+        "bloom_level": "Applying",
+        "difficulty": 0.55,
+        "discrimination": 0.45
+    },
+    {
+        "question_text": "กำหนดให้ $f: \\\\mathbb{R} \\\\to \\\\mathbb{R}$ โดยที่ $f(1) = 1$ และสำหรับทุก $x \\\\in \\\\mathbb{R}$, $f'(x) = \\\\frac{x^4 - 1}{x^2 + 1}$ ค่าของ $f(-2)$ ตรงกับข้อใดต่อไปนี้\n",
+        "correct_answer": "A",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$1$",
+                "error_code": "-"
+            },
+            {
+                "id": "B",
+                "text": "$2$",
+                "error_code": "forgot_plus_c"
+            },
+            {
+                "id": "C",
+                "text": "$3$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "D",
+                "text": "$4$",
+                "error_code": "algebra_simplification_error"
+            },
+            {
+                "id": "E",
+                "text": "$5$",
+                "error_code": "arithmetic_error"
+            }
+        ],
+        "main_topic": "integrals",
+        "sub_topic": "indefinite_integrals",
+        "skill_tags": [
+            "algebraic_manipulation",
+            "power_rule_integration",
+            "evaluating_functions"
+        ],
+        "bloom_level": "Applying",
+        "difficulty": 0.6,
+        "discrimination": 0.5
+    },
+    {
+        "question_text": "กำหนดให้ $f$ เป็นฟังก์ชันต่อเนื่องบนเซตของจำนวนจริง โดยที่ $f'(x) = \\\\begin{cases} x, & x < 1 \\\\\\\\ x-1, & x > 1 \\\\end{cases}$ ถ้า $f(0) = 0$ แล้ว $f(2)$ เท่ากับข้อใดต่อไปนี้",
+        "correct_answer": "A",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$1$",
+                "error_code": "-"
+            },
+            {
+                "id": "B",
+                "text": "$1.5$",
+                "error_code": "conceptual_misunderstanding"
+            },
+            {
+                "id": "C",
+                "text": "$2$",
+                "error_code": "forgot_plus_c"
+            },
+            {
+                "id": "D",
+                "text": "$2.5$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "E",
+                "text": "$3$",
+                "error_code": "arithmetic_error"
+            }
+        ],
+        "main_topic": "integrals",
+        "sub_topic": "indefinite_integrals",
+        "skill_tags": [
+            "power_rule_integration",
+            "evaluating_functions",
+            "other_precalc_skill"
+        ],
+        "bloom_level": "Analyzing",
+        "difficulty": 0.75,
+        "discrimination": 0.6
+    },
+    {
+        "question_text": "ให้ $f(x) = -x^3 + ax^2 + bx + c$ ถ้า $f(0) = 3$ และ $f$ มีค่าสูงสุดสัมพัทธ์ที่ $x = 1$ และค่าต่ำสุดสัมพัทธ์ที่ $x = -1$ แล้ว $f(1)$ เท่ากับเท่าใด",
+        "correct_answer": "D",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$-1$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "B",
+                "text": "$1$",
+                "error_code": "arithmetic_error"
+            },
+            {
+                "id": "C",
+                "text": "$3$",
+                "error_code": "conceptual_misunderstanding"
+            },
+            {
+                "id": "D",
+                "text": "$5$",
+                "error_code": "-"
+            },
+            {
+                "id": "E",
+                "text": "$7$",
+                "error_code": "algebra_simplification_error"
+            }
+        ],
+        "main_topic": "applications_of_derivatives",
+        "sub_topic": "curve_sketching_analysis",
+        "skill_tags": [
+            "first_derivative_test",
+            "power_rule",
+            "evaluating_functions"
+        ],
+        "bloom_level": "Analyzing",
+        "difficulty": 0.7,
+        "discrimination": 0.55
+    },
+    {
+        "question_text": "กำหนดให้ $f(x)$ เป็นพหุนาม ซึ่ง $f'(x) = 3x^2 - 6x$ และ $G(x) = \\\\begin{cases} x + 5, & x < -1 \\\\\\\\ f(x), & x \\\\geq -1 \\\\end{cases}$ ถ้า $G(x)$ ต่อเนื่องที่ $x = -1$ แล้ว $f$ มีค่าต่ำสุดสัมพัทธ์เท่ากับข้อใด",
+        "correct_answer": "B",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$-2$",
+                "error_code": "forgot_plus_c"
+            },
+            {
+                "id": "B",
+                "text": "$-1$",
+                "error_code": "-"
+            },
+            {
+                "id": "C",
+                "text": "$2$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "D",
+                "text": "$3$",
+                "error_code": "conceptual_misunderstanding"
+            },
+            {
+                "id": "E",
+                "text": "$4$",
+                "error_code": "arithmetic_error"
+            }
+        ],
+        "main_topic": "integrals",
+        "sub_topic": "indefinite_integrals",
+        "skill_tags": [
+            "power_rule_integration",
+            "evaluating_limits",
+            "evaluating_functions"
+        ],
+        "bloom_level": "Analyzing",
+        "difficulty": 0.8,
+        "discrimination": 0.6
+    },
+    {
+        "question_text": "ให้ $f$ เป็นฟังก์ชันซึ่งมีโดเมนและเรนจ์เป็นสับเซตของจำนวนจริง โดยที่ $f'(x) = ax^2 + bx$ เมื่อ $a, b$ เป็นจำนวนจริง ถ้า $f(0) = 1, f(1) = 2$ และ $f'(1) = 3$ แล้ว $f(-1)$ มีค่าเท่ากับเท่าใด",
+        "correct_answer": "C",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$-2$",
+                "error_code": "algebra_simplification_error"
+            },
+            {
+                "id": "B",
+                "text": "$-1$",
+                "error_code": "fraction_operation_error"
+            },
+            {
+                "id": "C",
+                "text": "$0$",
+                "error_code": "-"
+            },
+            {
+                "id": "D",
+                "text": "$1$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "E",
+                "text": "$2$",
+                "error_code": "forgot_plus_c"
+            }
+        ],
+        "main_topic": "integrals",
+        "sub_topic": "indefinite_integrals",
+        "skill_tags": [
+            "power_rule_integration",
+            "evaluating_functions",
+            "algebraic_manipulation"
+        ],
+        "bloom_level": "Analyzing",
+        "difficulty": 0.75,
+        "discrimination": 0.55
+    },
+    {
+        "question_text": "ให้ $f(x) = x^3 + ax^2 + bx + c$ มีค่าวิกฤตที่ $x = 1, 2$ และ $\\\\int_0^1 f(x) \\\\, dx = 0$ แล้ว $c$ มีค่าเท่าใด",
+        "correct_answer": "A",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$1/4$",
+                "error_code": "-"
+            },
+            {
+                "id": "B",
+                "text": "$3/4$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "C",
+                "text": "$5/4$",
+                "error_code": "fraction_operation_error"
+            },
+            {
+                "id": "D",
+                "text": "$1$",
+                "error_code": "arithmetic_error"
+            },
+            {
+                "id": "E",
+                "text": "$2$",
+                "error_code": "conceptual_misunderstanding"
+            }
+        ],
+        "main_topic": "applications_of_derivatives",
+        "sub_topic": "curve_sketching_analysis",
+        "skill_tags": [
+            "first_derivative_test",
+            "evaluating_ftc",
+            "power_rule_integration"
+        ],
+        "bloom_level": "Creating",
+        "difficulty": 0.85,
+        "discrimination": 0.7
+    },
+    {
+        "question_text": "จงหาพื้นที่ของบริเวณที่ปิดล้อมด้วยเส้นโค้ง $y = x^2 - 2x$ และแกน X บนช่วง $[0, 3]$",
+        "correct_answer": "C",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$2/3$",
+                "error_code": "conceptual_misunderstanding"
+            },
+            {
+                "id": "B",
+                "text": "$2$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "C",
+                "text": "$8/3$",
+                "error_code": "-"
+            },
+            {
+                "id": "D",
+                "text": "$4/3$",
+                "error_code": "wrong_curve_order_area"
+            },
+            {
+                "id": "E",
+                "text": "$10/3$",
+                "error_code": "fraction_operation_error"
+            }
+        ],
+        "main_topic": "applications_of_integrals",
+        "sub_topic": "area_between_curves",
+        "skill_tags": [
+            "setting_up_area_integral",
+            "power_rule_integration",
+            "evaluating_ftc"
+        ],
+        "bloom_level": "Analyzing",
+        "difficulty": 0.65,
+        "discrimination": 0.5
+    },
+    {
+        "question_text": "ให้ $f(x)$ ต่อเนื่องบน $[a, b]$ และ $F(x)$ เป็นปฏิยานุพันธ์ของ $f(x)$ ถ้า $F(b) = 10$ และ $\\\\int_a^b f(x) \\\\, dx = 6$ แล้ว $F(a)$ มีค่าเท่าใด",
+        "correct_answer": "C",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$16 $",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "B",
+                "text": "$6$",
+                "error_code": "arithmetic_error"
+            },
+            {
+                "id": "C",
+                "text": "$4$",
+                "error_code": "-"
+            },
+            {
+                "id": "D",
+                "text": "$-4$",
+                "error_code": "conceptual_misunderstanding"
+            },
+            {
+                "id": "E",
+                "text": "$10$",
+                "error_code": "algebra_simplification_error"
+            }
+        ],
+        "main_topic": "integrals",
+        "sub_topic": "fundamental_theorem_of_calculus",
+        "skill_tags": [
+            "evaluating_ftc"
+        ],
+        "bloom_level": "Understanding",
+        "difficulty": 0.3,
+        "discrimination": 0.35
+    },
+    {
+        "question_text": "$f(x)$ พหุนามดีกรีสาม มีค่าวิกฤตที่ $x = 4, -4$ โดย $f(0)=10, f(3)=9$ จงหา $a$ เมื่อ $f(x) = \\\\frac{x^3}{3} + \\\\frac{ax^2}{2} + 10$ สำหรับ $x < 1$",
+        "correct_answer": "C",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$4$",
+                "error_code": "arithmetic_error"
+            },
+            {
+                "id": "B",
+                "text": "$0$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "C",
+                "text": "$-4$",
+                "error_code": "-"
+            },
+            {
+                "id": "D",
+                "text": "$-8$",
+                "error_code": "algebra_simplification_error"
+            },
+            {
+                "id": "E",
+                "text": "$-16$",
+                "error_code": "conceptual_misunderstanding"
+            }
+        ],
+        "main_topic": "applications_of_derivatives",
+        "sub_topic": "curve_sketching_analysis",
+        "skill_tags": [
+            "first_derivative_test",
+            "power_rule_integration",
+            "evaluating_functions"
+        ],
+        "bloom_level": "Analyzing",
+        "difficulty": 0.8,
+        "discrimination": 0.6
+    },
+    {
+        "question_text": "\nถ้าพื้นที่ที่ปิดล้อมด้วยกราฟของพาราโบลาซึ่งมีจุดยอดอยู่ที่ $(0, -9)$ และแกน X มีค่าเท่ากับ $9$ ตารางหน่วย แล้วสมการพาราโบลาคือข้อใด",
+        "correct_answer": "E",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$y = x^2 - 9$",
+                "error_code": "conceptual_misunderstanding"
+            },
+            {
+                "id": "B",
+                "text": "$y = 2x^2 - 9$",
+                "error_code": "wrong_curve_order_area"
+            },
+            {
+                "id": "C",
+                "text": "$y = 4x^2 - 9$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "D",
+                "text": "$y = 8x^2 - 9$",
+                "error_code": "algebra_simplification_error"
+            },
+            {
+                "id": "E",
+                "text": "$y = 16x^2 - 9$",
+                "error_code": "-"
+            }
+        ],
+        "main_topic": "applications_of_integrals",
+        "sub_topic": "area_between_curves",
+        "skill_tags": [
+            "setting_up_area_integral",
+            "power_rule_integration",
+            "algebraic_manipulation"
+        ],
+        "bloom_level": "Creating",
+        "difficulty": 0.85,
+        "discrimination": 0.65
+    },
+    {
+        "question_text": "กำหนดให้ $f''(x) = 12x^2 + 6x - 4$ โดย $f'(1) = 5$ และ $f(0) = 1$ จงหาค่าของ $f(1)$",
+        "correct_answer": "D",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$1$",
+                "error_code": "forgot_plus_c"
+            },
+            {
+                "id": "B",
+                "text": "$2$",
+                "error_code": "arithmetic_error"
+            },
+            {
+                "id": "C",
+                "text": "$3$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "D",
+                "text": "$4$",
+                "error_code": "-"
+            },
+            {
+                "id": "E",
+                "text": "$5$",
+                "error_code": "derivative_instead_of_integral"
+            }
+        ],
+        "main_topic": "integrals",
+        "sub_topic": "indefinite_integrals",
+        "skill_tags": [
+            "power_rule_integration",
+            "evaluating_functions"
+        ],
+        "bloom_level": "Applying",
+        "difficulty": 0.6,
+        "discrimination": 0.5
+    },
+    {
+        "question_text": "จงหาค่าของ $\\\\int_0^{\\\\pi/2} (\\\\sin x + \\\\cos x) \\\\, dx$",
+        "correct_answer": "C",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$0$",
+                "error_code": "wrong_trig_derivative_sign"
+            },
+            {
+                "id": "B",
+                "text": "$1$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "C",
+                "text": "$2$",
+                "error_code": "-"
+            },
+            {
+                "id": "D",
+                "text": "$\\\\sqrt{2}$",
+                "error_code": "trig_evaluation_error"
+            },
+            {
+                "id": "E",
+                "text": "$\\\\pi$",
+                "error_code": "arithmetic_error"
+            }
+        ],
+        "main_topic": "integrals",
+        "sub_topic": "definite_integrals",
+        "skill_tags": [
+            "trig_integration",
+            "evaluating_ftc"
+        ],
+        "bloom_level": "Applying",
+        "difficulty": 0.5,
+        "discrimination": 0.45
+    },
+    {
+        "question_text": "ถ้า $f(x)=x^2-1$ บนช่วง $[-2, 3]$ แล้วพื้นที่ใต้เส้นโค้ง $y=\\\\vert f(x)\\\\vert$ ที่อยู่เหนือแกน X มีค่าเท่าใด",
+        "correct_answer": "C",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$20/3$",
+                "error_code": "wrong_curve_order_area"
+            },
+            {
+                "id": "B",
+                "text": "$22/3$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "C",
+                "text": "$28/3$",
+                "error_code": "-"
+            },
+            {
+                "id": "D",
+                "text": "$32/3$",
+                "error_code": "fraction_operation_error"
+            },
+            {
+                "id": "E",
+                "text": "$34/3$",
+                "error_code": "conceptual_misunderstanding"
+            }
+        ],
+        "main_topic": "applications_of_integrals",
+        "sub_topic": "area_between_curves",
+        "skill_tags": [
+            "setting_up_area_integral",
+            "evaluating_ftc",
+            "other_precalc_skill"
+        ],
+        "bloom_level": "Analyzing",
+        "difficulty": 0.75,
+        "discrimination": 0.55
+    },
+    {
+        "question_text": "บริเวณปิดล้อมด้วย $y=ax^2+2$, แกน X, $x=0, x=5$ มีพื้นที่ 135 ตร.หน่วย หาความชันที่ $x=2$",
+        "correct_answer": "D",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$3$",
+                "error_code": "algebra_simplification_error"
+            },
+            {
+                "id": "B",
+                "text": "$6$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "C",
+                "text": "$10$",
+                "error_code": "fraction_operation_error"
+            },
+            {
+                "id": "D",
+                "text": "$12$",
+                "error_code": "-"
+            },
+            {
+                "id": "E",
+                "text": "$24$",
+                "error_code": "arithmetic_error"
+            }
+        ],
+        "main_topic": "applications_of_integrals",
+        "sub_topic": "area_between_curves",
+        "skill_tags": [
+            "setting_up_area_integral",
+            "power_rule",
+            "evaluating_functions"
+        ],
+        "bloom_level": "Analyzing",
+        "difficulty": 0.8,
+        "discrimination": 0.6
+    },
+    {
+        "question_text": "$f(x)=-x^2+k$ พื้นที่ปิดล้อมด้วยกราฟกับแกน X เท่ากับ 36 ตร.หน่วย แล้ว $f(-1)+f(1)$ คือข้อใด",
+        "correct_answer": "B",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$12$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "B",
+                "text": "$14$",
+                "error_code": "-"
+            },
+            {
+                "id": "C",
+                "text": "$16 $",
+                "error_code": "arithmetic_error"
+            },
+            {
+                "id": "D",
+                "text": "$18$",
+                "error_code": "fraction_operation_error"
+            },
+            {
+                "id": "E",
+                "text": "$36$",
+                "error_code": "algebra_simplification_error"
+            }
+        ],
+        "main_topic": "applications_of_integrals",
+        "sub_topic": "area_between_curves",
+        "skill_tags": [
+            "setting_up_area_integral",
+            "power_rule_integration",
+            "evaluating_functions"
+        ],
+        "bloom_level": "Applying",
+        "difficulty": 0.7,
+        "discrimination": 0.55
+    },
+    {
+        "question_text": "พื้นที่ปิดล้อมด้วยพาราโบลาจุดยอด (0, -9) และแกน X เท่ากับ 9 ตร.หน่วย จงหาสมการพาราโบลา",
+        "correct_answer": "E",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$y=x^2-9$",
+                "error_code": "conceptual_misunderstanding"
+            },
+            {
+                "id": "B",
+                "text": "$y=2x^2-9$",
+                "error_code": "wrong_curve_order_area"
+            },
+            {
+                "id": "C",
+                "text": "$y=4x^2-9$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "D",
+                "text": "$y=8x^2-9$",
+                "error_code": "algebra_simplification_error"
+            },
+            {
+                "id": "E",
+                "text": "$y=16x^2-9$",
+                "error_code": "-"
+            }
+        ],
+        "main_topic": "applications_of_integrals",
+        "sub_topic": "area_between_curves",
+        "skill_tags": [
+            "setting_up_area_integral",
+            "power_rule_integration",
+            "algebraic_manipulation"
+        ],
+        "bloom_level": "Creating",
+        "difficulty": 0.85,
+        "discrimination": 0.65
+    },
+    {
+        "question_text": "ให้ $f(x)=ax^2+bx+c$ ผ่านจุด (0, 1), (1, 3), (2, 2) หาพื้นที่ปิดล้อมด้วย $y=f(x)$ และ $y=x$ จาก $x=0$ ถึง $x=2$",
+        "correct_answer": "B",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$\\\\frac{5}{2}$",
+                "error_code": "algebra_simplification_error"
+            },
+            {
+                "id": "B",
+                "text": "$\\\\frac{8}{3}$",
+                "error_code": "-"
+            },
+            {
+                "id": "C",
+                "text": "$3$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "D",
+                "text": "$\\\\frac{7}{2}$",
+                "error_code": "fraction_operation_error"
+            },
+            {
+                "id": "E",
+                "text": "$5$",
+                "error_code": "wrong_curve_order_area"
+            }
+        ],
+        "main_topic": "applications_of_integrals",
+        "sub_topic": "area_between_curves",
+        "skill_tags": [
+            "setting_up_area_integral",
+            "evaluating_ftc"
+        ],
+        "bloom_level": "Analyzing",
+        "difficulty": 0.75,
+        "discrimination": 0.55
+    },
+    {
+        "question_text": "หาพื้นที่ที่ปิดล้อมด้วยเส้นโค้ง $y=x^2-1$ และเส้นตรง $y=3$",
+        "correct_answer": "C",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$8$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "B",
+                "text": "$\\\\frac{16}{3}$",
+                "error_code": "fraction_operation_error"
+            },
+            {
+                "id": "C",
+                "text": "$\\\\frac{32}{3}$",
+                "error_code": "-"
+            },
+            {
+                "id": "D",
+                "text": "$12$",
+                "error_code": "wrong_curve_order_area"
+            },
+            {
+                "id": "E",
+                "text": "$\\\\frac{20}{3}$",
+                "error_code": "arithmetic_error"
+            }
+        ],
+        "main_topic": "applications_of_integrals",
+        "sub_topic": "area_between_curves",
+        "skill_tags": [
+            "setting_up_area_integral",
+            "evaluating_ftc"
+        ],
+        "bloom_level": "Applying",
+        "difficulty": 0.65,
+        "discrimination": 0.5
+    },
+    {
+        "question_text": "บริเวณที่ปิดล้อมด้วย $y=x^2$ และ $y=x$ มีพื้นที่เท่ากับกี่ตารางหน่วย",
+        "correct_answer": "B",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$\\\\frac{1}{3}$",
+                "error_code": "wrong_curve_order_area"
+            },
+            {
+                "id": "B",
+                "text": "$\\\\frac{1}{6}$",
+                "error_code": "-"
+            },
+            {
+                "id": "C",
+                "text": "$\\\\frac{1}{2}$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "D",
+                "text": "$\\\\frac{2}{3}$",
+                "error_code": "fraction_operation_error"
+            },
+            {
+                "id": "E",
+                "text": "$\\\\frac{1}{4}$",
+                "error_code": "arithmetic_error"
+            }
+        ],
+        "main_topic": "applications_of_integrals",
+        "sub_topic": "area_between_curves",
+        "skill_tags": [
+            "setting_up_area_integral",
+            "evaluating_ftc"
+        ],
+        "bloom_level": "Applying",
+        "difficulty": 0.6,
+        "discrimination": 0.45
+    },
+    {
+        "question_text": "จงหาพื้นที่ปิดล้อมด้วย $y=x^3-3x^2-10x$ และแกน X ตั้งแต่ $x=0$ ถึง $x=3$",
+        "correct_answer": "C",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$24$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "B",
+                "text": "$36$",
+                "error_code": "wrong_curve_order_area"
+            },
+            {
+                "id": "C",
+                "text": "$48$",
+                "error_code": "-"
+            },
+            {
+                "id": "D",
+                "text": "$60$",
+                "error_code": "arithmetic_error"
+            },
+            {
+                "id": "E",
+                "text": "$12$",
+                "error_code": "conceptual_misunderstanding"
+            }
+        ],
+        "main_topic": "applications_of_integrals",
+        "sub_topic": "area_between_curves",
+        "skill_tags": [
+            "setting_up_area_integral",
+            "factoring_polynomials",
+            "evaluating_ftc"
+        ],
+        "bloom_level": "Analyzing",
+        "difficulty": 0.7,
+        "discrimination": 0.6
+    },
+    {
+        "question_text": "$\\\\lim_{x\\\\to1^-}\\\\frac{1}{\\\\sqrt{1-x}}\\\\left(1-\\\\frac{2x^3}{x^2+1}\\\\right)$",
+        "correct_answer": "A",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$0$",
+                "error_code": "-"
+            },
+            {
+                "id": "B",
+                "text": "$0.5$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "C",
+                "text": "$1$",
+                "error_code": "fraction_operation_error"
+            },
+            {
+                "id": "D",
+                "text": "$2$",
+                "error_code": "derivative_instead_of_integral"
+            },
+            {
+                "id": "E",
+                "text": "$4$",
+                "error_code": "arithmetic_error"
+            }
+        ],
+        "main_topic": "limits_and_continuity",
+        "sub_topic": "evaluating_limits",
+        "skill_tags": [
+            "lhopitals_rule",
+            "algebraic_manipulation"
+        ],
+        "bloom_level": "Analyzing",
+        "difficulty": 0.8,
+        "discrimination": 0.65
+    },
+    {
+        "question_text": "กำหนด $f(x)=\\\\begin{cases}x+5,&x>a\\\\x+1,&x\\\\le a\\\\end{cases}$ และ $g(x)=x^2$ … หา $a$",
+        "correct_answer": "B",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$1$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "B",
+                "text": "$2$",
+                "error_code": "-"
+            },
+            {
+                "id": "C",
+                "text": "$3$",
+                "error_code": "arithmetic_error"
+            },
+            {
+                "id": "D",
+                "text": "$4$",
+                "error_code": "algebra_simplification_error"
+            },
+            {
+                "id": "E",
+                "text": "$5$",
+                "error_code": "conceptual_misunderstanding"
+            }
+        ],
+        "main_topic": "limits_and_continuity",
+        "sub_topic": "continuity",
+        "skill_tags": [
+            "direct_substitution",
+            "algebraic_manipulation"
+        ],
+        "bloom_level": "Applying",
+        "difficulty": 0.55,
+        "discrimination": 0.45
+    },
+    {
+        "question_text": "$\\\\lim_{x\\\\to2^-}\\\\dfrac{x+1}{x+2}\\\\cdot\\\\dfrac{x+2}{x-\\\\sqrt[3]{x^2+4}}$",
+        "correct_answer": "D",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$6$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "B",
+                "text": "$7$",
+                "error_code": "fraction_operation_error"
+            },
+            {
+                "id": "C",
+                "text": "$8$",
+                "error_code": "arithmetic_error"
+            },
+            {
+                "id": "D",
+                "text": "$9$",
+                "error_code": "-"
+            },
+            {
+                "id": "E",
+                "text": "$12$",
+                "error_code": "indeterminate_form_misconception"
+            }
+        ],
+        "main_topic": "limits_and_continuity",
+        "sub_topic": "evaluating_limits",
+        "skill_tags": [
+            "limit_factoring",
+            "direct_substitution"
+        ],
+        "bloom_level": "Applying",
+        "difficulty": 0.6,
+        "discrimination": 0.5
+    },
+    {
+        "question_text": "$\\\\lim_{x\\\\to1}\\\\dfrac{(\\\\sqrt{x}-1)(3x-2)}{3x^2-x-2}$",
+        "correct_answer": "C",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$-\\\\frac{1}{10}$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "B",
+                "text": "$0$",
+                "error_code": "algebra_simplification_error"
+            },
+            {
+                "id": "C",
+                "text": "$\\\\frac{1}{10}$",
+                "error_code": "-"
+            },
+            {
+                "id": "D",
+                "text": "$\\\\frac{1}{5}$",
+                "error_code": "fraction_operation_error"
+            },
+            {
+                "id": "E",
+                "text": "$1$",
+                "error_code": "indeterminate_form_misconception"
+            }
+        ],
+        "main_topic": "limits_and_continuity",
+        "sub_topic": "evaluating_limits",
+        "skill_tags": [
+            "limit_conjugate",
+            "lhopitals_rule"
+        ],
+        "bloom_level": "Analyzing",
+        "difficulty": 0.75,
+        "discrimination": 0.6
+    },
+    {
+        "question_text": "ให้ $f,g$ เป็นฟังก์ชันต่อเนื่อง โดย $g(1)=2$ และ $g(x)=\\\\dfrac{xf(x)+2x-f(x)-2}{x^2+3x-4}$ เมื่อ $x\\\\ne-4,1$ แล้ว $f(-4)+f(1)$ มีค่าเท่ากับข้อใด",
+        "correct_answer": "B",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$4$",
+                "error_code": "algebra_simplification_error"
+            },
+            {
+                "id": "B",
+                "text": "$8$",
+                "error_code": "-"
+            },
+            {
+                "id": "C",
+                "text": "$12$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "D",
+                "text": "$16$",
+                "error_code": "arithmetic_error"
+            },
+            {
+                "id": "E",
+                "text": "$20$",
+                "error_code": "conceptual_misunderstanding"
+            }
+        ],
+        "main_topic": "limits_and_continuity",
+        "sub_topic": "continuity",
+        "skill_tags": [
+            "limit_factoring",
+            "evaluating_functions"
+        ],
+        "bloom_level": "Analyzing",
+        "difficulty": 0.75,
+        "discrimination": 0.55
+    },
+    {
+        "question_text": "ค่าของ $\\\\lim_{x \\\\to 0} \\\\frac{\\\\sqrt{1+x+x^2}-1}{x}$",
+        "correct_answer": "B",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$0$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "B",
+                "text": "$0.5$",
+                "error_code": "-"
+            },
+            {
+                "id": "C",
+                "text": "$1$",
+                "error_code": "arithmetic_error"
+            },
+            {
+                "id": "D",
+                "text": "$2$",
+                "error_code": "indeterminate_form_misconception"
+            },
+            {
+                "id": "E",
+                "text": "หาค่าไม่ได้",
+                "error_code": "fraction_operation_error"
+            }
+        ],
+        "main_topic": "limits_and_continuity",
+        "sub_topic": "evaluating_limits",
+        "skill_tags": [
+            "limit_conjugate",
+            "lhopitals_rule"
+        ],
+        "bloom_level": "Applying",
+        "difficulty": 0.65,
+        "discrimination": 0.55
+    },
+    {
+        "question_text": "จงหาค่าของ $\\\\lim_{x \\\\to 1} \\\\frac{x^n - 1}{x - 1}$",
+        "correct_answer": "C",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$1$",
+                "error_code": "arithmetic_error"
+            },
+            {
+                "id": "B",
+                "text": "$0$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "C",
+                "text": "$n$",
+                "error_code": "-"
+            },
+            {
+                "id": "D",
+                "text": "$n-1$",
+                "error_code": "exponent_rule_error"
+            },
+            {
+                "id": "E",
+                "text": "$x^n$",
+                "error_code": "lhopital_applied_incorrectly"
+            }
+        ],
+        "main_topic": "limits_and_continuity",
+        "sub_topic": "evaluating_limits",
+        "skill_tags": [
+            "lhopitals_rule",
+            "power_rule"
+        ],
+        "bloom_level": "Applying",
+        "difficulty": 0.6,
+        "discrimination": 0.5
+    },
+    {
+        "question_text": "จงหาค่าของ $\\\\lim_{x \\\\to -2} \\\\frac{x^3+8}{x+2}$",
+        "correct_answer": "D",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$0$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "B",
+                "text": "$4$",
+                "error_code": "algebra_simplification_error"
+            },
+            {
+                "id": "C",
+                "text": "$8$",
+                "error_code": "arithmetic_error"
+            },
+            {
+                "id": "D",
+                "text": "$12$",
+                "error_code": "-"
+            },
+            {
+                "id": "E",
+                "text": "หาค่าไม่ได้",
+                "error_code": "indeterminate_form_misconception"
+            }
+        ],
+        "main_topic": "limits_and_continuity",
+        "sub_topic": "evaluating_limits",
+        "skill_tags": [
+            "limit_factoring",
+            "direct_substitution"
+        ],
+        "bloom_level": "Applying",
+        "difficulty": 0.5,
+        "discrimination": 0.4
+    },
+    {
+        "question_text": "ถ้า $\\\\lim_{x \\\\to 1} \\\\frac{\\\\sqrt{x^2+ax+b}-2}{x-1} = 1$ แล้ว $a+b$ มีค่าเท่าใด",
+        "correct_answer": "C",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$3$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "B",
+                "text": "$5$",
+                "error_code": "fraction_operation_error"
+            },
+            {
+                "id": "C",
+                "text": "$7$",
+                "error_code": "-"
+            },
+            {
+                "id": "D",
+                "text": "$9$",
+                "error_code": "algebra_simplification_error"
+            },
+            {
+                "id": "E",
+                "text": "$11$",
+                "error_code": "arithmetic_error"
+            }
+        ],
+        "main_topic": "limits_and_continuity",
+        "sub_topic": "evaluating_limits",
+        "skill_tags": [
+            "limit_conjugate",
+            "algebraic_manipulation"
+        ],
+        "bloom_level": "Analyzing",
+        "difficulty": 0.85,
+        "discrimination": 0.65
+    },
+    {
+        "question_text": "ให้ $a, b \\\\in \\\\mathbb{R}$ ถ้า $\\\\lim_{x \\\\to 0} [\\\\frac{3}{x(x+1)} + \\\\frac{7}{x(x-1)} + \\\\frac{a}{x(x^2-1)}] = b$ แล้ว $a+b$ คือข้อใด",
+        "correct_answer": "A",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$-14$",
+                "error_code": "-"
+            },
+            {
+                "id": "B",
+                "text": "$-10$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "C",
+                "text": "$-4$",
+                "error_code": "fraction_operation_error"
+            },
+            {
+                "id": "D",
+                "text": "$4$",
+                "error_code": "algebra_simplification_error"
+            },
+            {
+                "id": "E",
+                "text": "$10$",
+                "error_code": "arithmetic_error"
+            }
+        ],
+        "main_topic": "limits_and_continuity",
+        "sub_topic": "evaluating_limits",
+        "skill_tags": [
+            "algebraic_manipulation",
+            "limit_factoring"
+        ],
+        "bloom_level": "Analyzing",
+        "difficulty": 0.8,
+        "discrimination": 0.6
+    },
+    {
+        "question_text": "ค่าของ $\\\\lim_{x \\\\to 2} \\\\frac{2^x + 2^{2-x} - 5}{2^{-x/2} - 2^{1-x}}$ เท่ากับเท่าใด",
+        "correct_answer": "C",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$4$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "B",
+                "text": "$8$",
+                "error_code": "exponent_rule_error"
+            },
+            {
+                "id": "C",
+                "text": "$12$",
+                "error_code": "-"
+            },
+            {
+                "id": "D",
+                "text": "$16$",
+                "error_code": "arithmetic_error"
+            },
+            {
+                "id": "E",
+                "text": "$20$",
+                "error_code": "lhopital_applied_incorrectly"
+            }
+        ],
+        "main_topic": "limits_and_continuity",
+        "sub_topic": "evaluating_limits",
+        "skill_tags": [
+            "lhopitals_rule",
+            "exponential_derivatives"
+        ],
+        "bloom_level": "Analyzing",
+        "difficulty": 0.85,
+        "discrimination": 0.7
+    },
+    {
+        "question_text": "จงหาค่าของ $\\\\lim_{x \\\\to \\\\infty} (\\\\sqrt{x^2+1}-x)$",
+        "correct_answer": "A",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$0$",
+                "error_code": "-"
+            },
+            {
+                "id": "B",
+                "text": "$0.5$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "C",
+                "text": "$1$",
+                "error_code": "conceptual_misunderstanding"
+            },
+            {
+                "id": "D",
+                "text": "$\\\\infty$",
+                "error_code": "indeterminate_form_misconception"
+            },
+            {
+                "id": "E",
+                "text": "หาค่าไม่ได้",
+                "error_code": "arithmetic_error"
+            }
+        ],
+        "main_topic": "limits_and_continuity",
+        "sub_topic": "limits_at_infinity",
+        "skill_tags": [
+            "limit_conjugate",
+            "algebraic_manipulation"
+        ],
+        "bloom_level": "Applying",
+        "difficulty": 0.7,
+        "discrimination": 0.55
+    },
+    {
+        "question_text": "จงหาค่าของ $\\\\lim_{x \\\\to 0} \\\\frac{\\\\sin 3x}{x}$",
+        "correct_answer": "A",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$0$",
+                "error_code": "-"
+            },
+            {
+                "id": "B",
+                "text": "$1$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "C",
+                "text": "$3$",
+                "error_code": "trig_evaluation_error"
+            },
+            {
+                "id": "D",
+                "text": "$1/3$",
+                "error_code": "fraction_operation_error"
+            },
+            {
+                "id": "E",
+                "text": "หาค่าไม่ได้",
+                "error_code": "indeterminate_form_misconception"
+            }
+        ],
+        "main_topic": "limits_and_continuity",
+        "sub_topic": "evaluating_limits",
+        "skill_tags": [
+            "special_trig_limits",
+            "lhopitals_rule"
+        ],
+        "bloom_level": "Applying",
+        "difficulty": 0.4,
+        "discrimination": 0.35
+    },
+    {
+        "question_text": "จงหาค่าของ $\\\\lim_{x \\\\to \\\\infty} \\\\frac{5x^3 - 2x + 1}{2x^3 + 7}$",
+        "correct_answer": "B",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$0$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "B",
+                "text": "$\\\\frac{5}{2}$",
+                "error_code": "-"
+            },
+            {
+                "id": "C",
+                "text": "$1$",
+                "error_code": "conceptual_misunderstanding"
+            },
+            {
+                "id": "D",
+                "text": "หาค่าไม่ได้",
+                "error_code": "indeterminate_form_misconception"
+            },
+            {
+                "id": "E",
+                "text": "$5$",
+                "error_code": "arithmetic_error"
+            }
+        ],
+        "main_topic": "limits_and_continuity",
+        "sub_topic": "limits_at_infinity",
+        "skill_tags": [
+            "lhopitals_rule",
+            "algebraic_manipulation"
+        ],
+        "bloom_level": "Understanding",
+        "difficulty": 0.35,
+        "discrimination": 0.3
+    },
+    {
+        "question_text": "กำหนดให้ $f: \\\\mathbb{R} \\\\to \\\\mathbb{R}$ เป็นฟังก์ชันที่หาอนุพันธ์ได้ และ $\\\\displaystyle \\\\lim_{x \\\\to 2} \\\\frac{x^2+x-6}{\\\\sqrt{1+f(x)}-3} = 6$ ถ้าเส้นตรง $6x-y=4$ ตัดกับกราฟ $y=f(x)$ ที่ $x=2$ แล้วค่าของ $f'(2)$ เท่ากับเท่าใด",
+        "correct_answer": "D",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$5$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "B",
+                "text": "$6$",
+                "error_code": "algebra_simplification_error"
+            },
+            {
+                "id": "C",
+                "text": "$8$",
+                "error_code": "fraction_operation_error"
+            },
+            {
+                "id": "D",
+                "text": "$10$",
+                "error_code": "-"
+            },
+            {
+                "id": "E",
+                "text": "$30$",
+                "error_code": "arithmetic_error"
+            }
+        ],
+        "main_topic": "derivatives",
+        "sub_topic": "definition_of_derivative",
+        "skill_tags": [
+            "lhopitals_rule",
+            "evaluating_limits"
+        ],
+        "bloom_level": "Analyzing",
+        "difficulty": 0.8,
+        "discrimination": 0.65
+    },
+    {
+        "question_text": "กำหนดให้ $f: \\\\mathbb{R} \\\\to \\\\mathbb{R}$ เป็นฟังก์ชันที่หาอนุพันธ์ได้ โดยที่ $\\\\displaystyle \\\\lim_{x \\\\to 2559} \\\\frac{x f(x) - 2559 f(2559)}{x - 2559} = 7677$ ถ้า $f(2559) = 2559$ แล้วค่าของ $f'(2559)$ ตรงกับข้อใด",
+        "correct_answer": "B",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$1$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "B",
+                "text": "$2$",
+                "error_code": "-"
+            },
+            {
+                "id": "C",
+                "text": "$3$",
+                "error_code": "arithmetic_error"
+            },
+            {
+                "id": "D",
+                "text": "$4$",
+                "error_code": "conceptual_misunderstanding"
+            },
+            {
+                "id": "E",
+                "text": "$7677$",
+                "error_code": "fraction_operation_error"
+            }
+        ],
+        "main_topic": "derivatives",
+        "sub_topic": "definition_of_derivative",
+        "skill_tags": [
+            "lhopitals_rule",
+            "evaluating_functions"
+        ],
+        "bloom_level": "Analyzing",
+        "difficulty": 0.75,
+        "discrimination": 0.6
+    },
+    {
+        "question_text": "จงหาค่าของ $\\\\displaystyle \\\\lim_{x \\\\to 0} \\\\frac{e^x - 1 - x}{x^2}$",
+        "correct_answer": "B",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$0$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "B",
+                "text": "$\\\\frac{1}{2}$",
+                "error_code": "-"
+            },
+            {
+                "id": "C",
+                "text": "$1$",
+                "error_code": "fraction_operation_error"
+            },
+            {
+                "id": "D",
+                "text": "$e$",
+                "error_code": "lhopital_applied_incorrectly"
+            },
+            {
+                "id": "E",
+                "text": "หาค่าไม่ได้",
+                "error_code": "indeterminate_form_misconception"
+            }
+        ],
+        "main_topic": "limits_and_continuity",
+        "sub_topic": "evaluating_limits",
+        "skill_tags": [
+            "lhopitals_rule",
+            "exponential_derivatives"
+        ],
+        "bloom_level": "Analyzing",
+        "difficulty": 0.8,
+        "discrimination": 0.6
+    },
+    {
+        "question_text": "จงหาค่าของ $\\\\displaystyle \\\\lim_{x \\\\to \\\\frac{\\\\pi}{2}} \\\\frac{1 - \\\\sin x}{1 + \\\\cos 2x}$",
+        "correct_answer": "C",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$0$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "B",
+                "text": "$\\\\frac{1}{8}$",
+                "error_code": "trig_sign_error"
+            },
+            {
+                "id": "C",
+                "text": "$\\\\frac{1}{4}$",
+                "error_code": "-"
+            },
+            {
+                "id": "D",
+                "text": "$\\\\frac{1}{2}$",
+                "error_code": "fraction_operation_error"
+            },
+            {
+                "id": "E",
+                "text": "$1$",
+                "error_code": "arithmetic_error"
+            }
+        ],
+        "main_topic": "limits_and_continuity",
+        "sub_topic": "evaluating_limits",
+        "skill_tags": [
+            "lhopitals_rule",
+            "trig_derivatives"
+        ],
+        "bloom_level": "Analyzing",
+        "difficulty": 0.75,
+        "discrimination": 0.55
+    },
+    {
+        "question_text": "กำหนดให้ $f(x)$ เป็นฟังก์ชันที่หาอนุพันธ์ได้ โดยที่ $f(1) = 2$ และ $f'(1) = 3$ จงหาค่าของ $\\\\displaystyle \\\\lim_{x \\\\to 1} \\\\frac{f(x)^2 - 4}{x^2 - 1}$",
+        "correct_answer": "C",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$3$",
+                "error_code": "algebra_simplification_error"
+            },
+            {
+                "id": "B",
+                "text": "$4$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "C",
+                "text": "$6$",
+                "error_code": "-"
+            },
+            {
+                "id": "D",
+                "text": "$8$",
+                "error_code": "fraction_operation_error"
+            },
+            {
+                "id": "E",
+                "text": "$12$",
+                "error_code": "arithmetic_error"
+            }
+        ],
+        "main_topic": "limits_and_continuity",
+        "sub_topic": "evaluating_limits",
+        "skill_tags": [
+            "lhopitals_rule",
+            "evaluating_functions",
+            "algebraic_manipulation"
+        ],
+        "bloom_level": "Analyzing",
+        "difficulty": 0.7,
+        "discrimination": 0.55
+    },
+    {
+        "question_text": " ให้ $a$ และ $b$ เป็นจำนวนจริงที่ไม่เท่ากับศูนย์ และ $f(x) = ax^2 + bx + 1$ ถ้า $f(-1) = 0$ และเรนจ์ของ $f$ คือ $[0, \\\\infty)$ แล้วค่าของ $\\\\displaystyle \\\\int_{-1}^{2} f(x) \\\\, dx$ เท่ากับข้อใด",
+        "correct_answer": "D",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$5$",
+                "error_code": "fraction_operation_error"
+            },
+            {
+                "id": "B",
+                "text": "$7$",
+                "error_code": "arithmetic_error"
+            },
+            {
+                "id": "C",
+                "text": "$8$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "D",
+                "text": "$9$",
+                "error_code": "-"
+            },
+            {
+                "id": "E",
+                "text": "$11$",
+                "error_code": "conceptual_misunderstanding"
+            }
+        ],
+        "main_topic": "integrals",
+        "sub_topic": "definite_integrals",
+        "skill_tags": [
+            "power_rule_integration",
+            "evaluating_functions",
+            "algebraic_manipulation"
+        ],
+        "bloom_level": "Creating",
+        "difficulty": 0.85,
+        "discrimination": 0.65
+    },
+    {
+        "question_text": "จงหาค่าของ $\\\\displaystyle \\\\int_{-4}^{-2} \\\\frac{x^3 + x^2 + x}{x|x+2| - x^2 - 2} \\\\, dx$",
+        "correct_answer": "C",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$5$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "B",
+                "text": "$6$",
+                "error_code": "fraction_operation_error"
+            },
+            {
+                "id": "C",
+                "text": "$7$",
+                "error_code": "-"
+            },
+            {
+                "id": "D",
+                "text": "$8$",
+                "error_code": "algebra_simplification_error"
+            },
+            {
+                "id": "E",
+                "text": "หาค่าไม่ได้",
+                "error_code": "conceptual_misunderstanding"
+            }
+        ],
+        "main_topic": "integrals",
+        "sub_topic": "definite_integrals",
+        "skill_tags": [
+            "algebraic_manipulation",
+            "power_rule_integration",
+            "evaluating_ftc"
+        ],
+        "bloom_level": "Analyzing",
+        "difficulty": 0.8,
+        "discrimination": 0.6
+    },
+    {
+        "question_text": "กำหนดให้ $f(x) = 2x + 5$ และ $g(x) = ax^2 + bx + c$ ถ้า $(f^{-1} \\\\circ g)(0) = 2$, $\\\\displaystyle \\\\int_0^1 (f^{-1} \\\\circ g)(x) \\\\, dx = 1$ และ $(f^{-1} \\\\circ g)(x)$ มีค่าต่ำสุดสัมพัทธ์ที่ $x = 1$ แล้วค่าของ $g(1)$ เท่ากับเท่าใด",
+        "correct_answer": "C",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$5$",
+                "error_code": "conceptual_misunderstanding"
+            },
+            {
+                "id": "B",
+                "text": "$6$",
+                "error_code": "algebra_simplification_error"
+            },
+            {
+                "id": "C",
+                "text": "$7$",
+                "error_code": "-"
+            },
+            {
+                "id": "D",
+                "text": "$8$",
+                "error_code": "arithmetic_error"
+            },
+            {
+                "id": "E",
+                "text": "$9$",
+                "error_code": "fraction_operation_error"
+            }
+        ],
+        "main_topic": "integrals",
+        "sub_topic": "definite_integrals",
+        "skill_tags": [
+            "composite_functions",
+            "inverse_functions",
+            "power_rule_integration"
+        ],
+        "bloom_level": "Creating",
+        "difficulty": 0.9,
+        "discrimination": 0.7
+    },
+    {
+        "question_text": "กำหนดให้ $f(x) = ax^2 + bx + c$ ถ้า $f(-1) + f(1) = 14$, $f(0) = 2$ และ $\\\\displaystyle \\\\int_0^1 f(x) \\\\, dx = 2$ แล้วค่าของ $\\\\displaystyle \\\\int_0^1 f(3x) \\\\, dx$ เท่ากับเท่าใด",
+        "correct_answer": "D",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$8$",
+                "error_code": "arithmetic_error"
+            },
+            {
+                "id": "B",
+                "text": "$9$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "C",
+                "text": "$10$",
+                "error_code": "-"
+            },
+            {
+                "id": "D",
+                "text": "$11$",
+                "error_code": "fraction_operation_error"
+            },
+            {
+                "id": "E",
+                "text": "$12$",
+                "error_code": "algebra_simplification_error"
+            }
+        ],
+        "main_topic": "integrals",
+        "sub_topic": "definite_integrals",
+        "skill_tags": [
+            "power_rule_integration",
+            "evaluating_functions",
+            "evaluating_ftc"
+        ],
+        "bloom_level": "Analyzing",
+        "difficulty": 0.75,
+        "discrimination": 0.6
+    },
+    {
+        "question_text": "กำหนดให้ $f(x) = ax^3 + bx^2 + 1$ ถ้า $\\\\displaystyle \\\\lim_{x \\\\to 2} \\\\frac{f(x) - f(2)}{x - 2} = 0$ และ $\\\\displaystyle \\\\int_0^1 f(x) \\\\, dx = \\\\frac{1}{4}$ แล้วค่าของ $\\\\displaystyle \\\\lim_{x \\\\to 4} \\\\frac{f'(x) - f'(4)}{x - 4}$ เท่ากับเท่าใด",
+        "correct_answer": "C",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$12$",
+                "error_code": "conceptual_misunderstanding"
+            },
+            {
+                "id": "B",
+                "text": "$15$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "C",
+                "text": "$18$",
+                "error_code": "fraction_operation_error"
+            },
+            {
+                "id": "D",
+                "text": "$24$",
+                "error_code": "arithmetic_error"
+            },
+            {
+                "id": "E",
+                "text": "$0$",
+                "error_code": "-"
+            }
+        ],
+        "main_topic": "derivatives",
+        "sub_topic": "definition_of_derivative",
+        "skill_tags": [
+            "lhopitals_rule",
+            "evaluating_ftc",
+            "power_rule_integration"
+        ],
+        "bloom_level": "Analyzing",
+        "difficulty": 0.85,
+        "discrimination": 0.65
+    },
+    {
+        "question_text": "กำหนดให้ $f$ เป็นฟังก์ชันพหุนาม โดยที่ $f'(x) = ax^2 + bx + c$ เมื่อ $a, b, c$ เป็นจำนวนจริง และ $f(0) = 1$, $f(1) = 2$, $f'(1) = 3$ จงหาค่าของ $f(-1)$",
+        "correct_answer": "B",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$-1$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "B",
+                "text": "$0$",
+                "error_code": "-"
+            },
+            {
+                "id": "C",
+                "text": "$1$",
+                "error_code": "arithmetic_error"
+            },
+            {
+                "id": "D",
+                "text": "$2$",
+                "error_code": "algebra_simplification_error"
+            },
+            {
+                "id": "E",
+                "text": "$3$",
+                "error_code": "fraction_operation_error"
+            }
+        ],
+        "main_topic": "pre_calculus",
+        "sub_topic": "functions_and_graphs",
+        "skill_tags": [
+            "evaluating_functions",
+            "algebraic_manipulation"
+        ],
+        "bloom_level": "Applying",
+        "difficulty": 0.6,
+        "discrimination": 0.45
+    },
+    {
+        "question_text": "ถ้าพื้นที่ที่ปิดล้อมด้วยเส้นโค้ง $y = x^2 - 4x + 3$ และแกน $X$ มีค่าเท่ากับ $A$ และพื้นที่ที่ปิดล้อมด้วย $y = -x^2 + 4x - 3$ และแกน $X$ มีค่าเท่ากับ $B$ จงหา $A + B$",
+        "correct_answer": "C",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$2$",
+                "error_code": "wrong_curve_order_area"
+            },
+            {
+                "id": "B",
+                "text": "$\\\\frac{4}{3}$",
+                "error_code": "-"
+            },
+            {
+                "id": "C",
+                "text": "$\\\\frac{8}{3}$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "D",
+                "text": "$4$",
+                "error_code": "fraction_operation_error"
+            },
+            {
+                "id": "E",
+                "text": "$\\\\frac{16}{3}$",
+                "error_code": "arithmetic_error"
+            }
+        ],
+        "main_topic": "applications_of_integrals",
+        "sub_topic": "area_between_curves",
+        "skill_tags": [
+            "setting_up_area_integral",
+            "power_rule_integration"
+        ],
+        "bloom_level": "Analyzing",
+        "difficulty": 0.75,
+        "discrimination": 0.55
+    },
+    {
+        "question_text": "จงหาค่าของ $\\\\displaystyle \\\\int_0^3 (x + 1)\\\\sqrt{x + 1} \\\\, dx$",
+        "correct_answer": "C",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$\\\\frac{54}{5}$",
+                "error_code": "wrong_u_sub_bounds"
+            },
+            {
+                "id": "B",
+                "text": "$\\\\frac{58}{5}$",
+                "error_code": "fraction_operation_error"
+            },
+            {
+                "id": "C",
+                "text": "$\\\\frac{62}{5}$",
+                "error_code": "-"
+            },
+            {
+                "id": "D",
+                "text": "$\\\\frac{64}{5}$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "E",
+                "text": "$\\\\frac{70}{5}$",
+                "error_code": "arithmetic_error"
+            }
+        ],
+        "main_topic": "integrals",
+        "sub_topic": "definite_integrals",
+        "skill_tags": [
+            "u_substitution",
+            "power_rule_integration",
+            "evaluating_ftc"
+        ],
+        "bloom_level": "Applying",
+        "difficulty": 0.7,
+        "discrimination": 0.6
+    },
+    {
+        "question_text": "จงหาค่าของ $\\\\displaystyle \\\\int (3x^2 - 2x + 5) \\\\, dx$",
+        "correct_answer": "A",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$x^3 - x^2 + 5x + C$",
+                "error_code": "-"
+            },
+            {
+                "id": "B",
+                "text": "$3x^3 - 2x^2 + 5x + C$",
+                "error_code": "forgot_plus_c"
+            },
+            {
+                "id": "C",
+                "text": "$x^3 - x^2 + 5 + C$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "D",
+                "text": "$x^3 - x^2 + 5x$",
+                "error_code": "derivative_instead_of_integral"
+            },
+            {
+                "id": "E",
+                "text": "$x^3 - x^2 + 5x + 1$",
+                "error_code": "arithmetic_error"
+            }
+        ],
+        "main_topic": "integrals",
+        "sub_topic": "indefinite_integrals",
+        "skill_tags": [
+            "power_rule_integration"
+        ],
+        "bloom_level": "Understanding",
+        "difficulty": 0.2,
+        "discrimination": 0.3
+    },
+    {
+        "question_text": "กำหนดให้ $f''(x) = 12x$ จงหา $f(x)$ เมื่อ $f'(0) = 1$ และ $f(0) = 2$",
+        "correct_answer": "A",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$2x^3 + x + 2$",
+                "error_code": "-"
+            },
+            {
+                "id": "B",
+                "text": "$2x^3 + x$",
+                "error_code": "forgot_plus_c"
+            },
+            {
+                "id": "C",
+                "text": "$4x^3 + x + 2$",
+                "error_code": "arithmetic_error"
+            },
+            {
+                "id": "D",
+                "text": "$2x^2 + x + 2$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "E",
+                "text": "$2x^3 + 2$",
+                "error_code": "derivative_instead_of_integral"
+            }
+        ],
+        "main_topic": "integrals",
+        "sub_topic": "indefinite_integrals",
+        "skill_tags": [
+            "power_rule_integration",
+            "evaluating_functions"
+        ],
+        "bloom_level": "Applying",
+        "difficulty": 0.4,
+        "discrimination": 0.4
+    },
+    {
+        "question_text": "จงหาพื้นที่ที่ปิดล้อมด้วยเส้นโค้ง $y = x^2$ และ $y = x$",
+        "correct_answer": "B",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$\\\\frac{1}{12}$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "B",
+                "text": "$\\\\frac{1}{6}$",
+                "error_code": "-"
+            },
+            {
+                "id": "C",
+                "text": "$\\\\frac{1}{3}$",
+                "error_code": "wrong_curve_order_area"
+            },
+            {
+                "id": "D",
+                "text": "$\\\\frac{1}{2}$",
+                "error_code": "fraction_operation_error"
+            },
+            {
+                "id": "E",
+                "text": "$1$",
+                "error_code": "arithmetic_error"
+            }
+        ],
+        "main_topic": "applications_of_integrals",
+        "sub_topic": "area_between_curves",
+        "skill_tags": [
+            "setting_up_area_integral",
+            "power_rule_integration",
+            "evaluating_ftc"
+        ],
+        "bloom_level": "Applying",
+        "difficulty": 0.5,
+        "discrimination": 0.45
+    },
+    {
+        "question_text": " ถ้า $f(x)$ ต่อเนื่องบน $[a, b]$ และ $\\\\displaystyle \\\\int_a^b f(x) \\\\, dx = 10$ จงหาค่าของ $\\\\displaystyle \\\\int_a^b 2f(x) \\\\, dx$",
+        "correct_answer": "C",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$5$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "B",
+                "text": "$10$",
+                "error_code": "conceptual_misunderstanding"
+            },
+            {
+                "id": "C",
+                "text": "$20$",
+                "error_code": "-"
+            },
+            {
+                "id": "D",
+                "text": "$40$",
+                "error_code": "arithmetic_error"
+            },
+            {
+                "id": "E",
+                "text": "หาค่าไม่ได้",
+                "error_code": "algebra_simplification_error"
+            }
+        ],
+        "main_topic": "integrals",
+        "sub_topic": "definite_integrals",
+        "skill_tags": [
+            "integration_techniques",
+            "algebraic_manipulation"
+        ],
+        "bloom_level": "Understanding",
+        "difficulty": 0.35,
+        "discrimination": 0.4
+    },
+    {
+        "question_text": "ให้ $f$ เป็นฟังก์ชันหนึ่งต่อหนึ่ง โดย $f^{-1}(x) = \\\\frac{2x}{x+1}$ พิจารณาข้อความ (ก) $2f'(4) - f(4) = 3$, (ข) $f''(f(4)) = f(f''(4))$, (ค) $f$ เป็นฟังก์ชันเพิ่มบนช่วง $(0, 2)$",
+        "correct_answer": "A",
+        "choices": [
+            {
+                "id": "A",
+                "text": "(ก) และ (ข) ถูก แต่ (ค) ผิด",
+                "error_code": "conceptual_misunderstanding"
+            },
+            {
+                "id": "B",
+                "text": "(ก) และ (ค) ถูก แต่ (ข) ผิด",
+                "error_code": "product_quotient_mixup"
+            },
+            {
+                "id": "C",
+                "text": "(ข) และ (ค) ถูก แต่ (ก) ผิด",
+                "error_code": "-"
+            },
+            {
+                "id": "D",
+                "text": "ถูกทั้งสามข้อ",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "E",
+                "text": "ผิดทั้งสามข้อ",
+                "error_code": "algebra_simplification_error"
+            }
+        ],
+        "main_topic": "derivatives",
+        "sub_topic": "applications_of_derivatives",
+        "skill_tags": [
+            "first_derivative_test",
+            "inverse_functions",
+            "quotient_rule"
+        ],
+        "bloom_level": "Analyzing",
+        "difficulty": 0.8,
+        "discrimination": 0.65
+    },
+    {
+        "question_text": "กำหนดให้ $P(x)$ เป็นพหุนามดีกรี $2567$ ที่มีสัมประสิทธิ์เป็นจำนวนจริง ให้ $x_1, \\\\dots, x_k$ เป็นรากจริงที่แตกต่างกันของ $P(x)$ และ $n_i$ คือจำนวนน้อยสุดที่ทำให้ $P^{(n_i)}(x_i) \\\\neq 0$ จงหาค่าของ $\\\\sum_{i=1}^k n_i$",
+        "correct_answer": "B",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$2566$",
+                "error_code": "arithmetic_error"
+            },
+            {
+                "id": "B",
+                "text": "$2567$",
+                "error_code": "-"
+            },
+            {
+                "id": "C",
+                "text": "$k$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "D",
+                "text": "$2k$",
+                "error_code": "conceptual_misunderstanding"
+            },
+            {
+                "id": "E",
+                "text": "หาค่าไม่ได้",
+                "error_code": "fraction_operation_error"
+            }
+        ],
+        "main_topic": "derivatives",
+        "sub_topic": "applications_of_derivatives",
+        "skill_tags": [
+            "first_derivative_test",
+            "factoring_polynomials"
+        ],
+        "bloom_level": "Analyzing",
+        "difficulty": 0.75,
+        "discrimination": 0.6
+    },
+    {
+        "question_text": "กำหนดให้ $f(x) = x^3 + 2x - 1$ จงหาค่าของ $(f^{-1})'(2)$",
+        "correct_answer": "B",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$1/4$",
+                "error_code": "conceptual_misunderstanding"
+            },
+            {
+                "id": "B",
+                "text": "$1/5$",
+                "error_code": "-"
+            },
+            {
+                "id": "C",
+                "text": "$1/8$",
+                "error_code": "fraction_operation_error"
+            },
+            {
+                "id": "D",
+                "text": "$5$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "E",
+                "text": "$4$",
+                "error_code": "arithmetic_error"
+            }
+        ],
+        "main_topic": "derivatives",
+        "sub_topic": "advanced_derivative_rules",
+        "skill_tags": [
+            "inverse_functions",
+            "power_rule",
+            "evaluating_functions"
+        ],
+        "bloom_level": "Analyzing",
+        "difficulty": 0.85,
+        "discrimination": 0.7
+    },
+    {
+        "question_text": "กำหนดให้ $g(x)$ หาอนุพันธ์ได้ โดยที่ $g(1) = 3$ และ $g'(1) = 5$ ถ้า $h(x) = g(x^2)(x^2 + 1)$ จงหาค่าของ $h'(1)$",
+        "correct_answer": "C",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$10$",
+                "error_code": "forgot_chain_rule_inner"
+            },
+            {
+                "id": "B",
+                "text": "$14$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "C",
+                "text": "$16$",
+                "error_code": "-"
+            },
+            {
+                "id": "D",
+                "text": "$20$",
+                "error_code": "product_quotient_mixup"
+            },
+            {
+                "id": "E",
+                "text": "$26$",
+                "error_code": "arithmetic_error"
+            }
+        ],
+        "main_topic": "derivatives",
+        "sub_topic": "advanced_derivative_rules",
+        "skill_tags": [
+            "product_rule",
+            "chain_rule",
+            "evaluating_functions"
+        ],
+        "bloom_level": "Applying",
+        "difficulty": 0.7,
+        "discrimination": 0.55
+    },
+    {
+        "question_text": "จงหาอนุพันธ์อันดับที่ 2 ของ $f(x) = \\\\ln(2x + 1)$ ที่ $x = 0.5$",
+        "correct_answer": "B",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$-1/2$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "B",
+                "text": "$-1$",
+                "error_code": "-"
+            },
+            {
+                "id": "C",
+                "text": "$-2$",
+                "error_code": "forgot_chain_rule_inner"
+            },
+            {
+                "id": "D",
+                "text": "$1$",
+                "error_code": "fraction_operation_error"
+            },
+            {
+                "id": "E",
+                "text": "$-1/4$",
+                "error_code": "arithmetic_error"
+            }
+        ],
+        "main_topic": "derivatives",
+        "sub_topic": "advanced_derivative_rules",
+        "skill_tags": [
+            "logarithmic_derivatives",
+            "chain_rule",
+            "second_derivative"
+        ],
+        "bloom_level": "Applying",
+        "difficulty": 0.65,
+        "discrimination": 0.55
+    },
+    {
+        "question_text": "กำหนดให้ $f(x)$ เป็นพหุนาม ถ้า $f(\\\\sqrt{x} - 1) = x$ เมื่อ $x > 0$ แล้ว $f'(1)$ เท่ากับเท่าใด",
+        "correct_answer": "C",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$1$",
+                "error_code": "conceptual_misunderstanding"
+            },
+            {
+                "id": "B",
+                "text": "$2$",
+                "error_code": "algebra_simplification_error"
+            },
+            {
+                "id": "C",
+                "text": "$4$",
+                "error_code": "-"
+            },
+            {
+                "id": "D",
+                "text": "$5$",
+                "error_code": "forgot_chain_rule_inner"
+            },
+            {
+                "id": "E",
+                "text": "$8$",
+                "error_code": "arithmetic_error"
+            }
+        ],
+        "main_topic": "derivatives",
+        "sub_topic": "advanced_derivative_rules",
+        "skill_tags": [
+            "chain_rule",
+            "composite_functions",
+            "power_rule"
+        ],
+        "bloom_level": "Analyzing",
+        "difficulty": 0.8,
+        "discrimination": 0.6
+    },
+    {
+        "question_text": "กำหนดให้ $f$ เป็นฟังก์ชัน โดยที่ $f'(x) = 2x + 1$ ถ้า $h(x) = f(x^2)$ แล้ว $h'(x)$ มีค่าเท่ากับเท่าใด",
+        "correct_answer": "D",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$4x + 2$",
+                "error_code": "forgot_chain_rule_inner"
+            },
+            {
+                "id": "B",
+                "text": "$2x^2 + 1$",
+                "error_code": "algebra_simplification_error"
+            },
+            {
+                "id": "C",
+                "text": "$4x^2 + 2x$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "D",
+                "text": "$4x^3 + 2x$",
+                "error_code": "-"
+            },
+            {
+                "id": "E",
+                "text": "$4x^3 + 4x$",
+                "error_code": "arithmetic_error"
+            }
+        ],
+        "main_topic": "derivatives",
+        "sub_topic": "advanced_derivative_rules",
+        "skill_tags": [
+            "chain_rule",
+            "composite_functions",
+            "power_rule"
+        ],
+        "bloom_level": "Applying",
+        "difficulty": 0.45,
+        "discrimination": 0.4
+    },
+    {
+        "question_text": "กำหนดให้ $f(x) = |x^2 - 9|$ พิจารณาข้อความ (ก) $f'(3)$ หาค่าได้ (ข) $f'(-3)$ หาค่าไม่ได้ (ค) $f'(0) = 0$ ข้อใดถูกต้อง",
+        "correct_answer": "D",
+        "choices": [
+            {
+                "id": "A",
+                "text": "(ก) เท่านั้น",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "B",
+                "text": "(ข) เท่านั้น",
+                "error_code": "conceptual_misunderstanding"
+            },
+            {
+                "id": "C",
+                "text": "(ค) เท่านั้น",
+                "error_code": "arithmetic_error"
+            },
+            {
+                "id": "D",
+                "text": "(ข) และ (ค) ถูก",
+                "error_code": "-"
+            },
+            {
+                "id": "E",
+                "text": "ถูกทุกข้อ",
+                "error_code": "algebra_simplification_error"
+            }
+        ],
+        "main_topic": "derivatives",
+        "sub_topic": "advanced_derivative_rules",
+        "skill_tags": [
+            "chain_rule",
+            "evaluating_functions",
+            "algebraic_manipulation"
+        ],
+        "bloom_level": "Analyzing",
+        "difficulty": 0.75,
+        "discrimination": 0.6
+    },
+    {
+        "question_text": "กำหนดให้ $f'(x) = 2x + 1$ และ $h(x) = f(x^2)$ แล้ว $h'(x)$ มีค่าเท่ากับเท่าใด",
+        "correct_answer": "D",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$4x + 2$",
+                "error_code": "forgot_chain_rule_inner"
+            },
+            {
+                "id": "B",
+                "text": "$2x^2 + 1$",
+                "error_code": "algebra_simplification_error"
+            },
+            {
+                "id": "C",
+                "text": "$4x^2 + 2x$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "D",
+                "text": "$4x^3 + 2x$",
+                "error_code": "-"
+            },
+            {
+                "id": "E",
+                "text": "$4x^3 + 4x$",
+                "error_code": "arithmetic_error"
+            }
+        ],
+        "main_topic": "derivatives",
+        "sub_topic": "advanced_derivative_rules",
+        "skill_tags": [
+            "chain_rule",
+            "composite_functions",
+            "power_rule"
+        ],
+        "bloom_level": "Applying",
+        "difficulty": 0.45,
+        "discrimination": 0.4
+    },
+    {
+        "question_text": "กำหนดให้ $f(x) = x^3 - 3x^2 + 4$ จงหา $(f^{-1})'(4)$",
+        "correct_answer": "A",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$1/9$",
+                "error_code": "-"
+            },
+            {
+                "id": "B",
+                "text": "$1/3$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "C",
+                "text": "$3$",
+                "error_code": "fraction_operation_error"
+            },
+            {
+                "id": "D",
+                "text": "$9$",
+                "error_code": "arithmetic_error"
+            },
+            {
+                "id": "E",
+                "text": "$-1/9$",
+                "error_code": "conceptual_misunderstanding"
+            }
+        ],
+        "main_topic": "derivatives",
+        "sub_topic": "advanced_derivative_rules",
+        "skill_tags": [
+            "inverse_functions",
+            "power_rule",
+            "evaluating_functions"
+        ],
+        "bloom_level": "Analyzing",
+        "difficulty": 0.8,
+        "discrimination": 0.65
+    },
+    {
+        "question_text": "กำหนดให้ $f(x) = \\\\begin{cases} \\\\frac{x^2-4}{x-2}, & x \\\\ne 2 \\\\\\\\ a, & x = 2 \\\\end{cases}$ และ $g(x) = \\\\begin{cases} \\\\frac{x^2-1}{x-1}, & x \\\\ne 1 \\\\\\\\ b, & x = 1 \\\\end{cases}$ ถ้าแต่ละฟังก์ชันต่อเนื่อง แล้ว $f(g(a+b))$ เท่ากับเท่าใด",
+        "correct_answer": "D",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$4$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "B",
+                "text": "$6$",
+                "error_code": "fraction_operation_error"
+            },
+            {
+                "id": "C",
+                "text": "$8$",
+                "error_code": "-"
+            },
+            {
+                "id": "D",
+                "text": "$9$",
+                "error_code": "algebra_simplification_error"
+            },
+            {
+                "id": "E",
+                "text": "$16$",
+                "error_code": "arithmetic_error"
+            }
+        ],
+        "main_topic": "limits_and_continuity",
+        "sub_topic": "continuity",
+        "skill_tags": [
+            "limit_factoring",
+            "algebraic_manipulation"
+        ],
+        "bloom_level": "Analyzing",
+        "difficulty": 0.75,
+        "discrimination": 0.6
+    },
+    {
+        "question_text": " กำหนดให้ $f(x) = \\\\begin{cases} \\\\frac{\\\\sqrt{x}-2}{x-4}, & x > 4 \\\\\\\\ ax+b, & 0 < x \\\\le 4 \\\\\\\\ x^2+4x, & x \\\\le 0 \\\\end{cases}$ ถ้า $f$ ต่อเนื่องทุกจุด แล้ว $f(a+b)$ เท่ากับเท่าใด",
+        "correct_answer": "C",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$-8$",
+                "error_code": "algebra_simplification_error"
+            },
+            {
+                "id": "B",
+                "text": "$-6$",
+                "error_code": "-"
+            },
+            {
+                "id": "C",
+                "text": "$-4$",
+                "error_code": "conceptual_misunderstanding"
+            },
+            {
+                "id": "D",
+                "text": "$0$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "E",
+                "text": "$4$",
+                "error_code": "arithmetic_error"
+            }
+        ],
+        "main_topic": "limits_and_continuity",
+        "sub_topic": "continuity",
+        "skill_tags": [
+            "limit_factoring",
+            "algebraic_manipulation"
+        ],
+        "bloom_level": "Analyzing",
+        "difficulty": 0.8,
+        "discrimination": 0.65
+    },
+    {
+        "question_text": "กำหนดให้ $f(x) = \\\\begin{cases} \\\\frac{x^2+2x-3}{x-1}, & x > 1 \\\\\\\\ x^2+ax+b, & x \\\\le 1 \\\\end{cases}$ ถ้า $f$ ต่อเนื่องที่ $x=1$ และ $f'(0)=4$ แล้ว $a+b$ เท่ากับเท่าใด",
+        "correct_answer": "C",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$1$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "B",
+                "text": "$2$",
+                "error_code": "fraction_operation_error"
+            },
+            {
+                "id": "C",
+                "text": "$3$",
+                "error_code": "-"
+            },
+            {
+                "id": "D",
+                "text": "$4$",
+                "error_code": "algebra_simplification_error"
+            },
+            {
+                "id": "E",
+                "text": "$5$",
+                "error_code": "arithmetic_error"
+            }
+        ],
+        "main_topic": "limits_and_continuity",
+        "sub_topic": "continuity",
+        "skill_tags": [
+            "limit_conjugate",
+            "algebraic_manipulation"
+        ],
+        "bloom_level": "Analyzing",
+        "difficulty": 0.75,
+        "discrimination": 0.6
+    },
+    {
+        "question_text": "กำหนดให้ $f(x) = \\\\begin{cases} x+\\\\sqrt{x^2+5}, & x \\\\ge a \\\\\\\\ \\\\frac{15}{\\\\sqrt{x^2+5}}, & x < a \\\\end{cases}$ ถ้า $f$ ต่อเนื่องทุกจำนวนจริง แล้ว $a^2+a$ เท่ากับเท่าใด",
+        "correct_answer": "C",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$2$",
+                "error_code": "algebra_simplification_error"
+            },
+            {
+                "id": "B",
+                "text": "$4$",
+                "error_code": "fraction_operation_error"
+            },
+            {
+                "id": "C",
+                "text": "$6$",
+                "error_code": "-"
+            },
+            {
+                "id": "D",
+                "text": "$8$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "E",
+                "text": "$12$",
+                "error_code": "arithmetic_error"
+            }
+        ],
+        "main_topic": "limits_and_continuity",
+        "sub_topic": "continuity",
+        "skill_tags": [
+            "limit_conjugate",
+            "algebraic_manipulation"
+        ],
+        "bloom_level": "Analyzing",
+        "difficulty": 0.8,
+        "discrimination": 0.6
+    },
+    {
+        "question_text": "กำหนดให้ $f$ เป็นฟังก์ชันที่หาอนุพันธ์ได้ และ $g(x) = (f(x))^2$ ถ้า $f(7) = 3$ และ $g'(7) = 1$ แล้วอนุพันธ์ของ $f(2x^2+4x-9)$ ที่ $x = 2$ มีค่าเท่าใด",
+        "correct_answer": "B",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$1$",
+                "error_code": "forgot_chain_rule_inner"
+            },
+            {
+                "id": "B",
+                "text": "$2$",
+                "error_code": "-"
+            },
+            {
+                "id": "C",
+                "text": "$3$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "D",
+                "text": "$4$",
+                "error_code": "arithmetic_error"
+            },
+            {
+                "id": "E",
+                "text": "$6$",
+                "error_code": "conceptual_misunderstanding"
+            }
+        ],
+        "main_topic": "derivatives",
+        "sub_topic": "advanced_derivative_rules",
+        "skill_tags": [
+            "chain_rule",
+            "power_rule",
+            "evaluating_functions"
+        ],
+        "bloom_level": "Applying",
+        "difficulty": 0.6,
+        "discrimination": 0.55
+    },
+    {
+        "question_text": "กำหนดให้ $P(x) = (x^{10^0} + x^{10^1} + x^{10^2} + \\\\dots + x^{10^9})^9$ ให้ $A$ เป็นจำนวนหลักของ $P'(1)$ และ $B$ เป็นผลบวกเลขโดดของ $P'(1)$ จงหา $A+B$",
+        "correct_answer": "C",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$19$",
+                "error_code": "conceptual_misunderstanding"
+            },
+            {
+                "id": "B",
+                "text": "$23$",
+                "error_code": "arithmetic_error"
+            },
+            {
+                "id": "C",
+                "text": "$28$",
+                "error_code": "-"
+            },
+            {
+                "id": "D",
+                "text": "$32$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "E",
+                "text": "$36$",
+                "error_code": "algebra_simplification_error"
+            }
+        ],
+        "main_topic": "derivatives",
+        "sub_topic": "basic_derivative_rules",
+        "skill_tags": [
+            "power_rule",
+            "evaluating_functions"
+        ],
+        "bloom_level": "Applying",
+        "difficulty": 0.7,
+        "discrimination": 0.6
+    },
+    {
+        "question_text": "กำหนดให้ $f(x) = x^3 + 2x + 3$ และ $g(x) = f^{-1}(x)$ แล้ว $g'(6)$ เท่ากับข้อใด",
+        "correct_answer": "C",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$1/2$",
+                "error_code": "conceptual_misunderstanding"
+            },
+            {
+                "id": "B",
+                "text": "$1/3$",
+                "error_code": "-"
+            },
+            {
+                "id": "C",
+                "text": "$1/5$",
+                "error_code": "algebra_simplification_error"
+            },
+            {
+                "id": "D",
+                "text": "$1/14$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "E",
+                "text": "$5$",
+                "error_code": "fraction_operation_error"
+            }
+        ],
+        "main_topic": "derivatives",
+        "sub_topic": "advanced_derivative_rules",
+        "skill_tags": [
+            "inverse_functions",
+            "power_rule",
+            "evaluating_functions"
+        ],
+        "bloom_level": "Analyzing",
+        "difficulty": 0.85,
+        "discrimination": 0.65
+    },
+    {
+        "question_text": "กำหนดให้ $f(x) = \\\\begin{cases} (x+1)^2-5, & x<-1 \\\\\\\\ -5, & -1\\\\le x\\\\le 1 \\\\\\\\ (x-1)^2-5, & x>1 \\\\end{cases}$ แล้ว $(f \\\\circ f)'(2)$ เท่ากับข้อใด",
+        "correct_answer": "B",
+        "choices": [
+            {
+                "id": "A",
+                "text": "$12$",
+                "error_code": "forgot_chain_rule_inner"
+            },
+            {
+                "id": "B",
+                "text": "$8",
+                "error_code": "-"
+            },
+            {
+                "id": "C",
+                "text": "$0$",
+                "error_code": "composite_evaluation_error"
+            },
+            {
+                "id": "D",
+                "text": "$-8$",
+                "error_code": "sign_error"
+            },
+            {
+                "id": "E",
+                "text": "$-12$",
+                "error_code": "arithmetic_error"
+            }
+        ],
+        "main_topic": "derivatives",
+        "sub_topic": "advanced_derivative_rules",
+        "skill_tags": [
+            "chain_rule",
+            "composite_functions",
+            "evaluating_functions"
+        ],
+        "bloom_level": "Analyzing",
+        "difficulty": 0.85,
+        "discrimination": 0.65
+    }
+]
