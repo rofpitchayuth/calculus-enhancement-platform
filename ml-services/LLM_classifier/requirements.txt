@@ -6,3 +6,4 @@ torch
 accelerate
 outlines
 bitsandbytes
+python-dotenv
