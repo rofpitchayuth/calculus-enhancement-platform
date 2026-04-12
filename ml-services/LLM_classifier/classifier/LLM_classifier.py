@@ -1,7 +1,11 @@
 import torch
+import os
+from dotenv import load_dotenv
+load_dotenv()
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 import json
-import outlines
+import traceback
+import re
 from pydantic import BaseModel
 from typing import List
 from enum import Enum
@@ -103,7 +107,24 @@ class ErrorCodeEnum(str, Enum):
     wrong_curve_order_area = "wrong_curve_order_area"
     endpoint_extrema_forgotten = "endpoint_extrema_forgotten"
 
+class TaxonomyData(BaseModel):
+    main_topic: MainTopicEnum
+    sub_topic: SubTopicEnum
+    skill_tags: List[SkillTagEnum]
+    bloom_level: BloomLevelEnum
+    difficulty: float
+    discrimination: float
+
+class ErrorData(BaseModel):
+    step_by_step_analysis: str
+    error_code_A: ErrorCodeEnum
+    error_code_B: ErrorCodeEnum
+    error_code_C: ErrorCodeEnum
+    error_code_D: ErrorCodeEnum
+    error_code_E: ErrorCodeEnum
+
 class QuestionAnalysis(BaseModel):
+    step_by_step_analysis: str
     main_topic: MainTopicEnum
     sub_topic: SubTopicEnum
     skill_tags: List[SkillTagEnum]
@@ -115,14 +136,10 @@ class QuestionAnalysis(BaseModel):
     error_code_C: ErrorCodeEnum
     error_code_D: ErrorCodeEnum
     error_code_E: ErrorCodeEnum
-    reasoning: str
 
 class OutlinesLlamaClassifier:
-    """
-    A local Llama 3.2 3B classifier using `outlines` to enforce strict JSON schemas.
-    """
     def __init__(self):
-        print("Loading Llama 3.2 3B with 4-bit quantization...")
+        print("Loading Llama 3.1 8B")
         
         # 4-bit quantization config to save VRAM
         quantization_config = BitsAndBytesConfig(
@@ -132,89 +149,108 @@ class OutlinesLlamaClassifier:
             bnb_4bit_quant_type="nf4"
         )
         
-        model_name = "meta-llama/Llama-3.2-3B-Instruct"
+        model_name = "meta-llama/Llama-3.1-8B-Instruct"
         
         print("Loading model and tokenizer...")
         
         # Load the base transformer model
         self.base_model = AutoModelForCausalLM.from_pretrained(
             model_name,
-            quantization_config=quantization_config,
             device_map="auto",
             low_cpu_mem_usage=True,
-            dtype=torch.float16
+            torch_dtype=torch.bfloat16,
+            token=os.environ.get("HF_TOKEN")
+        )
+        self.tokenizer = AutoTokenizer.from_pretrained(
+            model_name,
+            token=os.environ.get("HF_TOKEN")
         )
         
-        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+        print("✅ Model loaded and ready for native generation!")
         
-        # Initialize outlines model wrapping the transformers model
-        print("Initializing Outlines guided generation wrapper...")
-        self.model_wrapper = outlines.from_transformers(self.base_model, self.tokenizer)
-        print("✅ Model loaded and outlines model wrapper ready!")
-        
+    def _generate_json(self, messages: list) -> dict:
+        prompt_text = self.tokenizer.apply_chat_template(
+            messages,
+            tokenize=False,
+            add_generation_prompt=True
+        )
+
+        inputs = self.tokenizer(
+            prompt_text,
+            return_tensors="pt"
+        ).to(self.base_model.device)
+
+        try:
+            outputs = self.base_model.generate(
+                **inputs,
+                max_new_tokens=3000,
+                temperature=0.3,
+                repetition_penalty=1.15,
+                do_sample=True,
+                pad_token_id=self.tokenizer.eos_token_id
+            )
+        except Exception as gen_err:
+            print(f"🔥 PyTorch Generate crashed: {str(gen_err)}")
+            raise
+
+        generated_tokens = outputs[0][inputs['input_ids'].shape[1]:]
+        response_text = self.tokenizer.decode(generated_tokens, skip_special_tokens=True).strip()
+
+        if response_text.startswith("```json"):
+            response_text = response_text[7:]
+        elif response_text.startswith("```"):
+            response_text = response_text[3:]
+            
+        if response_text.endswith("```"):
+            response_text = response_text[:-3]
+            
+        response_text = response_text.strip()
+
+        response_text = re.sub(r'(?<!\\)\\(?![\\"/bfnrt])', r'\\\\', response_text)
+
+        # Remove inline comments (e.g., // comment) that break JSON parsing
+        response_text = re.sub(r'//.*', '', response_text)
+
+        try:
+            parsed_data = json.loads(response_text)
+            if isinstance(parsed_data, list) and len(parsed_data) > 0:
+                parsed_data = parsed_data[0]
+            return parsed_data
+        except Exception as e:
+            import traceback
+            print("\n" + "="*50)
+            print("🔥 FAILED TO PARSE JSON. RAW RESPONSE:")
+            print(f"[{response_text}]")
+            traceback.print_exc()
+            print("="*50 + "\n")
+            raise RuntimeError(f"JSON Parsing failed: {str(e)}")
+
     def analyze_question(self, question_text: str, choice_a: str, choice_b: str, choice_c: str, choice_d: str, choice_e: str) -> QuestionAnalysis:
-        """
-        Uses outlines to force the LLM to generate a valid `QuestionAnalysis` JSON object.
-        """
-        prompt = f"""
-You are an Expert Calculus Tutor analyzing a multiple-choice question for a Knowledge Tracing platform. 
-Your task is to classify the question strictly using the provided taxonomy and evaluate the specific mathematical misconceptions behind every incorrect choice.
+        valid_main = [e.value for e in MainTopicEnum]
+        valid_sub = [e.value for e in SubTopicEnum]
+        valid_skills = [e.value for e in SkillTagEnum]
+        valid_errors = [e.value for e in ErrorCodeEnum]
 
-CRITICAL RULES:
-1. 'difficulty': MUST be a float from 0.0 (very easy) to 1.0 (extremely hard). 
-2. 'discrimination': MUST be a float from 0.0 to 1.0.
-3. 'error_code_X': For the choice that is the correct answer, you MUST output "correct_answer". For all other choices, select the most accurate error code from the ErrorCodeEnum.
+        # STEP 1: Generate Taxonomy Data
+        sys_tax = f"""You are a Calculus Curriculum Expert. Classify the following question into the exact taxonomy provided.
+STRICT RULES:
+1. main_topic: MUST be exactly one of {valid_main}
+2. sub_topic: MUST be exactly one of {valid_sub}. DO NOT put skill tags here.
+3. skill_tags: MUST be a list containing ONLY items from {valid_skills}. (e.g., "ftc_evaluation" belongs here, NOT in sub_topic).
+4. bloom_level: MUST be one of ["Remembering", "Understanding", "Applying", "Analyzing", "Evaluating", "Creating"]
+5. difficulty & discrimination: MUST be a float from 0.0 to 1.0.
 
-FEW-SHOT EXAMPLES:
+EXPECTED JSON TEMPLATE:
+{{
+  "main_topic": "",
+  "sub_topic": "",
+  "skill_tags": [],
+  "bloom_level": "",
+  "difficulty": 0.5,
+  "discrimination": 0.5
+}}
 
-=== Example 1 ===
-Question: จงหาค่าของ \\int(3x^{{2}}-2x+5)dx
-Choices:
-A) x^3 - x^2 + 5x + C
-B) 3x^3 - 2x^2 + 5x + C
-C) x^3 - x^2 + 5 + C
-D) x^3 - x^2 + 5x
-E) 6x - 2
-
-Expected Output Analysis:
-- main_topic: integrals
-- sub_topic: indefinite_integrals
-- skill_tags: ["power_rule_integration"]
-- bloom_level: Applying
-- difficulty: 0.20
-- discrimination: 0.30
-- correct choice is A, so error_code_A: correct_answer
-- B forgot to divide by n+1, so error_code_B: arithmetic_error
-- C forgot to integrate 5x, so error_code_C: arithmetic_error
-- D forgot the constant C, so error_code_D: forgot_plus_c
-- E took the derivative instead, so error_code_E: derivative_instead_of_integral
-- reasoning: This is a basic indefinite integral requiring the power rule.
-
-=== Example 2 ===
-Question: \\lim_{{x \\to \\infty}}\\frac{{5x^3 - 2x + 1}}{{2x^3 + 7}}
-Choices:
-A) 0
-B) \\frac{{5}}{{2}}
-C) 1
-D) หาค่าไม่ได้
-E) 5
-
-Expected Output Analysis:
-- main_topic: limits_and_continuity
-- sub_topic: limits_at_infinity
-- skill_tags: ["factoring_and_canceling", "lhopitals_rule"]
-- bloom_level: Applying
-- difficulty: 0.40
-- discrimination: 0.40
-- correct choice is B, so error_code_B: correct_answer
-- A represents misunderstanding limits to infinity (bottom heavy), so error_code_A: conceptual_misunderstanding
-- C is an arithmetic error, so error_code_C: arithmetic_error
-- D represents indeterminate form misconception, so error_code_D: indeterminate_form_misconception
-- E represents ignoring the denominator, so error_code_E: fraction_operation_error
-- reasoning: Limits at infinity for rational functions with equal highest degrees yield the ratio of leading coefficients (5/2).
-
-=== YOUR TURN ===
-Now analyze the following question:
+IMPORTANT: Return ONLY valid raw JSON. DO NOT include any comments (no //).
 
 Question: {question_text}
 Choices:
@@ -223,19 +259,48 @@ B) {choice_b}
 C) {choice_c}
 D) {choice_d}
 E) {choice_e}
-
-Generate the JSON output following the strict schema.
 """
-        # Generate the structured response
-        # The return value is inherently validated and parsed as a QuestionAnalysis Pydantic model
-        result = self.model_wrapper(prompt, QuestionAnalysis, max_new_tokens=2048)
-        
-        # Convert the raw JSON string into the expected Pydantic model
-        if isinstance(result, str):
-            parsed_dict = json.loads(result)
-            return QuestionAnalysis(**parsed_dict)
-            
-        return result
+        tax_messages = [{"role": "user", "content": sys_tax}]
+        tax_dict = self._generate_json(tax_messages)
+        taxonomy_data = TaxonomyData(**tax_dict)
+
+        # STEP 2: Generate Error Analysis Data
+        sys_err = f"""You are an Expert Calculus Tutor diagnosing student mistakes.
+STRICT RULES:
+1. 'step_by_step_analysis': Write in Thai. You are GIVEN the correct answer. 
+   - Rule 1A: Be CONCISE. Explain the correct mathematical steps in max 5 sentences.
+   - Rule 1B: Explicitly analyze the exact mathematical mistakes that lead to EACH of the other incorrect choices (max 1 sentence per choice).
+   - Rule 1C: If you use LaTeX, you MUST double-escape all backslashes (e.g., write \\\\int instead of \\int).
+2. 'error_code_X': You MUST set the correct choice's error code to "correct_answer".
+3. For all OTHER choices: MUST select the most accurate code from {valid_errors}. DO NOT invent error codes.
+
+EXPECTED JSON TEMPLATE:
+{{
+  "step_by_step_analysis": "",
+  "error_code_A": "",
+  "error_code_B": "",
+  "error_code_C": "",
+  "error_code_D": "",
+  "error_code_E": ""
+}}
+
+IMPORTANT: Return ONLY valid raw JSON. DO NOT include any inline comments (like // or #) inside the JSON.
+
+Question: {question_text}
+Choices:
+A) {choice_a}
+B) {choice_b}
+C) {choice_c}
+D) {choice_d}
+E) {choice_e}
+"""
+        err_messages = [{"role": "user", "content": sys_err}]
+        err_dict = self._generate_json(err_messages)
+        error_data = ErrorData(**err_dict)
+
+        # Merge results into final QuestionAnalysis model
+        final_data = {**tax_dict, **err_dict}
+        return QuestionAnalysis(**final_data)
 
 
 # Singleton pattern instances

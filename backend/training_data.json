@@ -775,7 +775,7 @@
         "choices": [
             {
                 "id": "A",
-                "text": "$16 $",
+                "text": "$16$",
                 "error_code": "sign_error"
             },
             {
