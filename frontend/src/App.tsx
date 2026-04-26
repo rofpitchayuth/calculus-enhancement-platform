@@ -20,6 +20,7 @@ import { AdminQuestionPage } from "./features/admin";
 import { Layout } from "./shared/components/layout/Layout";
 import { ProtectedRoute } from "./shared/components/ProtectedRoute";
 import QuizPage from "./features/exam/pages/QuizPage";
+import AllCourse from "./features/exam/pages/AllCourse";
 
 const router = createBrowserRouter([
   {
@@ -77,11 +78,11 @@ const router = createBrowserRouter([
   {
     path: "/dashboard/chapter/:chapterId",
     element: (
-      <ProtectedRoute>
+      // <ProtectedRoute>
         <Layout>
           <CourseReportPage />
         </Layout>
-      </ProtectedRoute>
+      //</ProtectedRoute>
     ),
   },
   {
@@ -104,7 +105,26 @@ const router = createBrowserRouter([
       </Layout>
     ),
   },
-
+  {
+    path: "/dashboard/overview",
+    element: (
+      //<ProtectedRoute>
+        <Layout>
+          <DashboardOverviewPage />
+        </Layout>
+      //</ProtectedRoute>
+    ),
+  },
+  {
+    path: "/allquiz",
+    element: (
+      //<ProtectedRoute>
+      <Layout>
+        <AllCourse />
+      </Layout>
+  //</ProtectedRoute>
+    ),
+  },
 
   {
     path: "*",

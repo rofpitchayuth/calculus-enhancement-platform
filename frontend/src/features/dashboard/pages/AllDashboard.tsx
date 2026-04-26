@@ -40,24 +40,28 @@ export function AllDashboard({ userId = 1 }: AllDashboardProps) {
       try {
         setLoading(true);
 
-        // Fetch unified dashboard data
-        const data = await dashboardService.getUnifiedDashboardData(userId);
-        setOverviewStats(data.overview);
+        // TODO: Replace with API calls
+        // const overviewRes = await fetch(`/api/dashboard/overview?userId=${userId}`);
+        // const overviewData = await overviewRes.json();
+        const overviewData = dashboardService.calculateOverviewStats(userId);
+        setOverviewStats(overviewData);
+
+        // TODO: Replace with API calls
+        // const progressRes = await fetch(`/api/dashboard/chapters/progress?userId=${userId}`);
+        // const progressData = await progressRes.json();
+        const progressData = dashboardService.getChapterProgressList(userId);
 
         // Transform progress data to chapter cards
-        const chapterCards: ChapterSummary[] = CHAPTERS.map((chapter) => {
-          const progress = data.chapterProgress[chapter.id];
-          
-          // Calculate score based on completed/total ratio
-          const score = progress ? Math.round((progress.completed / progress.total) * 100) : 0;
-
+        const chapterCards: ChapterSummary[] = CHAPTERS.map((chapter, idx) => {
+          const progress = progressData[idx];
           return {
             id: chapter.id,
             title: chapter.name,
-            latestScore: score,
+            latestScore: progress?.score || 0,
             trend: Math.random() > 0.5 ? 'up' : 'down',
-            attempts: 0, // Will be populated from unified data if available
-            avgScore: score,
+            attempts: progress?.attempts || 0,
+            avgScore: progress?.score || 0,
+            proficiencyLevel: dashboardService.getProficiencyLevel(progress?.score || 0),
           };
         });
 

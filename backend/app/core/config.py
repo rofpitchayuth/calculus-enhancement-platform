@@ -3,7 +3,7 @@ from pydantic import Field
 import os
 
 class Settings(BaseSettings):
-    DATABASE_URL: str = Field(default="postgresql://postgres:rofpun@localhost:5432/calculus_db")
+    DATABASE_URL: str = Field(default="postgresql://postgres:rofpun@localhost:15432/calculus_db")
     SECRET_KEY: str = Field(default="your-super-secret-key-minimum-32-characters-long-for-jwt-security")
     ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(default=30)
     ALGORITHM: str = Field(default="HS256")

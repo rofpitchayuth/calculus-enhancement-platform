@@ -50,7 +50,7 @@ export function HomePage() {
   };
 
   const handleViewAllCourses = () => {
-    navigate("/courses");
+    navigate("/allquiz");
   };
 
   const handleStartCourse = (_courseId: string | number) => {

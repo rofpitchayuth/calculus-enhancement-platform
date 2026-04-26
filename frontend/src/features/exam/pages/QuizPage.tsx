@@ -18,7 +18,7 @@
  */
 
 import { useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import { useAuth } from "../../auth/hooks/useAuth";
 import { useQuizFlow } from "../hooks/useQuizFlow";
@@ -29,6 +29,7 @@ import { mapErrorCodeToThai } from "../utils/errorMapper";
 import { renderMathText } from "../components/mathRenderer";
 
 export default function QuizPage() {
+  const { courseId } = useParams<{ courseId: string }>();
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -61,11 +62,13 @@ export default function QuizPage() {
   // in dev; the hasStarted ref prevents a duplicate session from being created).
   const hasStarted = useRef(false);
   useEffect(() => {
-    if (user?.id && !hasStarted.current) {
+    if (user?.id && courseId && !hasStarted.current) {
       hasStarted.current = true;
-      startQuiz(user.id, 5);
+      startQuiz(user.id, parseInt(courseId)).catch((err) => {
+        console.error('Failed to start quiz:', err);
+      }); 
     }
-  }, [user?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [user?.id, courseId, startQuiz]);
 
   const isLastQuestion = currentIndex === totalQuestions - 1;
   const isGrading = graderStatus === "loading";
