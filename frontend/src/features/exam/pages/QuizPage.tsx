@@ -152,8 +152,8 @@ export default function QuizPage() {
                 <div
                   key={idx}
                   className={`p-4 rounded-lg border-l-4 ${isItemCorrect
-                      ? "border-emerald-500 bg-emerald-50"
-                      : "border-rose-500 bg-rose-50"
+                    ? "border-emerald-500 bg-emerald-50"
+                    : "border-rose-500 bg-rose-50"
                     }`}
                 >
                   <div className="flex justify-between items-start">
@@ -199,7 +199,7 @@ export default function QuizPage() {
             <h3 className="text-lg font-bold text-center text-gray-800 mb-6">
               เรียนรู้ต่อในระดับที่คุณต้องการ
             </h3>
-            
+
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
               <button
                 onClick={() => user?.id && startQuiz(user.id, 5)} // Default to normal for now

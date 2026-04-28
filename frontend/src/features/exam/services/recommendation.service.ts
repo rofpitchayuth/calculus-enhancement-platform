@@ -4,7 +4,7 @@
  * Handles fetching adaptive questions from the recommendation engine.
  */
 
-import type { Question } from "../types/grader.types"; // Reusing existing Question type
+import type { Question } from "../types/quiz.types"; // Reusing existing Question type
 
 const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:8000/api/v1";
 

@@ -6,6 +6,7 @@
 
 import React from "react";
 import type { QuestionDraftRequest } from "../types/admin.types";
+import MathImageUploader from "./MathImageUploader";
 
 interface QuestionInputFormProps {
   input: QuestionDraftRequest;
@@ -20,20 +21,34 @@ export function QuestionInputForm({ input, setInput, onGenerate, isLoading }: Qu
     setInput({ ...input, [name]: value });
   };
 
+  const handleMathChange = (latex: string) => {
+    setInput({ ...input, question_text: latex });
+  };
+
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 space-y-6">
       <h2 className="text-xl font-bold text-gray-800">1. Input Question Details</h2>
       
-      <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">Question Text (LaTeX supported with $...$)</label>
-        <textarea
-          name="question_text"
-          value={input.question_text}
-          onChange={handleChange}
-          rows={4}
-          className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none"
-          placeholder="Enter the calculus question here..."
+      <div className="space-y-4">
+        <MathImageUploader 
+          onLatexChange={handleMathChange} 
+          initialValue={input.question_text}
+          label="Question Text (Auto-OCR or Visual Editor)"
         />
+        
+        <div className="space-y-2">
+          <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider">
+            Raw Source / Markdown
+          </label>
+          <textarea
+            name="question_text"
+            value={input.question_text}
+            onChange={handleChange}
+            rows={3}
+            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none text-sm font-mono bg-gray-50"
+            placeholder="LaTeX formula will appear here..."
+          />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

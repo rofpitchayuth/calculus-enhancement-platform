@@ -6,26 +6,40 @@ from pydantic import BaseModel
 logger = logging.getLogger(__name__)
 
 class QuestionAnalysisResult(BaseModel):
-    difficulty: float
+    step_by_step_analysis: str
     main_topic: str
+    sub_topic: str
     skill_tags: List[str]
     bloom_level: str
+    difficulty: float
+    discrimination: float
+    error_code_A: str
+    error_code_B: str
+    error_code_C: str
+    error_code_D: str
+    error_code_E: str
 
-async def auto_tag_question(question_text: str):
+async def auto_tag_question(
+    question_text: str,
+    choice_a: str,
+    choice_b: str,
+    choice_c: str,
+    choice_d: str,
+    choice_e: str
+):
     """
     Calls the LLM Classifier microservice to analyze a calculus question.
-    Returns structured data containing the difficulty, topic, skill tags, and bloom level.
+    Returns structured data containing the full 12-field analysis.
     """
     url = "http://localhost:8001/api/v1/classify"
     
-    # Send dummy choices as expected by llm_service.py endpoint
     payload = {
         "question_text": question_text,
-        "choice_a": "N/A",
-        "choice_b": "N/A",
-        "choice_c": "N/A",
-        "choice_d": "N/A",
-        "choice_e": "N/A"
+        "choice_a": choice_a,
+        "choice_b": choice_b,
+        "choice_c": choice_c,
+        "choice_d": choice_d,
+        "choice_e": choice_e
     }
     
     timeout = httpx.Timeout(300.0)
@@ -36,12 +50,7 @@ async def auto_tag_question(question_text: str):
             response.raise_for_status()
             
             data = response.json()
-            return QuestionAnalysisResult(
-                difficulty=data.get("difficulty", 0.5),
-                main_topic=data.get("main_topic", "Unknown"),
-                skill_tags=data.get("skill_tags", []),
-                bloom_level=data.get("bloom_level", "Unknown")
-            )
+            return QuestionAnalysisResult(**data)
             
     except (httpx.ConnectError, httpx.TimeoutException) as e:
         logger.error(f"Error communicating with LLM microservice: {str(e)}")
@@ -52,3 +61,22 @@ async def auto_tag_question(question_text: str):
     except Exception as e:
         logger.error(f"Unexpected error in auto_tag_question: {str(e)}")
         return "LLM Microservice is currently unreachable."
+
+async def extract_latex_from_image(base64_image: str) -> str:
+    """
+    Calls the LLM Vision microservice to extract LaTeX from an image.
+    """
+    url = "http://localhost:8001/api/v1/vision/extract-latex"
+    payload = {"base64_image": base64_image}
+    timeout = httpx.Timeout(180.0)
+    
+    try:
+        async with httpx.AsyncClient(timeout=timeout) as client:
+            response = await client.post(url, json=payload)
+            response.raise_for_status()
+            data = response.json()
+            return data.get("latex", "")
+    except Exception as e:
+        logger.error(f"Failed to extract LaTeX from image: {e}")
+        # Return a clear error message that the backend route can handle
+        return "ERROR: ML Service Vision pipeline is unreachable."

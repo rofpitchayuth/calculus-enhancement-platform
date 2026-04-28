@@ -3,8 +3,6 @@
  * ==============================================================
  * The top-level Admin page for adding new questions using the HITL workflow.
  */
-
-import React from "react";
 import { useAdminDraft } from "../hooks/useAdminDraft";
 import { QuestionInputForm } from "../components/QuestionInputForm";
 import { ExpertReviewForm } from "../components/ExpertReviewForm";

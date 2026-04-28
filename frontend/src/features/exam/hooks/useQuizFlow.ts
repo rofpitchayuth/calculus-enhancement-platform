@@ -133,9 +133,9 @@ export function useQuizFlow(onFinish: () => void): UseQuizFlowReturn {
       try {
         // CALL UNIFIED SUBMISSION (PRE-COMPUTED)
         const result = await submitAnswer(
-          userId, 
-          currentQuestion.id, 
-          selectedChoice, 
+          userId,
+          currentQuestion.id,
+          selectedChoice,
           currentQuestion.skill_id,
           latency
         );
@@ -143,14 +143,16 @@ export function useQuizFlow(onFinish: () => void): UseQuizFlowReturn {
         if (result) {
           // Adapt the result to the GraderResponse shape used by UI
           setGraderResult({
-            is_correct: result.is_correct,
+            student_id: userId,
+            question_id: currentQuestion.id,
             selected_choice: selectedChoice,
+            is_correct: result.is_correct,
             error_code: result.error_code,
             feedback_text: result.feedback_text
           });
           setGraderStatus("done");
         } else {
-            throw new Error("ไม่สามารถส่งคำตอบได้ กรุณาลองใหม่อีกครั้ง");
+          throw new Error("ไม่สามารถส่งคำตอบได้ กรุณาลองใหม่อีกครั้ง");
         }
       } catch (err: unknown) {
         setGraderError("ไม่สามารถส่งคำตอบได้ กรุณาลองใหม่อีกครั้ง");

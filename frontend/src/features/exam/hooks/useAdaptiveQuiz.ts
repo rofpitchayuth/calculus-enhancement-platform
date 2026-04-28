@@ -6,7 +6,7 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { recommendationService } from "../services/recommendation.service";
-import type { Question } from "../types/grader.types";
+import type { Question } from "../types/quiz.types";
 
 export function useAdaptiveQuiz(subTopic: string) {
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);

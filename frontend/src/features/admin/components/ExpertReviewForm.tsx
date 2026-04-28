@@ -25,11 +25,6 @@ export function ExpertReviewForm({ draftInput, analysis, setAnalysis, onSave, is
     setAnalysis({ ...analysis, [name]: value });
   };
 
-  const handleTagsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const tags = e.target.value.split(",").map(t => t.trim());
-    setAnalysis({ ...analysis, skill_tags: tags });
-  };
-
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 space-y-8">
       <div className="flex items-center justify-between border-b pb-4">
@@ -56,9 +51,31 @@ export function ExpertReviewForm({ draftInput, analysis, setAnalysis, onSave, is
       </div>
 
       {/* --- Taxonomy Settings --- */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">Bloom's Level</label>
+          <label className="block text-xs font-bold text-gray-500 uppercase">Main Topic</label>
+          <input
+            type="text"
+            name="main_topic"
+            value={analysis.main_topic}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border rounded-lg bg-white"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <label className="block text-xs font-bold text-gray-500 uppercase">Sub Topic</label>
+          <input
+            type="text"
+            name="sub_topic"
+            value={analysis.sub_topic}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border rounded-lg bg-white"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <label className="block text-xs font-bold text-gray-500 uppercase">Bloom's Level</label>
           <select
             name="bloom_level"
             value={analysis.bloom_level}
@@ -72,21 +89,7 @@ export function ExpertReviewForm({ draftInput, analysis, setAnalysis, onSave, is
         </div>
 
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">Difficulty (0.0 - 1.0)</label>
-          <input
-            type="number"
-            step="0.1"
-            min="0"
-            max="1"
-            name="difficulty"
-            value={analysis.difficulty}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border rounded-lg"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">Correct Answer</label>
+          <label className="block text-xs font-bold text-gray-500 uppercase">Correct Answer</label>
           <select
             value={correctChoice}
             onChange={(e) => setCorrectChoice(e.target.value)}
@@ -96,6 +99,56 @@ export function ExpertReviewForm({ draftInput, analysis, setAnalysis, onSave, is
               <option key={l} value={l}>Choice {l}</option>
             ))}
           </select>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="space-y-2">
+          <label className="block text-xs font-bold text-gray-500 uppercase">Difficulty (0.0 - 1.0)</label>
+          <div className="flex items-center gap-4">
+            <input
+              type="range"
+              step="0.05"
+              min="0"
+              max="1"
+              name="difficulty"
+              value={analysis.difficulty}
+              onChange={handleChange}
+              className="flex-1"
+            />
+            <input
+              type="number"
+              step="0.01"
+              name="difficulty"
+              value={analysis.difficulty}
+              onChange={handleChange}
+              className="w-20 px-2 py-1 border rounded text-center font-bold"
+            />
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <label className="block text-xs font-bold text-gray-500 uppercase">Discrimination (0.0 - 1.0)</label>
+          <div className="flex items-center gap-4">
+            <input
+              type="range"
+              step="0.05"
+              min="0"
+              max="1"
+              name="discrimination"
+              value={analysis.discrimination}
+              onChange={handleChange}
+              className="flex-1"
+            />
+            <input
+              type="number"
+              step="0.01"
+              name="discrimination"
+              value={analysis.discrimination}
+              onChange={handleChange}
+              className="w-20 px-2 py-1 border rounded text-center font-bold"
+            />
+          </div>
         </div>
       </div>
 

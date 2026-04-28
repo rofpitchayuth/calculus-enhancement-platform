@@ -50,3 +50,6 @@ class QuestionSaveRequest(BaseModel):
     skill_tags: List[str]
     # content_json can store the step_by_step_analysis or mapping
     content_json: Optional[dict] = None
+
+class ImageOCRRequest(BaseModel):
+    base64_image: str
