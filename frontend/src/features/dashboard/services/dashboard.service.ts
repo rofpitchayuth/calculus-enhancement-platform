@@ -22,12 +22,10 @@ import type {
 
 // ===== Constants =====
 const CHAPTERS = [
-  { id: 'limits', name: 'Limits', topic: 'Limits' },
-  { id: 'continuity', name: 'Continuity', topic: 'Continuity' },
-  { id: 'derivatives', name: 'Derivatives', topic: 'Derivatives' },
-  { id: 'applications-derivatives', name: 'Applications of Derivatives', topic: 'Applications of Derivatives' },
-  { id: 'integrals', name: 'Integrals', topic: 'Integrals' },
-  { id: 'applications-integrals', name: 'Applications of Integrals', topic: 'Applications of Integrals' },
+  { id: 'limits_and_continuity', name: 'Limits & Continuity',  topic: 'limit'         },
+  { id: 'derivatives',           name: 'Derivatives',           topic: 'differential'  },
+  { id: 'integrals',             name: 'Integrals',             topic: 'integral'      },
+  { id: 'applications',          name: 'Applications',          topic: 'applications'  },
 ];
 
 const PROFICIENCY_LEVELS = {

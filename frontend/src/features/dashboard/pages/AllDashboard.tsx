@@ -2,107 +2,68 @@
 
 import { useState, useEffect } from 'react';
 import { ChapterCard } from '../components';
-import { dashboardService } from '../services/dashboard.service';
-import type { OverviewStats, ChapterSummary } from '../types/dashboard.types';
+import { fetchTopicsSummary } from '../api/dashboard.api';
+import type { TopicSummary } from '../api/dashboard.api';
+import type { ChapterSummary } from '../types/dashboard.types';
 
 interface AllDashboardProps {
   userId?: number;
 }
 
-/**
- * AllDashboard - แสดงภาพรวมของทั้ง 6 บท
- *
- * โครงสร้าง:
- * - Grid 3 columns × 2 rows = 6 chapter cards
- * - แต่ละ card แสดง: ชื่อบท, คะแนนล่าสุด, trend, เวลาต่อข้อ, ความเชี่ยวชาญ, จำนวนครั้งที่ทำ
- *
- * Mock Data: ใช้จาก dashboardService.getChapterProgressList
- * API Integration: Replace getChapterProgressList ด้วย API call
- */
-
-const CHAPTERS = [
-  { id: 'limits', topic: 'Limits', name: 'Limits' },
-  { id: 'continuity', topic: 'Continuity', name: 'Continuity' },
-  { id: 'derivatives', topic: 'Derivatives', name: 'Derivatives' },
-  { id: 'applications-derivatives', topic: 'Applications of Derivatives', name: 'Applications of Derivatives' },
-  { id: 'integrals', topic: 'Integrals', name: 'Integrals' },
-  { id: 'applications-integrals', topic: 'Applications of Integrals', name: 'Applications of Integrals' },
-];
-
-
 export function AllDashboard({ userId = 1 }: AllDashboardProps) {
   const [chapters, setChapters] = useState<ChapterSummary[]>([]);
-  const [overviewStats, setOverviewStats] = useState<OverviewStats | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading]   = useState(true);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const load = async () => {
       try {
         setLoading(true);
+        const { data } = await fetchTopicsSummary();
 
-        // TODO: Replace with API calls
-        // const overviewRes = await fetch(`/api/dashboard/overview?userId=${userId}`);
-        // const overviewData = await overviewRes.json();
-        const overviewData = dashboardService.calculateOverviewStats(userId);
-        setOverviewStats(overviewData);
-
-        // TODO: Replace with API calls
-        // const progressRes = await fetch(`/api/dashboard/chapters/progress?userId=${userId}`);
-        // const progressData = await progressRes.json();
-        const progressData = dashboardService.getChapterProgressList(userId);
-
-        // Transform progress data to chapter cards
-        const chapterCards: ChapterSummary[] = CHAPTERS.map((chapter, idx) => {
-          const progress = progressData[idx];
-          return {
-            id: chapter.id,
-            title: chapter.name,
-            latestScore: progress?.score || 0,
-            trend: Math.random() > 0.5 ? 'up' : 'down',
-            attempts: progress?.attempts || 0,
-            avgScore: progress?.score || 0,
-            proficiencyLevel: dashboardService.getProficiencyLevel(progress?.score || 0),
-          };
-        });
+        // แปลง TopicSummary → ChapterSummary ที่ ChapterCard ต้องการ
+        const chapterCards: ChapterSummary[] = data.map((topic: TopicSummary) => ({
+          id:               topic.topicId,
+          title:            topic.displayName,
+          latestScore:      topic.latestScore,   // คะแนนครั้งล่าสุดของ topic นี้
+          trend:            'up' as const,
+          attempts:         topic.totalAttempts,
+          avgScore:         topic.latestScore,
+          proficiencyLevel: topic.proficiencyLevel,
+        }));
 
         setChapters(chapterCards);
-      } catch (error) {
-        console.error('Failed to fetch chapter data:', error);
+      } catch (err) {
+        console.error('Failed to fetch dashboard data:', err);
       } finally {
         setLoading(false);
       }
     };
-
-    fetchData();
+    load();
   }, [userId]);
 
-  if (loading || !overviewStats) {
+  const statsForCard = {
+    proficiencyLevel: '',
+    averageScore:     0,
+    totalAttempts:    0,
+    totalChapters:    4,
+  };
+
+  if (loading) {
     return (
       <div className="min-h-screen bg-blue-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-[#003B62]"></div>
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-[#003B62]" />
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-blue-50 px-4 py-4">
-      {/* Header */}
-      <h1 className="text-4xl font-extrabold text-[#003B62] mb-6">
-        DASHBOARD
-      </h1>
-      
-
-      {/* Chapter Cards Grid */}
+      <h1 className="text-4xl font-extrabold text-[#003B62] mb-6">DASHBOARD</h1>
       <div className="grid grid-cols-3 gap-4">
         {chapters.map((chapter) => (
-          <ChapterCard
-            key={chapter.id}
-            chapter={chapter}
-            stats={overviewStats}
-          />
+          <ChapterCard key={chapter.id} chapter={chapter} stats={statsForCard} />
         ))}
       </div>
-      
     </div>
   );
 }

@@ -1,18 +1,21 @@
+// src/features/exam/hooks/useQuiz.ts
+
 import { useState } from 'react';
 import { quizService } from '../services/quiz.service';
 import type { QuizSession, SubmitResponse, QuizEndResponse } from '../types/quiz.types';
 
 export const useQuiz = () => {
-    const [quiz, setQuiz] = useState<QuizSession | null>(null);
+    const [quiz, setQuiz]               = useState<QuizSession | null>(null);
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading]         = useState(false);
+    const [error, setError]             = useState<string | null>(null);
 
-    const startQuiz = async (userId: number, numQuestions: number = 5) => {
+    // เพิ่ม topic: string เข้ามา — ส่งตรงไปยัง backend เพื่อ filter ข้อสอบตาม main_topic
+    const startQuiz = async (userId: number, topic: string, numQuestions: number = 10) => {
         try {
             setLoading(true);
             setError(null);
-            const data = await quizService.startQuiz(userId, numQuestions);
+            const data = await quizService.startQuiz(userId, topic, numQuestions);
             setQuiz(data);
             setCurrentIndex(0);
         } catch (err: any) {
@@ -34,12 +37,12 @@ export const useQuiz = () => {
         try {
             setLoading(true);
             const result = await quizService.submitAnswer({
-                user_id: userId,
-                session_id: quiz.session_id,
-                question_id: questionId,
-                user_answer: userAnswer,
-                skill_id: skillId,
-                response_latency: latency
+                user_id:          userId,
+                session_id:       quiz.session_id,
+                question_id:      questionId,
+                user_answer:      userAnswer,
+                skill_id:         skillId,
+                response_latency: latency,
             });
             return result;
         } catch (err: any) {
@@ -88,6 +91,6 @@ export const useQuiz = () => {
         submitAnswer,
         nextQuestion,
         endQuizSession,
-        resetQuiz
+        resetQuiz,
     };
 };

@@ -9,11 +9,15 @@ const getAuthHeaders = () => {
 };
 
 export const quizService = {
-    startQuiz: async (userId: number, numQuestions: number = 5): Promise<QuizSession> => {
+    startQuiz: async (userId: number, topic: string, numQuestions: number): Promise<QuizSession> => {
         const headers = getAuthHeaders();
         const response = await axios.post<QuizSession>(
             `${API_URL}/quiz/start`,
-            { user_id: userId, num_questions: numQuestions },
+            {
+                user_id:       userId,
+                topic:         topic,
+                num_questions: numQuestions,
+            },
             { headers }
         );
         return response.data;

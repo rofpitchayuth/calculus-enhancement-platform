@@ -1,5 +1,6 @@
 import type { Question } from "../types/quiz.types";
 import { renderMathText } from "./mathRenderer";
+import { QuizTimer } from "./QuizTimer";
 
 // Props
 interface QuestionCardProps {
@@ -8,6 +9,7 @@ interface QuestionCardProps {
   totalQuestions: number;
   selectedChoice: string;
   onChoiceSelect: (choice: string) => void;
+  onTimeUp?: () => void;
   disabled?: boolean;
 }
 
@@ -18,6 +20,7 @@ export const QuestionCard = ({
   totalQuestions,
   selectedChoice,
   onChoiceSelect,
+  onTimeUp = () => {},
   disabled = false,
 }: QuestionCardProps) => {
   const dots = Array.from({ length: totalQuestions }, (_, i) => i);
@@ -29,9 +32,12 @@ export const QuestionCard = ({
           <h1 className="text-4xl font-bold text-gray-800 tracking-wide">
             CALCULUS QUIZ
           </h1>
-          <span className="text-sm text-gray-500 font-medium">
-            ข้อที่ {currentIndex + 1} / {totalQuestions}
-          </span>
+          <QuizTimer
+            totalSeconds={60 * 60}
+            currentIndex={currentIndex}
+            totalQuestions={totalQuestions}
+            onTimeUp={onTimeUp}
+          />
         </div>
 
         <div className="flex items-center justify-center gap-2 mb-6">
