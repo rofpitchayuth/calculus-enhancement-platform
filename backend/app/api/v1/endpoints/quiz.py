@@ -61,7 +61,8 @@ def submit_answer(
             session_id=request.session_id,
             question_id=request.question_id,
             user_answer=request.user_answer,
-            skill_id=request.skill_id
+            skill_id=request.skill_id,
+            response_latency=request.response_latency
         )
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))

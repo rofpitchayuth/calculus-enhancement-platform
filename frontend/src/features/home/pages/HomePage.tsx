@@ -42,7 +42,7 @@ export function HomePage() {
   const navigate = useNavigate();
 
   const handleViewOverall = () => {
-    navigate("/dashboard/overview");
+    navigate("/dashboard");
   };
 
   const handleViewDetailed = () => {

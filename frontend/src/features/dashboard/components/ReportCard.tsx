@@ -1,6 +1,6 @@
 // src/features/dashboard/components/ReportCard.tsx
 
-import type { StatCardProps } from "../types/dashboard.type";
+import type { StatCardProps } from "../types/dashboard.types";
 
 /**
  * Report Card Component - สำหรับแสดง summary card ใน CourseReportPage

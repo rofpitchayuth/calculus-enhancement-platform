@@ -1,6 +1,6 @@
 // src/features/dashboard/pages/CourseReportPage.tsx
 
-import type { CourseReportPageProps } from "../types/dashboard.type";
+import type { CourseReportPageProps } from "../types/dashboard.types";
 import { DashboardCard, DonutChartComponent } from "../components";
 import {
   COURSE_REPORT_SUMMARY,

@@ -1,4 +1,4 @@
-import type { ChapterDashboardPageProps } from "../types/dashboard.type";
+import type { ChapterDashboardPageProps } from "../types/dashboard.types";
 import { StatCard, DashboardCard, BloomBar, LineChartComponent, RadarChartComponent } from "../components";
 import {
   CHAPTER_NAMES,

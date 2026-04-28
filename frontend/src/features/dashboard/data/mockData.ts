@@ -1,6 +1,6 @@
 // src/features/dashboard/data/mockData.ts
 
-import type { ChapterSummary } from "../types/dashboard.type";
+import type { ChapterSummary } from "../types/dashboard.types";
 
 /**
  * Chapter Names Mapping

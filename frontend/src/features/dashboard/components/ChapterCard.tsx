@@ -1,15 +1,7 @@
 // src/features/dashboard/components/ChapterCard.tsx
 
 
-import type { ChapterSummary } from "../types/dashboard.type";
-
-type DashboardOverviewStats = {
-  totalChapters: string;
-  averageScore: string;
-  totalAttempts: string;
-};
-
-
+import type { ChapterSummary, OverviewStats } from "../types/dashboard.types";
 
 /**
  * Chapter Card Component - สำหรับแสดงการ์ดแต่ละบทใน DashboardOverviewPage
@@ -19,7 +11,7 @@ export function ChapterCard({
   stats,
 }: {
   chapter: ChapterSummary;
-  stats: DashboardOverviewStats;
+  stats: OverviewStats;
 }) {
   const trendLabel =
     chapter.trend === "up"

@@ -11,8 +11,9 @@ class QuizSubmitAnswerRequest(BaseModel):
     user_id: int
     session_id: int
     question_id: int
-    user_answer: str
+    user_answer: str # "A", "B", "C", etc.
     skill_id: str = Field(..., description="Main skill for this question (e.g., 'limits', 'derivatives')")
+    response_latency: float = Field(0.0, description="Time taken to answer in seconds")
 
 class QuestionResponse(BaseModel):
     id: int
@@ -32,6 +33,8 @@ class QuizStartResponse(BaseModel):
 class QuizSubmitResponse(BaseModel):
     is_correct: bool
     correct_answer: str
+    error_code: str = Field(..., description="Pre-computed error code for the selected choice")
+    feedback_text: str = Field(..., description="Pre-computed step-by-step analysis for this question")
     p_mastery_before: float = Field(..., description="Mastery probability before this answer")
     p_mastery_after: float = Field(..., description="Updated mastery probability")
     p_correct_next: float = Field(..., description="Predicted probability of getting next question correct")

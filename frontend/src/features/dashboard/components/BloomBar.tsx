@@ -1,6 +1,6 @@
 // src/features/dashboard/components/BloomBar.tsx
 
-import type { BloomBarProps } from "../types/dashboard.type";
+import type { BloomBarProps } from "../types/dashboard.types";
 
 /**
  * Bloom Bar Component - สำหรับแสดง progress bar ของ Bloom's Level

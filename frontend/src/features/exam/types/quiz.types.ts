@@ -23,6 +23,8 @@ export interface QuizSession {
 export interface SubmitResponse {
     is_correct: boolean;
     correct_answer: string;
+    error_code: string;
+    feedback_text: string;
     p_mastery_before: number;
     p_mastery_after: number;
     p_correct_next: number;
@@ -34,6 +36,7 @@ export interface QuizSubmitRequest {
     question_id: number;
     user_answer: string;
     skill_id: string;
+    response_latency: number;
 }
 
 export interface QuizSummaryItem {
@@ -45,6 +48,7 @@ export interface QuizSummaryItem {
     main_topic: string | null;
     sub_topic: string | null;
     error_code: string | null;
+    feedback_text?: string | null;
 }
 
 export interface QuizEndResponse {

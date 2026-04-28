@@ -9,13 +9,13 @@ import { AuthProvider } from "./features/auth/hooks/useAuth";
 import { LoginPage } from "./features/auth/pages/LoginPage";
 import { SignUpPage } from "./features/auth/pages/SignUpPage";
 import { HomePage } from "./features/home/pages/HomePage";
-import { AllDashboard } from "./features/dashboard/pages/AllDashboard";
 
 import {
   DashboardOverviewPage,
   ChapterDashboardPage,
   CourseReportPage,
 } from "./features/dashboard";
+import { AdminQuestionPage } from "./features/admin";
 
 import { Layout } from "./shared/components/layout/Layout";
 import { ProtectedRoute } from "./shared/components/ProtectedRoute";
@@ -53,12 +53,16 @@ const router = createBrowserRouter([
   {
     path: "/dashboard",
     element: (
-      //<ProtectedRoute>
-      <Layout>
-        <AllDashboard />
-      </Layout>
-      // </ProtectedRoute>
+      <ProtectedRoute>
+        <Layout>
+          <DashboardOverviewPage />
+        </Layout>
+      </ProtectedRoute>
     ),
+  },
+  {
+    path: "/dashboard/overview",
+    element: <Navigate to="/dashboard" replace />,
   },
   {
     path: "/dashboard/chapter/:chapterId/all",
@@ -90,14 +94,14 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
+
+  // ===== HITL ADMIN =====
   {
-    path: "/dashboard/overview",
+    path: "/admin/questions",
     element: (
-      <ProtectedRoute>
-        <Layout>
-          <DashboardOverviewPage />
-        </Layout>
-      </ProtectedRoute>
+      <Layout>
+        <AdminQuestionPage />
+      </Layout>
     ),
   },
 

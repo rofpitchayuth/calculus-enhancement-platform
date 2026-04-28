@@ -1,6 +1,6 @@
 // src/features/dashboard/components/DashboardCard.tsx
 
-import type { DashboardCardProps } from "../types/dashboard.type";
+import type { DashboardCardProps } from "../types/dashboard.types";
 
 /**
  * Dashboard Card Component - สำหรับ wrap content ที่มี title

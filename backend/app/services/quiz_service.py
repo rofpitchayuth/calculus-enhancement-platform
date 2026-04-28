@@ -64,8 +64,13 @@ class QuizService:
         session_id: int,
         question_id: int,
         user_answer: str,
-        skill_id: str
+        skill_id: str,
+        response_latency: float = 0.0
     ) -> QuizSubmitResponse:
+        """
+        Submits a student's answer using purely pre-computed metadata.
+        This is the "Lightning-Fast" workflow with zero dynamic LLM overhead.
+        """
         question = self.db.query(Question).filter(Question.id == question_id).first()
         if not question:
             raise ValueError(f"Question {question_id} not found")
@@ -73,31 +78,46 @@ class QuizService:
         quiz_session = self.db.query(QuizSession).filter(QuizSession.id == session_id, QuizSession.user_id == user_id).first()
         if not quiz_session:
             raise ValueError(f"QuizSession {session_id} not found or unauthorized")
+
+        # 1. Extract error_code from the choices list (Source of Truth)
+        choices = question.choices or []
+        selected_choice_data = next((c for c in choices if str(c.get("id")).upper() == user_answer.upper()), None)
         
-        is_correct = (user_answer.strip().lower() == question.correct_answer.strip().lower())
+        # 2. STRICT EVALUATION: is_correct is TRUE only if error_code is 'correct_answer'
+        error_code = selected_choice_data.get("error_code", "unclassified_error") if selected_choice_data else "unclassified_error"
+        is_correct = (error_code == "correct_answer")
         
-        # Mock BKT logic for now
-        p_mastery_before = 0.5
-        p_mastery_after = 0.6 if is_correct else 0.4
-        p_correct_next = 0.7
+        feedback_text = "ถูกต้อง! เยี่ยมมาก" if is_correct else "ลองพิจารณาใหม่อีกครั้ง"
         
+        # 3. Persistent Storage
         attempt = QuizAttempt(
             user_id=user_id,
             session_id=session_id,
             question_id=question_id,
             is_correct=is_correct,
             user_answer=user_answer,
+            response_time=response_latency,
             skill_tag=skill_id,
+            error_code=error_code,
             difficulty=str(question.difficulty),
             attempted_at=datetime.utcnow()
         )
         self.db.add(attempt)
         self.db.commit()
         self.db.refresh(attempt)
-        
+
+        # 4. Trigger Knowledge Tracing (predict updated mastery)
+        # In this lightning flow, we simulate or call a fast cache.
+        # We'll use the existing mock pattern but with real pre-computed taxonomy.
+        p_mastery_before = 0.5 
+        p_mastery_after = 0.6 if is_correct else 0.4
+        p_correct_next = 0.7
+
         return QuizSubmitResponse(
             is_correct=is_correct,
             correct_answer=question.correct_answer,
+            error_code=error_code,
+            feedback_text=feedback_text,
             p_mastery_before=p_mastery_before,
             p_mastery_after=p_mastery_after,
             p_correct_next=p_correct_next
@@ -134,12 +154,8 @@ class QuizService:
         for index, attempt in enumerate(attempts):
             question = self.db.query(Question).filter(Question.id == attempt.question_id).first()
             if question:
-                error_code = None
-                if not attempt.is_correct and question.choices:
-                    # Find the selected choice to extract its error code
-                    selected_choice = next((c for c in question.choices if str(c.get("id")).lower() == attempt.user_answer.lower()), None)
-                    if selected_choice:
-                        error_code = selected_choice.get("error_code")
+                # ดึง error_code จาก attempt มาแสดงผลเสมอ
+                error_code = attempt.error_code
                 
                 session_summary.append({
                     "question_number": index + 1,

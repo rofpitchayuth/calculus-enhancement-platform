@@ -8,7 +8,50 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__)))
 
 from sqlalchemy.orm import Session
 from app.core.database import SessionLocal, engine
-from app.models.question import Question
+from app.models.question import Question, ErrorCode
+
+ERROR_CODES_DATA = [
+    {"code": "correct_answer", "name": "Correct Answer", "category": "Success"},
+    {"code": "sign_error", "name": "Sign Error", "category": "Calculation"},
+    {"code": "arithmetic_error", "name": "Arithmetic Error", "category": "Calculation"},
+    {"code": "fraction_operation_error", "name": "Fraction Operation Error", "category": "Algebra"},
+    {"code": "algebra_simplification_error", "name": "Algebra Simplification Error", "category": "Algebra"},
+    {"code": "forgot_chain_rule_inner", "name": "Forgot Chain Rule Inner", "category": "Calculus"},
+    {"code": "product_quotient_mixup", "name": "Product/Quotient Rule Mixup", "category": "Calculus"},
+    {"code": "derivative_instead_of_integral", "name": "Derivative Instead of Integral", "category": "Calculus"},
+    {"code": "forgot_plus_c", "name": "Forgot +C", "category": "Calculus"},
+    {"code": "wrong_u_sub_bounds", "name": "Wrong u-substitution Bounds", "category": "Calculus"},
+    {"code": "trig_sign_error", "name": "Trigonometric Sign Error", "category": "Calculus"},
+    {"code": "composite_evaluation_error", "name": "Composite Evaluation Error", "category": "Algebra"},
+    {"code": "trig_evaluation_error", "name": "Trig Evaluation Error", "category": "Calculus"},
+    {"code": "exponent_rule_error", "name": "Exponent Rule Error", "category": "Algebra"},
+    {"code": "logarithm_rule_error", "name": "Logarithm Rule Error", "category": "Algebra"},
+    {"code": "unclassified_error", "name": "Unclassified Error", "category": "Other"},
+    {"code": "conceptual_misunderstanding", "name": "Conceptual Misunderstanding", "category": "Concept"},
+    {"code": "indeterminate_form_misconception", "name": "Indeterminate Form Misconception", "category": "Concept"},
+    {"code": "lhopital_applied_incorrectly", "name": "L'Hopital Applied Incorrectly", "category": "Calculus"},
+    {"code": "wrong_trig_derivative_sign", "name": "Wrong Trig Derivative Sign", "category": "Calculus"},
+    {"code": "constant_derivative_error", "name": "Constant Derivative Error", "category": "Calculus"},
+    {"code": "u_sub_forgot_du", "name": "u-sub Forgot du", "category": "Calculus"},
+    {"code": "wrong_integration_formula", "name": "Wrong Integration Formula", "category": "Calculus"},
+    {"code": "radius_squared_error", "name": "Radius Squared Error", "category": "Calculus"},
+    {"code": "wrong_curve_order_area", "name": "Wrong Curve Order for Area", "category": "Calculus"},
+    {"code": "endpoint_extrema_forgotten", "name": "Endpoint Extrema Forgotten", "category": "Calculus"},
+]
+
+def seed_error_codes(db: Session):
+    print("Seeding error codes...")
+    for ec_data in ERROR_CODES_DATA:
+        existing = db.query(ErrorCode).filter(ErrorCode.code == ec_data["code"]).first()
+        if not existing:
+            new_ec = ErrorCode(
+                code=ec_data["code"],
+                name=ec_data["name"],
+                category=ec_data["category"]
+            )
+            db.add(new_ec)
+    db.commit()
+    print("Successfully seeded error codes.")
 
 def seed_db():
     excel_path = "data.xlsx"
@@ -24,12 +67,16 @@ def seed_db():
     df = df.replace({np.nan: None})
     
     db = SessionLocal()
+    
+    # 1. Seed Error Codes First (to satisfy foreign key constraints)
+    seed_error_codes(db)
+    
     added_count = 0
     training_data = []
     
     for _, row in df.iterrows():
         choices_list = []
-        for letter in ['A', 'B', 'C', 'D', 'E']:
+        for letter in ['a', 'b', 'c', 'd', 'e']:
             choice_col = f'choice_{letter.lower()}'
             error_code_col = f'error_code_{letter}'
             

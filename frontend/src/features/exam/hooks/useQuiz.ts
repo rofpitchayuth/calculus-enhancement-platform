@@ -27,7 +27,8 @@ export const useQuiz = () => {
         userId: number,
         questionId: number,
         userAnswer: string,
-        skillId: string
+        skillId: string,
+        latency: number
     ): Promise<SubmitResponse | null> => {
         if (!quiz) return null;
         try {
@@ -37,7 +38,8 @@ export const useQuiz = () => {
                 session_id: quiz.session_id,
                 question_id: questionId,
                 user_answer: userAnswer,
-                skill_id: skillId
+                skill_id: skillId,
+                response_latency: latency
             });
             return result;
         } catch (err: any) {

@@ -1,6 +1,6 @@
 // src/features/dashboard/components/StatCard.tsx
 
-import type { StatCardProps } from "../types/dashboard.type";
+import type { StatCardProps } from "../types/dashboard.types";
 
 /**
  * Stat Card Component - สำหรับแสดงสถิติด้วย label + value
