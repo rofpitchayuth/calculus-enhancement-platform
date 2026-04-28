@@ -16,6 +16,8 @@ class Settings(BaseSettings):
     
     # URL of the LLM Classifier microservice.
     LLM_SERVICE_URL: str = Field(default="http://localhost:8002")
+    HF_TOKEN: str = Field(default="")
+    GEMINI_API_KEY: str = Field(default="")
     
     class Config:
         env_file = ".env"

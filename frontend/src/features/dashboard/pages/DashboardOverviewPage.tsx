@@ -142,7 +142,7 @@ export function DashboardOverviewPage({ userId = 1 }: DashboardOverviewPageProps
         {/* Right side */}
         <div className="col-span-2 space-y-4">
           {/* 3 Inline Stats */}
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-3 gap-3 mb-4 bg-white shadow-md p-4 rounded-3xl">
             <InlineStat
               label="ระดับความเชี่ยวชาญรวม"
               value={overviewStats.proficiencyLevel}

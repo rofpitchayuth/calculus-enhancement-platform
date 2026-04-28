@@ -93,7 +93,7 @@ export function Navbar({ className = "" }: NavbarProps) {
 
           <li className="relative">
             <NavLink
-              to="/dashboard"
+              to="/alldashboard"
               className={({ isActive }: { isActive: boolean }) =>
                 `relative px-1 py-0.1 transition-colors hover:text-blue-600 ${isActive ? "text-gray-900 font-medium" : ""
                 }`

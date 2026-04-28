@@ -21,6 +21,8 @@ import { Layout } from "./shared/components/layout/Layout";
 import { ProtectedRoute } from "./shared/components/ProtectedRoute";
 import QuizPage from "./features/exam/pages/QuizPage";
 import AllCourse from "./features/exam/pages/AllCourse";
+import { AllDashboard } from "./features/dashboard/pages/AllDashboard";
+
 
 const router = createBrowserRouter([
   {
@@ -125,6 +127,17 @@ const router = createBrowserRouter([
   //</ProtectedRoute>
     ),
   },
+  {
+    path: "/alldashboard",
+    element: (
+      //<ProtectedRoute>
+      <Layout>
+        <AllDashboard />
+      </Layout> 
+     // </ProtectedRoute>
+    )
+  },
+
 
   {
     path: "*",

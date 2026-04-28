@@ -77,7 +77,7 @@ export default function QuizPage() {
   // ── State: loading initial quiz session ─────────────────────────────────
   if (quizLoading && !currentQuestion) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+      <div className="min-h-screen flex items-center justify-center bg-blue-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-600 mx-auto mb-4" />
           <p className="text-gray-600 font-medium">กำลังโหลดแบบทดสอบ…</p>
@@ -89,8 +89,8 @@ export default function QuizPage() {
   // ── State: session error ────────────────────────────────────────────────
   if (quizError || (!currentQuestion && !quizLoading && !quizEndResult)) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
-        <div className="text-center max-w-md">
+      <div className="min-h-screen flex items-center justify-center bg-blue-50">
+        <div className="text-center max-w-md bg-white px-20 py-10 rounded-xl shadow-md">
           <p className="text-red-600 mb-4 font-medium">{quizError ?? "ไม่พบแบบทดสอบ"}</p>
           <button
             onClick={() => user?.id && startQuiz(user.id, 5)}
@@ -106,7 +106,7 @@ export default function QuizPage() {
   // ── State: session ended → summary screen ───────────────────────────────
   if (quizEndResult) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-8">
+      <div className="min-h-screen bg-blue-50 p-8">
         <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg p-8">
           <h2 className="text-3xl font-bold text-center text-[#003B62] mb-6">
             สรุปผลการทำแบบทดสอบ
@@ -251,7 +251,7 @@ export default function QuizPage() {
 
   // ── State: main quiz flow ───────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-8">
+    <div className="min-h-screen bg-blue-50 p-8">
       <div className="max-w-4xl mx-auto">
 
         {/* Question card — disabled when grader is in-flight or done */}

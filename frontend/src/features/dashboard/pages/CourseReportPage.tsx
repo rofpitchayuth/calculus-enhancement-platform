@@ -35,7 +35,7 @@ const CHAPTERS_MAP: Record<string, string> = {
  */
 function DifficultyStars({ level }: { level: number }) {
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-1  bg-white px-3 py-1 rounded-full shadow-sm"> 
       <span className="text-xs text-gray-600 mr-1">ระดับความยาก</span>
       {[1, 2, 3, 4, 5].map((i) => (
         <span
@@ -155,14 +155,14 @@ export function CourseReportPage({
         {/* Right: stats + chips + skill breakdown */}
         <div className="space-y-4">
           {/* Stats Row */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-white rounded-2xl shadow-md px-5 py-4 border">
+          <div className="grid grid-cols-2 gap-2 mb-4 bg-white shadow-md p-4 rounded-3xl">
+            <div className="bg-white rounded-2xl  px-5 py-4 border">
               <p className="text-xs text-gray-500 mb-1">ระดับความเชี่ยวชาญ</p>
               <p className="text-2xl font-bold text-[#003B62]">
                 {dashboardService.getProficiencyLevel(accuracy)}
               </p>
             </div>
-            <div className="bg-white rounded-2xl shadow-md px-5 py-4 border">
+            <div className="bg-white rounded-2xl  px-5 py-4 border">
               <p className="text-xs text-gray-500 mb-1">เวลาเฉลี่ยต่อข้อ</p>
               <p className="text-2xl font-bold text-[#003B62]">
                 {report.avgTimePerQuestion} วินาที
@@ -207,7 +207,7 @@ export function CourseReportPage({
 
           {/* Skill Breakdown */}
           <div className="bg-white rounded-2xl shadow-md p-4">
-            <h4 className="font-semibold text-gray-700 mb-3 text-right">
+            <h4 className="font-semibold text-gray-700 mb-3 text-left">
               คะแนนในแต่ละทักษะ
             </h4>
             <div className="space-y-3">
