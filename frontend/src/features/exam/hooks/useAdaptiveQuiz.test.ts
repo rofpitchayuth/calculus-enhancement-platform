@@ -1,24 +1,8 @@
-/**
- * useAdaptiveQuiz.test.ts — Hook Tests
- * ======================================
- * Tests the useAdaptiveQuiz hook's state transitions:
- *   1. Initial mount triggers fetchNext("normal") automatically
- *   2. fetchNext accepts a difficulty_adjustment parameter
- *   3. Loading/error/success states transition correctly
- *   4. Error handling sets the error state
- *
- * Uses vitest + @testing-library/react's renderHook utility.
- * The recommendationService is fully mocked via vi.mock.
- */
-
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, act, waitFor } from "@testing-library/react";
 import { useAdaptiveQuiz } from "./useAdaptiveQuiz";
 
-// ---------------------------------------------------------------------------
 // Mock the recommendation service
-// ---------------------------------------------------------------------------
-
 const mockGetNextQuestion = vi.fn();
 
 vi.mock("../services/recommendation.service", () => ({
@@ -27,10 +11,7 @@ vi.mock("../services/recommendation.service", () => ({
   },
 }));
 
-// ---------------------------------------------------------------------------
 // Test data
-// ---------------------------------------------------------------------------
-
 const MOCK_QUESTION = {
   id: 42,
   question_text: "Find the derivative of $x^3$",
@@ -51,10 +32,6 @@ const MOCK_HARDER_QUESTION = {
   question_text: "Find the derivative of $\\sin(x^2)$",
 };
 
-// ---------------------------------------------------------------------------
-// Tests
-// ---------------------------------------------------------------------------
-
 describe("useAdaptiveQuiz", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -65,7 +42,6 @@ describe("useAdaptiveQuiz", () => {
 
     const { result } = renderHook(() => useAdaptiveQuiz("derivatives"));
 
-    // Initially should be loading
     expect(result.current.isLoading).toBe(true);
     expect(result.current.currentQuestion).toBeNull();
 
@@ -73,32 +49,26 @@ describe("useAdaptiveQuiz", () => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    // After load completes
     expect(result.current.currentQuestion).toEqual(MOCK_QUESTION);
     expect(result.current.error).toBeNull();
 
-    // Verify the service was called with default "normal"
     expect(mockGetNextQuestion).toHaveBeenCalledWith("derivatives", "normal");
   });
 
   it("passes difficulty_adjustment parameter when fetchNext is called", async () => {
     mockGetNextQuestion
-      .mockResolvedValueOnce(MOCK_QUESTION)        // initial mount
-      .mockResolvedValueOnce(MOCK_HARDER_QUESTION); // explicit "harder" call
+      .mockResolvedValueOnce(MOCK_QUESTION)       
+      .mockResolvedValueOnce(MOCK_HARDER_QUESTION);
 
     const { result } = renderHook(() => useAdaptiveQuiz("derivatives"));
 
-    // Wait for initial load
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
     });
-
-    // Now call fetchNext with "harder"
     await act(async () => {
       await result.current.fetchNext("harder");
     });
 
-    // The second call should have passed "harder"
     expect(mockGetNextQuestion).toHaveBeenCalledTimes(2);
     expect(mockGetNextQuestion).toHaveBeenNthCalledWith(2, "derivatives", "harder");
     expect(result.current.currentQuestion).toEqual(MOCK_HARDER_QUESTION);
@@ -135,17 +105,15 @@ describe("useAdaptiveQuiz", () => {
 
   it("clears previous error on successful retry", async () => {
     mockGetNextQuestion
-      .mockRejectedValueOnce(new Error("Network error"))  // first call fails
-      .mockResolvedValueOnce(MOCK_QUESTION);               // retry succeeds
+      .mockRejectedValueOnce(new Error("Network error"))    
+      .mockResolvedValueOnce(MOCK_QUESTION);
 
     const { result } = renderHook(() => useAdaptiveQuiz("derivatives"));
 
-    // Wait for the error state
     await waitFor(() => {
       expect(result.current.error).toBe("Network error");
     });
 
-    // Retry
     await act(async () => {
       await result.current.fetchNext("normal");
     });
@@ -163,10 +131,8 @@ describe("useAdaptiveQuiz", () => {
 
     const { result } = renderHook(() => useAdaptiveQuiz("derivatives"));
 
-    // Should be loading while promise is pending
     expect(result.current.isLoading).toBe(true);
 
-    // Resolve the promise
     await act(async () => {
       resolvePromise!(MOCK_QUESTION);
     });

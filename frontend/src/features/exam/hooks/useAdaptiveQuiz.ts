@@ -1,9 +1,3 @@
-/**
- * useAdaptiveQuiz.ts — Presentation Layer (Orchestrator Hook)
- * ==========================================================
- * Manages the "Practice Mode" loop where questions are served adaptively.
- */
-
 import { useState, useCallback, useEffect } from "react";
 import { recommendationService } from "../services/recommendation.service";
 import type { Question } from "../types/quiz.types";

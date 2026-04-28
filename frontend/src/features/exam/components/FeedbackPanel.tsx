@@ -1,28 +1,9 @@
-/**
- * FeedbackPanel.tsx — Presentational Component
- * ==============================================
- * Renders the AI grader's response after the student submits an answer.
- *
- * Props:
- *   result        - GraderResponse from the backend.
- *   onNext        - Callback to advance (or end) the session.
- *   isLastQuestion - When true the CTA says "ดูสรุปผล" instead of "ข้อถัดไป".
- *
- * Design rules:
- *   - Stateless: no useState, no useEffect, no API calls.
- *   - The feedback_text may contain LaTeX — pass it through renderMathText.
- *   - Error codes are displayed as a styled "badge" with a human-readable label.
- */
-
 import type { GraderResponse } from "../types/grader.types";
 import { renderMathText } from "./mathRenderer";
 
-// ---------------------------------------------------------------------------
 // Error code → human-readable Thai label
-// ---------------------------------------------------------------------------
-
 const ERROR_CODE_LABELS: Record<string, string> = {
-  correct_answer:                  "✅ คำตอบถูกต้อง",
+  correct_answer:                  "คำตอบถูกต้อง",
   sign_error:                      "เครื่องหมายผิด (Sign Error)",
   arithmetic_error:                "คำนวณผิด (Arithmetic Error)",
   fraction_operation_error:        "การดำเนินการเศษส่วนผิด",
@@ -54,28 +35,21 @@ function getErrorLabel(code: string): string {
   return ERROR_CODE_LABELS[code] ?? code.replace(/_/g, " ");
 }
 
-// ---------------------------------------------------------------------------
 // Props
-// ---------------------------------------------------------------------------
-
 interface FeedbackPanelProps {
   result: GraderResponse;
   onNext: () => void;
-  onAdaptiveNext?: () => void; // For continuous practice mode
+  onAdaptiveNext?: () => void;
   isLastQuestion: boolean;
 }
 
-// ---------------------------------------------------------------------------
 // Component
-// ---------------------------------------------------------------------------
-
 export function FeedbackPanel({ 
   result, 
   onNext, 
   onAdaptiveNext, 
   isLastQuestion 
 }: FeedbackPanelProps) {
-  // STRICT CHECK: Consider it correct if is_correct is true OR error_code is 'correct_answer'
   const isTrulyCorrect = result.is_correct || result.error_code === 'correct_answer';
   const { error_code, feedback_text } = result;
 
@@ -88,7 +62,6 @@ export function FeedbackPanel({
           : "border-rose-300 bg-gradient-to-br from-rose-50 to-red-50",
       ].join(" ")}
     >
-      {/* ── Result badge ─────────────────────────────────────────────── */}
       <div className="flex items-center gap-3 mb-5">
         <div
           className={[
@@ -105,7 +78,7 @@ export function FeedbackPanel({
               isTrulyCorrect ? "text-emerald-700" : "text-rose-700",
             ].join(" ")}
           >
-            {isTrulyCorrect ? "ถูกต้อง! เยี่ยมมาก 🎉" : "ยังไม่ถูก — ลองดูคำอธิบายด้านล่าง"}
+            {isTrulyCorrect ? "ถูกต้อง! เยี่ยมมาก" : "ยังไม่ถูก — ลองดูคำอธิบายด้านล่าง"}
           </h3>
           <p className="text-sm text-gray-500">
             ตัวเลือกที่เลือก:{" "}
@@ -114,7 +87,6 @@ export function FeedbackPanel({
         </div>
       </div>
 
-      {/* ── Error code badge ──────────────────────────────────────────── */}
       <div className="mb-5">
         <p className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-gray-400">
           Error Code
@@ -139,20 +111,17 @@ export function FeedbackPanel({
         )}
       </div>
 
-      {/* ── Step-by-step analysis ─────────────────────────────────────── */}
       <div className="mb-6">
         <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400">
           การวิเคราะห์ทีละขั้นตอน
         </p>
         <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-inner">
           <div className="text-sm leading-7 text-gray-700">
-            {/* feedback_text may contain LaTeX; renderMathText handles $…$ segments */}
             {renderMathText(feedback_text)}
           </div>
         </div>
       </div>
 
-      {/* ── CTA ──────────────────────────────────────────────────────── */}
       <div className="flex flex-col gap-3">
         {onAdaptiveNext && (
           <button

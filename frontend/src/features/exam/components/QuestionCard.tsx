@@ -1,38 +1,17 @@
-/**
- * QuestionCard.tsx — Presentational Component
- * ============================================
- * Renders the current calculus question and its 5 answer choices.
- *
- * Responsibilities:
- *   - Display the question text with LaTeX via renderMathText.
- *   - Display each choice with LaTeX via renderMathText.
- *   - Highlight the selected choice.
- *   - Disable all choices when disabled=true (grader is in-flight or done).
- *
- * This component is intentionally stateless.  All state lives in useQuizFlow.
- */
-
 import type { Question } from "../types/quiz.types";
 import { renderMathText } from "./mathRenderer";
 
-// ---------------------------------------------------------------------------
 // Props
-// ---------------------------------------------------------------------------
-
 interface QuestionCardProps {
   question: Question;
   currentIndex: number;
   totalQuestions: number;
   selectedChoice: string;
   onChoiceSelect: (choice: string) => void;
-  /** When true the choice radio buttons are inert (grader in-flight or done). */
   disabled?: boolean;
 }
 
-// ---------------------------------------------------------------------------
 // Component
-// ---------------------------------------------------------------------------
-
 export const QuestionCard = ({
   question,
   currentIndex,
@@ -45,7 +24,6 @@ export const QuestionCard = ({
 
   return (
     <>
-      {/* ── Header: progress dots ────────────────────────────────────── */}
       <div className="mb-8">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-4xl font-bold text-gray-800 tracking-wide">
@@ -72,7 +50,6 @@ export const QuestionCard = ({
         </div>
       </div>
 
-      {/* ── Question body ─────────────────────────────────────────────── */}
       <div className="bg-white rounded-3xl border-4 border-blue-500 p-8 shadow-lg">
         <div className="mb-8">
           <p className="text-xl text-gray-800 leading-relaxed mb-6">
@@ -81,7 +58,6 @@ export const QuestionCard = ({
           <hr className="border-gray-300" />
         </div>
 
-        {/* ── Choices ────────────────────────────────────────────────── */}
         {question.choices && question.choices.length > 0 ? (
           <div className="space-y-3">
             {question.choices.map((choice, index) => {
@@ -110,7 +86,6 @@ export const QuestionCard = ({
                     disabled={disabled}
                     className="w-5 h-5 text-blue-600 focus:ring-blue-500"
                   />
-                  {/* Choice letter badge */}
                   <span
                     className={[
                       "flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold",

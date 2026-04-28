@@ -23,7 +23,6 @@ export const QuizResultCard = ({ result, onNext, isLastQuestion }: QuizResultCar
         </div>
       </div>
 
-      {/* IBKT Results */}
       <div className="grid grid-cols-2 gap-4 mb-4">
         <div className="bg-white p-4 rounded-lg">
           <p className="text-xs text-gray-500 mb-1">Mastery Before</p>
