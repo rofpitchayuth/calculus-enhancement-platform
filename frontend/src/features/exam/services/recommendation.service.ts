@@ -6,7 +6,7 @@
 
 import type { Question } from "../types/quiz.types"; // Reusing existing Question type
 
-const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:8000/api/v1";
+import { API_BASE_URL as API_BASE } from '../../../shared/api/config';
 
 function getAuthHeaders(): HeadersInit {
   const token = localStorage.getItem("access_token");

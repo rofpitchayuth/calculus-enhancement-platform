@@ -13,7 +13,7 @@ import type {
   ChapterProgress
 } from "../types/dashboard.types";
 
-const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:8000/api/v1";
+import { API_BASE_URL as API_BASE } from '../../../shared/api/config';
 const API_URL = `${API_BASE}/dashboard`;
 
 /** Timeout for the dashboard stats request (10 seconds). */

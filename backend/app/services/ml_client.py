@@ -199,7 +199,7 @@ def sync_student_profile(
 
         return {
             "profile_label": profile_label,
-            "avg_mastery":   avg_mastery,
+            "skill_mastery": avg_mastery,
             "accuracy":      accuracy,
         }
 

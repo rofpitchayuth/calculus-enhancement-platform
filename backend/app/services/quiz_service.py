@@ -190,5 +190,5 @@ class QuizService:
             "session_summary": session_summary,
             # AI profile fields — None when the ML service is unavailable
             "student_profile": profile_data.get("profile_label") if profile_data else None,
-            "avg_mastery":     profile_data.get("avg_mastery")   if profile_data else None,
+            "skill_mastery":   profile_data.get("skill_mastery") if profile_data else None,
         }

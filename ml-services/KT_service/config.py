@@ -18,6 +18,7 @@ main.py imports a single, clean namespace.
 """
 
 import json
+import os
 from pathlib import Path
 
 # ---------------------------------------------------------------------------
@@ -77,15 +78,9 @@ NUM_LAYERS: int = 1
 SERVICE_PORT: int = 8001
 
 # Origins permitted to make cross-origin requests to this service.
-# The main FastAPI backend (8000) is included so it can call this service from
-# browser-initiated requests; localhost:3000 covers the development frontend.
-ALLOWED_ORIGINS: list = [
-    "http://localhost:8000",   # main backend (production calls)
-    "http://localhost:3000",   # React/Next.js dev server (frontend)
-    "http://localhost:5173",   # Vite dev server (alternative frontend port)
-    "http://127.0.0.1:8000",
-    "http://127.0.0.1:3000",
-]
+# Reads a comma-separated list from environment variable.
+_ENV_ORIGINS = os.getenv("ALLOWED_ORIGINS", "http://localhost:8000,http://localhost:3000,http://localhost:5173")
+ALLOWED_ORIGINS: list = [origin.strip() for origin in _ENV_ORIGINS.split(",")]
 
 # Inference device — CPU keeps the deployment simple; switch to 'cuda' if
 # a GPU is available in the production environment.

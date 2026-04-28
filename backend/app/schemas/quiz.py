@@ -57,7 +57,7 @@ class QuizEndResponse(BaseModel):
         None,
         description="AI-generated student profile label (e.g. 'High Achiever', 'Struggling')"
     )
-    avg_mastery: Optional[float] = Field(
+    skill_mastery: Optional[float] = Field(
         None,
         description="Average predicted mastery probability (0.0–1.0) from the DKT-GRU model"
     )

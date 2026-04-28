@@ -3,6 +3,8 @@ import logging
 from typing import List, Optional
 from pydantic import BaseModel
 
+from app.core.config import settings
+
 logger = logging.getLogger(__name__)
 
 class QuestionAnalysisResult(BaseModel):
@@ -31,7 +33,7 @@ async def auto_tag_question(
     Calls the LLM Classifier microservice to analyze a calculus question.
     Returns structured data containing the full 12-field analysis.
     """
-    url = "http://localhost:8001/api/v1/classify"
+    url = f"{settings.LLM_SERVICE_URL}/api/v1/classify"
     
     payload = {
         "question_text": question_text,
@@ -66,7 +68,7 @@ async def extract_latex_from_image(base64_image: str) -> str:
     """
     Calls the LLM Vision microservice to extract LaTeX from an image.
     """
-    url = "http://localhost:8001/api/v1/vision/extract-latex"
+    url = f"{settings.LLM_SERVICE_URL}/api/v1/vision/extract-latex"
     payload = {"base64_image": base64_image}
     timeout = httpx.Timeout(180.0)
     

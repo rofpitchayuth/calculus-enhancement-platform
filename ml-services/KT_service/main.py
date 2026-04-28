@@ -17,10 +17,10 @@ endpoint handlers without global variables.
 
 Usage
 -----
-  uvicorn main:app --host 0.0.0.0 --port 8001 --reload
+  uvicorn main:app --host 0.0.0.0 --port 8002 --reload
 
-  Interactive docs: http://localhost:8001/docs
-  Health check:     http://localhost:8001/health
+  Interactive docs: http://localhost:8002/docs
+  Health check:     http://localhost:8002/health
 """
 
 from contextlib import asynccontextmanager

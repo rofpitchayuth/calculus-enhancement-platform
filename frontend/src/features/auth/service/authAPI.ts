@@ -1,6 +1,6 @@
 import type { LoginCredentials, SignUpData, AuthResponse, User } from '../types/auth.type';
 
-const API_BASE_URL = 'http://localhost:8000/api/v1';
+import { API_BASE_URL } from '../../../shared/api/config';
 
 class AuthApiService {
   async login(credentials: LoginCredentials): Promise<AuthResponse> {

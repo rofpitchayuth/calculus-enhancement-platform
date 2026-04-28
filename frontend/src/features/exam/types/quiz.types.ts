@@ -58,4 +58,6 @@ export interface QuizEndResponse {
     start_time: string;
     end_time: string;
     session_summary: QuizSummaryItem[];
+    student_profile?: string | null;
+    skill_mastery?: number | null;
 }

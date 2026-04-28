@@ -3,6 +3,7 @@ import json
 import base64
 import logging
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, field_validator
 from typing import List
 from enum import Enum
@@ -20,10 +21,21 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(title="Unified ML Classification Service")
 
-# Read Tailscale LLM base URL from environment
-LLM_API_BASE_URL = os.getenv("LLM_API_BASE_URL", "http://100.115.248.49:9292")
+# Read configuration from environment
+LLM_API_BASE_URL = os.getenv("LLM_API_BASE_URL", "http://localhost:11434")
 MODEL_NAME = os.getenv("LLM_MODEL_NAME", "qwen2.5-math-7b-instruct")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
+# CORS configuration
+ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:5173,http://localhost:8000").split(",")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[origin.strip() for origin in ALLOWED_ORIGINS],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class MainTopicEnum(str, Enum):
     derivatives = "derivatives"

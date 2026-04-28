@@ -1,7 +1,7 @@
 import axios from 'axios';
 import type { QuizSession, SubmitResponse, QuizEndResponse, QuizSubmitRequest } from '../types/quiz.types';
 
-const API_URL = 'http://localhost:8000/api/v1';
+import { API_BASE_URL as API_URL } from '../../../shared/api/config';
 
 const getAuthHeaders = () => {
     const token = localStorage.getItem('access_token');

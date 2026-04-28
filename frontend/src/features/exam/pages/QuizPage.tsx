@@ -24,7 +24,6 @@ import { useAuth } from "../../auth/hooks/useAuth";
 import { useQuizFlow } from "../hooks/useQuizFlow";
 import { QuestionCard } from "../components/QuestionCard";
 import { GraderLoadingOverlay } from "../components/GraderLoadingOverlay";
-import { FeedbackPanel } from "../components/FeedbackPanel";
 import { mapErrorCodeToThai } from "../utils/errorMapper";
 import { renderMathText } from "../components/mathRenderer";
 
@@ -125,20 +124,40 @@ export default function QuizPage() {
               </p>
             </div>
 
-            {/* AI archetype badge (populated by KT microservice — optional field) */}
-            {(quizEndResult as any).student_profile && (
-              <div className="bg-indigo-50 p-6 rounded-xl text-center min-w-[180px]">
-                <p className="text-gray-600 font-medium">AI Profile</p>
-                <p className="text-lg font-bold text-indigo-700 mt-2">
-                  {(quizEndResult as any).student_profile}
-                </p>
-                {(quizEndResult as any).avg_mastery != null && (
-                  <p className="text-sm text-gray-500 mt-1">
-                    Mastery: {((quizEndResult as any).avg_mastery * 100).toFixed(1)}%
+            {/* AI archetype badge & Mastery Indicator */}
+            <div className="bg-indigo-50 p-6 rounded-xl text-center min-w-[200px] flex flex-col justify-center">
+              <p className="text-gray-600 font-medium">AI Analysis</p>
+              
+              {quizEndResult.skill_mastery !== null && quizEndResult.skill_mastery !== undefined ? (
+                <div className="mt-2">
+                  <p className="text-lg font-bold text-indigo-700">
+                    {quizEndResult.student_profile || "Developing (Average)"}
                   </p>
-                )}
-              </div>
-            )}
+                  
+                  {/* Mastery Progress Bar */}
+                  <div className="mt-3">
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-xs font-semibold text-indigo-600">Skill Mastery</span>
+                      <span className="text-xs font-bold text-indigo-700">
+                        {(quizEndResult.skill_mastery * 100).toFixed(1)}%
+                      </span>
+                    </div>
+                    <div className="w-full bg-indigo-200 rounded-full h-2">
+                      <div 
+                        className="bg-indigo-600 h-2 rounded-full transition-all duration-1000" 
+                        style={{ width: `${quizEndResult.skill_mastery * 100}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="mt-4">
+                  <p className="text-sm text-gray-400 italic">
+                    AI Analysis temporarily unavailable
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Per-question summary list */}
