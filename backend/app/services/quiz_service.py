@@ -160,6 +160,7 @@ class QuizService:
                 session_summary.append({
                     "question_number": index + 1,
                     "question_text": question.question_text,
+                    "choices":         question.choices or [],
                     "is_correct": attempt.is_correct,
                     "user_answer": attempt.user_answer,
                     "correct_answer": question.correct_answer,

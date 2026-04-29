@@ -1,232 +1,1101 @@
-// src/features/dashboard/data/mockData.ts
+// Mock Data สำหรับฐานข้อมูล Quiz System
 
-import type { ChapterSummary } from "../types/dashboard.types";
-
-/**
- * Chapter Names Mapping
- */
-export const CHAPTER_NAMES: Record<string, string> = {
-  differential: "Differential",
-  limit: "Limits",
-  integral: "Integral",
-};
-
-/**
- * Mock data for DashboardOverviewPage
- */
-export const MOCK_CHAPTERS: ChapterSummary[] = [
-  {
-    id: "limit",
-    title: "Limits",
-    latestScore: 82,
-    attempts: 4,
-    trend: "up",
-  },
-  {
-    id: "differential",
-    title: "Differential",
-    latestScore: 78,
-    attempts: 3,
-    trend: "steady",
-  },
-  {
-    id: "integral",
-    title: "Integral",
-    latestScore: 65,
-    attempts: 2,
-    trend: "down",
-  },
-];
-
-/**
- * Mock data for ChapterDashboardPage
- */
-export const CHAPTER_STATS = {
-  latestScore: 78,
-  latestDiff: +8,
-  difficulty: "ปานกลาง",
-  avgTimePerQuestion: 18,
-  avgTimeDiff: -2,
-  totalRounds: 3,
-};
-
-/**
- * Mock Bloom's Level data for ChapterDashboardPage
- */
-export const BLOOM_LEVELS = [
-  { label: "Remember", percent: 90 },
-  { label: "Understand", percent: 80 },
-  { label: "Apply", percent: 60 },
-  { label: "Analyze", percent: 40 },
-  { label: "Evaluate", percent: 10 },
-];
-
-/**
- * Mock data for Strengths & Weaknesses in ChapterDashboardPage
- */
-export const CHAPTER_STRENGTHS = ["Derivative Concept", "Basic Function Rule"];
-
-export const CHAPTER_WEAKNESSES = ["Chain Rule", "Evaluate & Check"];
-
-/**
- * Mock data for Course Report Page - Summary
- */
-export const COURSE_REPORT_SUMMARY = {
-  totalScore: "78%",
-  avgTimePerQuestion: "18 วินาที",
-  proficiencyLevel: "ปานกลาง",
-};
-
-/**
- * Mock data for Course Report Page - Strengths
- */
-export const COURSE_REPORT_STRENGTHS = [
-  "เข้าใจแนวคิดพื้นฐานของ Limit / Differential ได้ดี",
-  "แก้โจทย์คำนวณตรงสูตรได้แม่นยำ",
-];
-
-/**
- * Mock data for Course Report Page - Weaknesses
- */
-export const COURSE_REPORT_WEAKNESSES = [
-  "การวิเคราะห์โจทย์ประยุกต์หลายขั้นตอน",
-  "การแปลโจทย์ภาษาไทยเป็นสัญลักษณ์คณิตศาสตร์",
-];
-
-/**
- * Mock data for Course Report Table
- */
-export const COURSE_REPORT_ATTEMPTS = [
-  {
-    round: 1,
-    date: "01/11/2025",
-    score: "70%",
-    avgTime: "22 วินาที",
-    note: "เริ่มต้นทำครั้งแรก",
-  },
-  {
-    round: 2,
-    date: "05/11/2025",
-    score: "75%",
-    avgTime: "20 วินาที",
-    note: "เข้าใจสูตรดีขึ้น",
-  },
-  {
-    round: 3,
-    date: "10/11/2025",
-    score: "78%",
-    avgTime: "18 วินาที",
-    note: "เริ่มทำโจทย์ประยุกต์ได้",
-  },
-];
-
-/**
- * Mock data for Chapter Dashboard Table
- */
-export const CHAPTER_ATTEMPTS = [
-  {
-    round: 1,
-    date: "01/11/2025",
-    score: "70%",
-    avgTime: "22 วินาที",
-    strength: "จำสูตรพื้นฐานได้ดี",
-    weakness: "อ่านโจทย์ประยุกต์ให้ละเอียด",
-  },
-];
-
-/**
- * Mock data for Dashboard Overview Summary Stats
- */
-export const DASHBOARD_OVERVIEW_STATS = {
-  totalChapters: "3 บท",
-  averageScore: "75%",
-  totalAttempts: "9 รอบ",
-};
-
-/**
- * Mock data for Chapter Dashboard - Score Progress Line Chart
- * แสดงพัฒนาการคะแนนย้อนหลัง
- */
-export const CHAPTER_SCORE_HISTORY = [
-  { attempt: 1, score: 70, date: "01/11" },
-  { attempt: 2, score: 75, date: "05/11" },
-  { attempt: 3, score: 78, date: "10/11" },
-];
-
-/**
- * Mock data for Chapter Dashboard - Time Progress Line Chart
- * แสดงพัฒนาการเวลาเฉลี่ยต่อข้อย้อนหลัง
- */
-export const CHAPTER_TIME_HISTORY = [
-  { attempt: 1, avgTime: 22, date: "01/11" },
-  { attempt: 2, avgTime: 20, date: "05/11" },
-  { attempt: 3, avgTime: 18, date: "10/11" },
-];
-
-/**
- * Mock data for Chapter Dashboard - Radar Chart (Skills Analysis)
- * แสดงการวิเคราะห์ทักษะต่างๆ ในบทเรียน
- */
-export const CHAPTER_SKILLS_RADAR = [
-  { skill: "Concept", value: 85 },
-  { skill: "Calculation", value: 90 },
-  { skill: "Application", value: 65 },
-  { skill: "Analysis", value: 70 },
-  { skill: "Evaluation", value: 60 },
-];
-
-/**
- * Mock data for Course Report Page - Donut Chart
- * แสดงคะแนนรวมในรูปแบบ donut (87% pass, 13% fail)
- */
-export const COURSE_REPORT_SCORE_DISTRIBUTION = [
-  { name: "Pass", value: 87, color: "#6693BC" },
-  { name: "Fail", value: 13, color: "#FFDA84" },
-];
-
-/**
- * Mock data for Course Report Page - Error Analysis Table
- */
-export const COURSE_REPORT_ERROR_ANALYSIS = [
+// ========== USERS TABLE ==========
+export const mockUsers = [
   {
     id: 1,
-    topic: "Chain Rule",
-    errors: 3,
-    errorRate: "15%",
-    suggestion: "ทบทวนการใช้ chain rule ให้แม่นยำ",
+    email: 'student1.calculus@example.com',
+    hashed_password: '$2b$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcg7b3XeKeUxWdeS86E36gGGQ1C',
+    full_name: 'นักเรียนที่ 1 (Advanced)',
+    role: 'student',
+    is_active: true,
+    is_verified: true,
+    created_at: '2024-01-15T08:30:00Z',
+    updated_at: '2024-03-20T10:15:00Z',
   },
   {
     id: 2,
-    topic: "Product Rule",
-    errors: 2,
-    errorRate: "10%",
-    suggestion: "ฝึกโจทย์ product rule เพิ่มเติม",
+    email: 'instructor.calculus@example.com',
+    hashed_password: '$2b$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcg7b3XeKeUxWdeS86E36gGGQ1C',
+    full_name: 'ผู้สอนแคลคูลัส',
+    role: 'instructor',
+    is_active: true,
+    is_verified: true,
+    created_at: '2024-01-10T09:00:00Z',
+    updated_at: '2024-03-25T14:45:00Z',
   },
   {
     id: 3,
-    topic: "L'Hôpital's Rule",
-    errors: 4,
-    errorRate: "20%",
-    suggestion: "เรียนเพิ่มเติมเกี่ยวกับการใช้ L'Hôpital's Rule",
+    email: 'student2.calculus@example.com',
+    hashed_password: '$2b$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcg7b3XeKeUxWdeS86E36gGGQ1C',
+    full_name: 'นักเรียนที่ 2 (Intermediate)',
+    role: 'student',
+    is_active: true,
+    is_verified: false,
+    created_at: '2024-02-01T11:20:00Z',
+    updated_at: '2024-03-18T16:30:00Z',
+  },
+  {
+    id: 4,
+    email: 'student3.calculus@example.com',
+    hashed_password: '$2b$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcg7b3XeKeUxWdeS86E36gGGQ1C',
+    full_name: 'นักเรียนที่ 3 (Excellent)',
+    role: 'student',
+    is_active: true,
+    is_verified: true,
+    created_at: '2024-01-20T13:45:00Z',
+    updated_at: '2024-02-28T09:10:00Z',
   },
 ];
 
+// ========== STUDENT_KNOWLEDGE TABLE ==========
+export const mockStudentKnowledge = [
+  {
+    id: 1,
+    user_id: 1,
+    skill_mastery: {
+      'Limits': 0.85,
+      'Continuity': 0.80,
+      'Derivatives': 0.90,
+      'Applications of Derivatives': 0.88,
+      'Integrals': 0.85,
+      'Applications of Integrals': 0.82,
+    },
+    last_updated: '2024-03-20T10:15:00Z',
+  },
+  {
+    id: 2,
+    user_id: 3,
+    skill_mastery: {
+      'Limits': 0.60,
+      'Continuity': 0.65,
+      'Derivatives': 0.70,
+      'Applications of Derivatives': 0.65,
+      'Integrals': 0.60,
+      'Applications of Integrals': 0.55,
+    },
+    last_updated: '2024-03-18T16:30:00Z',
+  },
+  {
+    id: 3,
+    user_id: 4,
+    skill_mastery: {
+      'Limits': 0.95,
+      'Continuity': 0.92,
+      'Derivatives': 0.95,
+      'Applications of Derivatives': 0.93,
+      'Integrals': 0.92,
+      'Applications of Integrals': 0.90,
+    },
+    last_updated: '2024-02-28T09:10:00Z',
+  },
+];
+
+// ========== QUESTIONS TABLE ==========
+// วิชาแคลคูลัส (Calculus) - 6 บท
+export const mockQuestions = [
+  // ========== บท 1: Limits ==========
+  {
+    id: 1,
+    question_text: 'จงหา limit ของ f(x) = (x² - 4)/(x - 2) เมื่อ x → 2',
+    content_json: {
+      type: 'multiple_choice',
+      description: 'Algebraic limits - factoring method',
+    },
+    correct_answer: '4',
+    choices: ['2', '4', 'ไม่มี limit', '0'],
+    difficulty: 3.5,
+    discrimination: 0.75,
+    guessing: 0.15,
+    bloom_level: 'apply',
+    main_topic: 'Limits',
+    sub_topic: 'Algebraic limits',
+    skill_tags: ['Limits', 'Algebraic limits'],
+    created_at: '2024-01-01T08:00:00Z',
+    updated_at: '2024-03-20T10:00:00Z',
+  },
+  {
+    id: 2,
+    question_text: 'จงหา lim(x→0) (√(x+1) - 1)/x โดยใช้ Rationalization',
+    content_json: {
+      type: 'short_answer',
+      description: 'Rationalization technique for limits',
+    },
+    correct_answer: '1/2',
+    choices: null,
+    difficulty: 4.2,
+    discrimination: 0.78,
+    guessing: 0.10,
+    bloom_level: 'apply',
+    main_topic: 'Limits',
+    sub_topic: 'Rationalization',
+    skill_tags: ['Limits', 'Rationalization'],
+    created_at: '2024-01-02T09:30:00Z',
+    updated_at: '2024-03-19T11:20:00Z',
+  },
+  {
+    id: 3,
+    question_text: 'จงหา lim(x→∞) (3x² + 2x)/(5x² - 1)',
+    content_json: {
+      type: 'multiple_choice',
+      description: 'Limit at infinity - polynomial behavior',
+    },
+    correct_answer: '3/5',
+    choices: ['3/5', '2/(-1)', '0', '∞'],
+    difficulty: 3.8,
+    discrimination: 0.82,
+    guessing: 0.20,
+    bloom_level: 'apply',
+    main_topic: 'Limits',
+    sub_topic: 'Limit at infinity',
+    skill_tags: ['Limits', 'Limit at infinity'],
+    created_at: '2024-01-03T10:00:00Z',
+    updated_at: '2024-03-18T14:30:00Z',
+  },
+  {
+    id: 4,
+    question_text: 'จงหา lim(x→0+) 1/x',
+    content_json: {
+      type: 'multiple_choice',
+      description: 'One-sided limit approaching from right',
+    },
+    correct_answer: '+∞',
+    choices: ['-∞', '+∞', '0', '1'],
+    difficulty: 3.2,
+    discrimination: 0.80,
+    guessing: 0.25,
+    bloom_level: 'understand',
+    main_topic: 'Limits',
+    sub_topic: 'One-sided limit',
+    skill_tags: ['Limits', 'One-sided limit'],
+    created_at: '2024-01-04T08:15:00Z',
+    updated_at: '2024-03-17T09:30:00Z',
+  },
+  {
+    id: 5,
+    question_text: 'ใช้ Squeeze Theorem เพื่อหา lim(x→0) x²sin(1/x)',
+    content_json: {
+      type: 'short_answer',
+      description: 'Squeeze theorem application',
+    },
+    correct_answer: '0',
+    choices: null,
+    difficulty: 5.0,
+    discrimination: 0.85,
+    guessing: 0.05,
+    bloom_level: 'analyze',
+    main_topic: 'Limits',
+    sub_topic: 'Squeeze theorem',
+    skill_tags: ['Limits', 'Squeeze theorem'],
+    created_at: '2024-01-05T13:00:00Z',
+    updated_at: '2024-03-16T15:45:00Z',
+  },
+
+  // ========== บท 2: Continuity ==========
+  {
+    id: 6,
+    question_text: 'ฟังก์ชัน f(x) = 1/(x-3) ไม่ต่อเนื่องที่จุดใด',
+    content_json: {
+      type: 'multiple_choice',
+      description: 'Definition of continuity and discontinuity points',
+    },
+    correct_answer: 'x = 3',
+    choices: ['x = 0', 'x = 1', 'x = 3', 'ต่อเนื่องทั่วไป'],
+    difficulty: 3.5,
+    discrimination: 0.80,
+    guessing: 0.20,
+    bloom_level: 'understand',
+    main_topic: 'Continuity',
+    sub_topic: 'Definition of continuity',
+    skill_tags: ['Continuity', 'Definition of continuity'],
+    created_at: '2024-01-06T08:00:00Z',
+    updated_at: '2024-03-15T10:00:00Z',
+  },
+  {
+    id: 7,
+    question_text: 'ฟังก์ชัน f(x) = {(x², x<1), (2, x≥1)} มีความต่อเนื่องที่ x=1 หรือไม่',
+    content_json: {
+      type: 'short_answer',
+      description: 'Continuity of piecewise functions',
+    },
+    correct_answer: 'ไม่ต่อเนื่อง เพราะ lim(x→1-) f(x) = 1 ≠ f(1) = 2',
+    choices: null,
+    difficulty: 4.5,
+    discrimination: 0.77,
+    guessing: 0.10,
+    bloom_level: 'apply',
+    main_topic: 'Continuity',
+    sub_topic: 'Continuity of piecewise functions',
+    skill_tags: ['Continuity', 'Continuity of piecewise functions'],
+    created_at: '2024-01-07T09:30:00Z',
+    updated_at: '2024-03-14T11:20:00Z',
+  },
+  {
+    id: 8,
+    question_text: 'จงบอกประเภท discontinuity ของ f(x) = |x|/x ที่ x=0',
+    content_json: {
+      type: 'multiple_choice',
+      description: 'Types of discontinuity classification',
+    },
+    correct_answer: 'Jump discontinuity',
+    choices: ['Removable', 'Jump discontinuity', 'Infinite', 'None'],
+    difficulty: 4.0,
+    discrimination: 0.75,
+    guessing: 0.25,
+    bloom_level: 'understand',
+    main_topic: 'Continuity',
+    sub_topic: 'Types of discontinuity',
+    skill_tags: ['Continuity', 'Types of discontinuity'],
+    created_at: '2024-01-08T10:00:00Z',
+    updated_at: '2024-03-13T14:30:00Z',
+  },
+  {
+    id: 9,
+    question_text: 'ฟังก์ชัน f(x) = x³ - 2x มีค่ารากระหว่าง 1 กับ 2 หรือไม่ เหตุผล',
+    content_json: {
+      type: 'short_answer',
+      description: 'Intermediate value theorem application',
+    },
+    correct_answer: 'ใช่ เพราะ f(1)=-1<0 และ f(2)=4>0 โดย IVT จึงมีรากระหว่าง 1 กับ 2',
+    choices: null,
+    difficulty: 4.2,
+    discrimination: 0.81,
+    guessing: 0.08,
+    bloom_level: 'apply',
+    main_topic: 'Continuity',
+    sub_topic: 'Intermediate value theorem',
+    skill_tags: ['Continuity', 'Intermediate value theorem'],
+    created_at: '2024-01-09T13:00:00Z',
+    updated_at: '2024-03-12T15:45:00Z',
+  },
+
+  // ========== บท 3: Derivatives ==========
+  {
+    id: 10,
+    question_text: 'จงหาอนุพันธ์ของ f(x) = x⁴ + 3x² - 5 โดยใช้ Power rule',
+    content_json: {
+      type: 'short_answer',
+      description: 'Power rule for derivatives',
+    },
+    correct_answer: '4x³ + 6x',
+    choices: null,
+    difficulty: 2.8,
+    discrimination: 0.88,
+    guessing: 0.05,
+    bloom_level: 'apply',
+    main_topic: 'Derivatives',
+    sub_topic: 'Power rule',
+    skill_tags: ['Derivatives', 'Power rule'],
+    created_at: '2024-01-10T08:00:00Z',
+    updated_at: '2024-03-11T10:00:00Z',
+  },
+  {
+    id: 11,
+    question_text: 'จงหาอนุพันธ์ของ f(x) = (x² + 1)(x³ - 2) โดยใช้ Product rule',
+    content_json: {
+      type: 'short_answer',
+      description: 'Product rule for derivatives',
+    },
+    correct_answer: '5x⁴ + 3x² - 4x',
+    choices: null,
+    difficulty: 3.5,
+    discrimination: 0.80,
+    guessing: 0.08,
+    bloom_level: 'apply',
+    main_topic: 'Derivatives',
+    sub_topic: 'Product rule',
+    skill_tags: ['Derivatives', 'Product rule'],
+    created_at: '2024-01-11T09:30:00Z',
+    updated_at: '2024-03-10T11:20:00Z',
+  },
+  {
+    id: 12,
+    question_text: 'จงหาอนุพันธ์ของ f(x) = (x² + 1)/(x - 1) โดยใช้ Quotient rule',
+    content_json: {
+      type: 'short_answer',
+      description: 'Quotient rule for derivatives',
+    },
+    correct_answer: '(x² - 2x - 1)/(x - 1)²',
+    choices: null,
+    difficulty: 4.0,
+    discrimination: 0.75,
+    guessing: 0.10,
+    bloom_level: 'apply',
+    main_topic: 'Derivatives',
+    sub_topic: 'Quotient rule',
+    skill_tags: ['Derivatives', 'Quotient rule'],
+    created_at: '2024-01-12T10:00:00Z',
+    updated_at: '2024-03-09T14:30:00Z',
+  },
+  {
+    id: 13,
+    question_text: 'จงหาอนุพันธ์ของ f(x) = (3x² + 1)⁵ โดยใช้ Chain rule',
+    content_json: {
+      type: 'short_answer',
+      description: 'Chain rule for composite functions',
+    },
+    correct_answer: '30x(3x² + 1)⁴',
+    choices: null,
+    difficulty: 4.2,
+    discrimination: 0.82,
+    guessing: 0.08,
+    bloom_level: 'apply',
+    main_topic: 'Derivatives',
+    sub_topic: 'Chain rule',
+    skill_tags: ['Derivatives', 'Chain rule'],
+    created_at: '2024-01-13T13:00:00Z',
+    updated_at: '2024-03-08T15:45:00Z',
+  },
+  {
+    id: 14,
+    question_text: 'จงหาอนุพันธ์อันดับสาม (f\'\'\') ของ f(x) = x⁴',
+    content_json: {
+      type: 'short_answer',
+      description: 'Higher order derivatives calculation',
+    },
+    correct_answer: '24x',
+    choices: null,
+    difficulty: 3.2,
+    discrimination: 0.85,
+    guessing: 0.10,
+    bloom_level: 'apply',
+    main_topic: 'Derivatives',
+    sub_topic: 'Higher order derivatives',
+    skill_tags: ['Derivatives', 'Higher order derivatives'],
+    created_at: '2024-01-14T08:15:00Z',
+    updated_at: '2024-03-07T09:30:00Z',
+  },
+  {
+    id: 15,
+    question_text: 'จงหา dy/dx ของ x² + y² = 25 โดยใช้ Implicit differentiation',
+    content_json: {
+      type: 'short_answer',
+      description: 'Implicit differentiation technique',
+    },
+    correct_answer: 'dy/dx = -x/y',
+    choices: null,
+    difficulty: 4.5,
+    discrimination: 0.78,
+    guessing: 0.10,
+    bloom_level: 'apply',
+    main_topic: 'Derivatives',
+    sub_topic: 'Implicit differentiation',
+    skill_tags: ['Derivatives', 'Implicit differentiation'],
+    created_at: '2024-01-15T09:00:00Z',
+    updated_at: '2024-03-06T10:30:00Z',
+  },
+  {
+    id: 16,
+    question_text: 'จงหาอนุพันธ์ของ f(x) = ln(x² + 1) โดยใช้ Log differentiation',
+    content_json: {
+      type: 'short_answer',
+      description: 'Logarithmic differentiation',
+    },
+    correct_answer: '2x/(x² + 1)',
+    choices: null,
+    difficulty: 4.0,
+    discrimination: 0.80,
+    guessing: 0.10,
+    bloom_level: 'apply',
+    main_topic: 'Derivatives',
+    sub_topic: 'Log differentiation',
+    skill_tags: ['Derivatives', 'Log differentiation'],
+    created_at: '2024-01-16T13:00:00Z',
+    updated_at: '2024-03-05T15:45:00Z',
+  },
+
+  // ========== บท 4: Applications of Derivatives ==========
+  {
+    id: 17,
+    question_text: 'จงหาช่วงที่ฟังก์ชัน f(x) = x³ - 3x เพิ่มขึ้น (increasing)',
+    content_json: {
+      type: 'short_answer',
+      description: 'Determine intervals of increase/decrease',
+    },
+    correct_answer: '(-∞, -1) ∪ (1, ∞)',
+    choices: null,
+    difficulty: 3.8,
+    discrimination: 0.80,
+    guessing: 0.10,
+    bloom_level: 'apply',
+    main_topic: 'Applications of Derivatives',
+    sub_topic: 'Increasing / decreasing',
+    skill_tags: ['Applications of Derivatives', 'Increasing / decreasing'],
+    created_at: '2024-01-17T08:00:00Z',
+    updated_at: '2024-03-04T10:00:00Z',
+  },
+  {
+    id: 18,
+    question_text: 'จงหาจุดวิกฤต (critical points) ของ f(x) = x² - 4x + 3',
+    content_json: {
+      type: 'short_answer',
+      description: 'Finding critical points',
+    },
+    correct_answer: 'x = 2',
+    choices: null,
+    difficulty: 3.5,
+    discrimination: 0.85,
+    guessing: 0.10,
+    bloom_level: 'apply',
+    main_topic: 'Applications of Derivatives',
+    sub_topic: 'Critical points',
+    skill_tags: ['Applications of Derivatives', 'Critical points'],
+    created_at: '2024-01-18T09:30:00Z',
+    updated_at: '2024-03-03T11:20:00Z',
+  },
+  {
+    id: 19,
+    question_text: 'จงหาช่วงที่ f(x) = x³ - 3x² เว้าเหนือ (concave up)',
+    content_json: {
+      type: 'short_answer',
+      description: 'Determine concavity of function',
+    },
+    correct_answer: '(1, ∞)',
+    choices: null,
+    difficulty: 4.0,
+    discrimination: 0.78,
+    guessing: 0.10,
+    bloom_level: 'apply',
+    main_topic: 'Applications of Derivatives',
+    sub_topic: 'Concavity',
+    skill_tags: ['Applications of Derivatives', 'Concavity'],
+    created_at: '2024-01-19T10:00:00Z',
+    updated_at: '2024-03-02T14:30:00Z',
+  },
+  {
+    id: 20,
+    question_text: 'จงหาจุดเปลี่ยนเว้า (inflection points) ของ f(x) = x³ - 6x²',
+    content_json: {
+      type: 'short_answer',
+      description: 'Finding inflection points',
+    },
+    correct_answer: 'x = 4',
+    choices: null,
+    difficulty: 4.2,
+    discrimination: 0.81,
+    guessing: 0.08,
+    bloom_level: 'apply',
+    main_topic: 'Applications of Derivatives',
+    sub_topic: 'Inflection points',
+    skill_tags: ['Applications of Derivatives', 'Inflection points'],
+    created_at: '2024-01-20T13:00:00Z',
+    updated_at: '2024-03-01T15:45:00Z',
+  },
+  {
+    id: 21,
+    question_text: 'จงร่างกราฟของ f(x) = x³ - 3x โดยหา critical points, inflection points และสรุป behavior',
+    content_json: {
+      type: 'essay',
+      description: 'Complete curve sketching analysis',
+    },
+    correct_answer: 'Maximum ที่ x=-1, Minimum ที่ x=1, Inflection point ที่ x=0',
+    choices: null,
+    difficulty: 5.5,
+    discrimination: 0.75,
+    guessing: 0.05,
+    bloom_level: 'analyze',
+    main_topic: 'Applications of Derivatives',
+    sub_topic: 'Curve sketching',
+    skill_tags: ['Applications of Derivatives', 'Curve sketching'],
+    created_at: '2024-01-21T08:00:00Z',
+    updated_at: '2024-02-28T10:00:00Z',
+  },
+  {
+    id: 22,
+    question_text: 'ต้องการสร้างกล่องจากกระดาษ 10 × 6 โดยตัดมุมเป็นสี่เหลี่ยม x จงหา x ที่ให้ปริมาณสูงสุด',
+    content_json: {
+      type: 'short_answer',
+      description: 'Optimization problem solving',
+    },
+    correct_answer: 'x = 1',
+    choices: null,
+    difficulty: 5.0,
+    discrimination: 0.77,
+    guessing: 0.05,
+    bloom_level: 'analyze',
+    main_topic: 'Applications of Derivatives',
+    sub_topic: 'Optimization',
+    skill_tags: ['Applications of Derivatives', 'Optimization'],
+    created_at: '2024-01-22T09:30:00Z',
+    updated_at: '2024-02-27T11:20:00Z',
+  },
+  {
+    id: 23,
+    question_text: 'ลูกบอลตกจากตึกสูง 100 ม. ด้วยความเร็ว 10 m/s ลงมา จงหาความเร่ง',
+    content_json: {
+      type: 'short_answer',
+      description: 'Related rates problem',
+    },
+    correct_answer: '9.8 m/s² (หรือ 10 m/s²)',
+    choices: null,
+    difficulty: 3.5,
+    discrimination: 0.80,
+    guessing: 0.15,
+    bloom_level: 'apply',
+    main_topic: 'Applications of Derivatives',
+    sub_topic: 'Related rates',
+    skill_tags: ['Applications of Derivatives', 'Related rates'],
+    created_at: '2024-01-23T13:00:00Z',
+    updated_at: '2024-02-26T15:45:00Z',
+  },
+  {
+    id: 24,
+    question_text: 'จงใช้ Linear approximation หาค่า √(4.1) โดยใช้ f(x) = √x ที่ x = 4',
+    content_json: {
+      type: 'short_answer',
+      description: 'Linear approximation technique',
+    },
+    correct_answer: 'ประมาณ 2.025',
+    choices: null,
+    difficulty: 4.0,
+    discrimination: 0.76,
+    guessing: 0.10,
+    bloom_level: 'apply',
+    main_topic: 'Applications of Derivatives',
+    sub_topic: 'Linear approximation',
+    skill_tags: ['Applications of Derivatives', 'Linear approximation'],
+    created_at: '2024-01-24T08:15:00Z',
+    updated_at: '2024-02-25T09:30:00Z',
+  },
+
+  // ========== บท 5: Integrals ==========
+  {
+    id: 25,
+    question_text: 'จงหา ∫(3x² + 2x - 1)dx (Indefinite integral)',
+    content_json: {
+      type: 'short_answer',
+      description: 'Indefinite integral calculation',
+    },
+    correct_answer: 'x³ + x² - x + C',
+    choices: null,
+    difficulty: 2.8,
+    discrimination: 0.88,
+    guessing: 0.05,
+    bloom_level: 'apply',
+    main_topic: 'Integrals',
+    sub_topic: 'Indefinite integral',
+    skill_tags: ['Integrals', 'Indefinite integral'],
+    created_at: '2024-01-25T08:00:00Z',
+    updated_at: '2024-02-24T10:00:00Z',
+  },
+  {
+    id: 26,
+    question_text: 'จงหา ∫₀² (x² + 1)dx (Definite integral)',
+    content_json: {
+      type: 'short_answer',
+      description: 'Definite integral evaluation',
+    },
+    correct_answer: '14/3',
+    choices: null,
+    difficulty: 3.0,
+    discrimination: 0.85,
+    guessing: 0.10,
+    bloom_level: 'apply',
+    main_topic: 'Integrals',
+    sub_topic: 'Definite integral',
+    skill_tags: ['Integrals', 'Definite integral'],
+    created_at: '2024-01-26T09:30:00Z',
+    updated_at: '2024-02-23T11:20:00Z',
+  },
+  {
+    id: 27,
+    question_text: 'จงอธิบาย Fundamental Theorem of Calculus และใช้ประโยชน์',
+    content_json: {
+      type: 'essay',
+      description: 'Fundamental Theorem of Calculus',
+    },
+    correct_answer: 'FTC เชื่อมโยง derivative กับ integral ถ้า F\'(x)=f(x) แล้ว ∫f(x)dx = F(x) + C',
+    choices: null,
+    difficulty: 5.0,
+    discrimination: 0.82,
+    guessing: 0.05,
+    bloom_level: 'understand',
+    main_topic: 'Integrals',
+    sub_topic: 'Fundamental theorem of calculus',
+    skill_tags: ['Integrals', 'Fundamental theorem of calculus'],
+    created_at: '2024-01-27T10:00:00Z',
+    updated_at: '2024-02-22T14:30:00Z',
+  },
+  {
+    id: 28,
+    question_text: 'จงหา ∫(2x)(x² + 1)³ dx โดยใช้ Substitution',
+    content_json: {
+      type: 'short_answer',
+      description: 'Integration by substitution',
+    },
+    correct_answer: '(x² + 1)⁴/4 + C',
+    choices: null,
+    difficulty: 4.0,
+    discrimination: 0.80,
+    guessing: 0.10,
+    bloom_level: 'apply',
+    main_topic: 'Integrals',
+    sub_topic: 'Substitution',
+    skill_tags: ['Integrals', 'Substitution'],
+    created_at: '2024-01-28T13:00:00Z',
+    updated_at: '2024-02-21T15:45:00Z',
+  },
+  {
+    id: 29,
+    question_text: 'จงหาพื้นที่ใต้กราฟ f(x) = x² จาก x=0 ถึง x=3',
+    content_json: {
+      type: 'short_answer',
+      description: 'Area under curve calculation',
+    },
+    correct_answer: '9',
+    choices: null,
+    difficulty: 3.2,
+    discrimination: 0.85,
+    guessing: 0.10,
+    bloom_level: 'apply',
+    main_topic: 'Integrals',
+    sub_topic: 'Area under curve',
+    skill_tags: ['Integrals', 'Area under curve'],
+    created_at: '2024-01-29T08:15:00Z',
+    updated_at: '2024-02-20T09:30:00Z',
+  },
+
+  // ========== บท 6: Applications of Integrals ==========
+  {
+    id: 30,
+    question_text: 'จงหาพื้นที่ระหว่าง y = x² และ y = 2x',
+    content_json: {
+      type: 'short_answer',
+      description: 'Area between curves',
+    },
+    correct_answer: '4/3',
+    choices: null,
+    difficulty: 4.0,
+    discrimination: 0.80,
+    guessing: 0.10,
+    bloom_level: 'apply',
+    main_topic: 'Applications of Integrals',
+    sub_topic: 'Area between curves',
+    skill_tags: ['Applications of Integrals', 'Area between curves'],
+    created_at: '2024-01-30T08:00:00Z',
+    updated_at: '2024-02-19T10:00:00Z',
+  },
+  {
+    id: 31,
+    question_text: 'จงหาปริมาณของทรงตัน (disk method) ที่เกิดจากการหมุน y = √x เกี่ยวกับแกน x จาก x=0 ถึง x=4',
+    content_json: {
+      type: 'short_answer',
+      description: 'Volume calculation using disk method',
+    },
+    correct_answer: '8π',
+    choices: null,
+    difficulty: 4.5,
+    discrimination: 0.78,
+    guessing: 0.08,
+    bloom_level: 'apply',
+    main_topic: 'Applications of Integrals',
+    sub_topic: 'Volume (disk method)',
+    skill_tags: ['Applications of Integrals', 'Volume (disk method)'],
+    created_at: '2024-01-31T09:30:00Z',
+    updated_at: '2024-02-18T11:20:00Z',
+  },
+  {
+    id: 32,
+    question_text: 'จงหาค่าเฉลี่ย (average value) ของ f(x) = x² บนช่วง [0, 3]',
+    content_json: {
+      type: 'short_answer',
+      description: 'Average value of function',
+    },
+    correct_answer: '3',
+    choices: null,
+    difficulty: 3.5,
+    discrimination: 0.82,
+    guessing: 0.10,
+    bloom_level: 'apply',
+    main_topic: 'Applications of Integrals',
+    sub_topic: 'Average value',
+    skill_tags: ['Applications of Integrals', 'Average value'],
+    created_at: '2024-02-01T10:00:00Z',
+    updated_at: '2024-02-17T14:30:00Z',
+  },
+  {
+    id: 33,
+    question_text: 'จงหาฟังก์ชัน accumulation A(x) = ∫₀ˣ t² dt และหาค่า A\'(x)',
+    content_json: {
+      type: 'short_answer',
+      description: 'Accumulation function and its derivative',
+    },
+    correct_answer: 'A(x) = x³/3, A\'(x) = x²',
+    choices: null,
+    difficulty: 4.0,
+    discrimination: 0.81,
+    guessing: 0.08,
+    bloom_level: 'apply',
+    main_topic: 'Applications of Integrals',
+    sub_topic: 'Accumulation function',
+    skill_tags: ['Applications of Integrals', 'Accumulation function'],
+    created_at: '2024-02-02T13:00:00Z',
+    updated_at: '2024-02-16T15:45:00Z',
+  },
+];
+
+// ========== RECOMMENDATIONS TABLE ==========
+export const mockRecommendations = [
+  {
+    id: 1,
+    user_id: 1,
+    question_id: 10,
+    reason: 'คุณทำได้ดีในเรื่อง Derivatives แล้ว ลองทำ Power rule ที่ยากขึ้น',
+    confidence: 0.90,
+    created_at: '2024-03-20T10:30:00Z',
+  },
+  {
+    id: 2,
+    user_id: 3,
+    question_id: 2,
+    reason: 'แนะนำให้ฝึก Rationalization เพื่อพัฒนาทักษะ Limits',
+    confidence: 0.78,
+    created_at: '2024-03-18T12:00:00Z',
+  },
+  {
+    id: 3,
+    user_id: 1,
+    question_id: 22,
+    reason: 'คำถามท้าทายสำหรับผู้เรียนขั้นสูง - Optimization problem',
+    confidence: 0.92,
+    created_at: '2024-03-19T14:45:00Z',
+  },
+  {
+    id: 4,
+    user_id: 4,
+    question_id: 31,
+    reason: 'ฝึกปริมาณทรงตัน (disk method) ในบท Applications of Integrals',
+    confidence: 0.88,
+    created_at: '2024-02-28T16:20:00Z',
+  },
+];
+
+// ========== QUIZ_SESSIONS TABLE ==========
+export const mockQuizSessions = [
+  {
+    id: 1,
+    user_id: 1,
+    title: 'แบบฝึกหัด: Limits & Continuity',
+    session_type: 'practice',
+    start_time: '2024-03-20T08:00:00Z',
+    end_time: '2024-03-20T08:45:00Z',
+    total_score: 85.5,
+    total_questions: 10,
+    created_at: '2024-03-20T08:00:00Z',
+    updated_at: '2024-03-20T08:45:00Z',
+  },
+  {
+    id: 2,
+    user_id: 3,
+    title: 'สอบ: Derivatives (บท 3)',
+    session_type: 'exam',
+    start_time: '2024-03-18T09:00:00Z',
+    end_time: '2024-03-18T10:30:00Z',
+    total_score: 72.0,
+    total_questions: 20,
+    created_at: '2024-03-18T09:00:00Z',
+    updated_at: '2024-03-18T10:30:00Z',
+  },
+  {
+    id: 3,
+    user_id: 1,
+    title: 'แบบฝึกหัด: Applications of Derivatives',
+    session_type: 'practice',
+    start_time: '2024-03-19T14:00:00Z',
+    end_time: '2024-03-19T14:30:00Z',
+    total_score: 90.0,
+    total_questions: 8,
+    created_at: '2024-03-19T14:00:00Z',
+    updated_at: '2024-03-19T14:30:00Z',
+  },
+  {
+    id: 4,
+    user_id: 4,
+    title: 'สอบ: Integrals & Applications (บท 5-6)',
+    session_type: 'exam',
+    start_time: '2024-02-28T08:00:00Z',
+    end_time: '2024-02-28T09:45:00Z',
+    total_score: 95.5,
+    total_questions: 25,
+    created_at: '2024-02-28T08:00:00Z',
+    updated_at: '2024-02-28T09:45:00Z',
+  },
+];
+
+// ========== QUIZ_ATTEMPTS TABLE ==========
+export const mockQuizAttempts = [
+  {
+    id: 1,
+    user_id: 1,
+    quiz_attempt_id: 1,
+    session_id: 1,
+    question_id: 1,
+    is_correct: true,
+    difficulty: 'medium',
+    response_time: 45.5,
+    skill_tag: 'Algebraic limits',
+    user_answer: '4',
+    error_code: null,
+  },
+  {
+    id: 2,
+    user_id: 1,
+    quiz_attempt_id: 1,
+    session_id: 1,
+    question_id: 2,
+    is_correct: false,
+    difficulty: 'medium',
+    response_time: 120.3,
+    skill_tag: 'Rationalization',
+    user_answer: '1',
+    error_code: 'WRONG_ANSWER',
+  },
+  {
+    id: 3,
+    user_id: 3,
+    quiz_attempt_id: 2,
+    session_id: 2,
+    question_id: 10,
+    is_correct: true,
+    difficulty: 'easy',
+    response_time: 60.0,
+    skill_tag: 'Power rule',
+    user_answer: '4x³ + 6x',
+    error_code: null,
+  },
+  {
+    id: 4,
+    user_id: 1,
+    quiz_attempt_id: 3,
+    session_id: 3,
+    question_id: 18,
+    is_correct: true,
+    difficulty: 'medium',
+    response_time: 75.2,
+    skill_tag: 'Critical points',
+    user_answer: 'x = 2',
+    error_code: null,
+  },
+  {
+    id: 5,
+    user_id: 4,
+    quiz_attempt_id: 4,
+    session_id: 4,
+    question_id: 26,
+    is_correct: true,
+    difficulty: 'easy',
+    response_time: 30.0,
+    skill_tag: 'Definite integral',
+    user_answer: '14/3',
+    error_code: null,
+  },
+];
+
+// ========== ERROR_CODES TABLE ==========
+export const mockErrorCodes = [
+  {
+    code: 'WRONG_ANSWER',
+    name: 'Wrong Answer',
+    category: 'response_error',
+    explanation: 'The user provided an incorrect answer',
+    default_feedback: 'Your answer is incorrect. Please review the material and try again.',
+    created_at: '2024-01-01T00:00:00Z',
+    updated_at: '2024-01-01T00:00:00Z',
+  },
+  {
+    code: 'TIMEOUT',
+    name: 'Response Timeout',
+    category: 'system_error',
+    explanation: 'The user did not submit an answer within the time limit',
+    default_feedback: 'Time limit exceeded. Please be more quick in responding.',
+    created_at: '2024-01-01T00:00:00Z',
+    updated_at: '2024-01-01T00:00:00Z',
+  },
+  {
+    code: 'BLANK_ANSWER',
+    name: 'Blank Answer',
+    category: 'response_error',
+    explanation: 'The user submitted a blank or empty answer',
+    default_feedback: 'Please provide an answer before submitting.',
+    created_at: '2024-01-01T00:00:00Z',
+    updated_at: '2024-01-01T00:00:00Z',
+  },
+  {
+    code: 'SERVER_ERROR',
+    name: 'Server Error',
+    category: 'system_error',
+    explanation: 'An unexpected server error occurred while processing the question',
+    default_feedback: 'An error occurred. Please try again later.',
+    created_at: '2024-01-01T00:00:00Z',
+    updated_at: '2024-01-01T00:00:00Z',
+  },
+  {
+    code: 'INVALID_FORMAT',
+    name: 'Invalid Answer Format',
+    category: 'validation_error',
+    explanation: 'The answer format is invalid or does not match expected format',
+    default_feedback: 'Please provide your answer in the correct format.',
+    created_at: '2024-01-01T00:00:00Z',
+    updated_at: '2024-01-01T00:00:00Z',
+  },
+];
+
+// ========== QUIZ_RESULTS TABLE ==========
+export const mockQuizResults = [
+  {
+    id: 1,
+    user_id: 1,
+    quiz_attempt_id: 1,
+    session_id: 1,
+    question_id: 1,
+    is_correct: true,
+    difficulty: 'medium',
+    response_time: 45.5,
+    skill_tag: 'Algebraic limits',
+    user_answer: '4',
+    error_code: null,
+  },
+  {
+    id: 2,
+    user_id: 1,
+    quiz_attempt_id: 1,
+    session_id: 1,
+    question_id: 2,
+    is_correct: false,
+    difficulty: 'medium',
+    response_time: 120.3,
+    skill_tag: 'Rationalization',
+    user_answer: '1',
+    error_code: 'WRONG_ANSWER',
+  },
+  {
+    id: 3,
+    user_id: 3,
+    quiz_attempt_id: 2,
+    session_id: 2,
+    question_id: 10,
+    is_correct: true,
+    difficulty: 'easy',
+    response_time: 60.0,
+    skill_tag: 'Power rule',
+    user_answer: '4x³ + 6x',
+    error_code: null,
+  },
+  {
+    id: 4,
+    user_id: 1,
+    quiz_attempt_id: 3,
+    session_id: 3,
+    question_id: 18,
+    is_correct: true,
+    difficulty: 'medium',
+    response_time: 75.2,
+    skill_tag: 'Critical points',
+    user_answer: 'x = 2',
+    error_code: null,
+  },
+  {
+    id: 5,
+    user_id: 4,
+    quiz_attempt_id: 4,
+    session_id: 4,
+    question_id: 26,
+    is_correct: true,
+    difficulty: 'easy',
+    response_time: 30.0,
+    skill_tag: 'Definite integral',
+    user_answer: '14/3',
+    error_code: null,
+  },
+];
+
+// ========== Helper Functions ==========
+
 /**
- * Mock data for Dashboard Overview Page - Chapter Skills Progress
+ * Get user by ID
  */
-export const DASHBOARD_CHAPTER_PROGRESS = {
-  limit: { completed: 75, total: 100 },
-  differential: { completed: 78, total: 100 },
-  integral: { completed: 65, total: 100 },
+export const getUserById = (userId: number) => {
+  return mockUsers.find((user) => user.id === userId);
 };
 
 /**
- * Mock data for Dashboard Overview Page - Overall Skills Radar
+ * Get all quiz sessions for a user
  */
-export const DASHBOARD_OVERALL_SKILLS_RADAR = [
-  { skill: "Concept", limit: 82, differential: 78, integral: 65 },
-  { skill: "Calculation", limit: 85, differential: 80, integral: 70 },
-  { skill: "Application", limit: 75, differential: 65, integral: 55 },
-  { skill: "Analysis", limit: 80, differential: 70, integral: 60 },
-  { skill: "Evaluation", limit: 70, differential: 60, integral: 50 },
-];
+export const getUserQuizSessions = (userId: number) => {
+  return mockQuizSessions.filter((session) => session.user_id === userId);
+};
+
+/**
+ * Get all quiz results for a user
+ */
+export const getUserQuizResults = (userId: number) => {
+  return mockQuizResults.filter((result) => result.user_id === userId);
+};
+
+/**
+ * Get question by ID
+ */
+export const getQuestionById = (questionId: number) => {
+  return mockQuestions.find((question) => question.id === questionId);
+};
+
+/**
+ * Get all questions by topic
+ */
+export const getQuestionsByTopic = (topic: string) => {
+  return mockQuestions.filter((question) => question.main_topic === topic);
+};
+
+/**
+ * Get student knowledge by user ID
+ */
+export const getStudentKnowledgeByUserId = (userId: number) => {
+  return mockStudentKnowledge.find((sk) => sk.user_id === userId);
+};
+
+/**
+ * Calculate user statistics
+ */
+export const calculateUserStatistics = (userId: number) => {
+  const results = getUserQuizResults(userId);
+  if (results.length === 0) {
+    return {
+      totalAttempts: 0,
+      correctAnswers: 0,
+      wrongAnswers: 0,
+      accuracyRate: 0,
+      averageResponseTime: 0,
+    };
+  }
+
+  const correctAnswers = results.filter((r) => r.is_correct).length;
+  const wrongAnswers = results.filter((r) => !r.is_correct).length;
+  const averageResponseTime =
+    results.reduce((sum, r) => sum + r.response_time, 0) / results.length;
+
+  return {
+    totalAttempts: results.length,
+    correctAnswers,
+    wrongAnswers,
+    accuracyRate: (correctAnswers / results.length) * 100,
+    averageResponseTime: Math.round(averageResponseTime * 10) / 10,
+  };
+};
+
+export default {
+  mockUsers,
+  mockStudentKnowledge,
+  mockQuestions,
+  mockRecommendations,
+  mockQuizSessions,
+  mockQuizAttempts,
+  mockErrorCodes,
+  mockQuizResults,
+  getUserById,
+  getUserQuizSessions,
+  getUserQuizResults,
+  getQuestionById,
+  getQuestionsByTopic,
+  getStudentKnowledgeByUserId,
+  calculateUserStatistics,
+};

@@ -1,115 +1,79 @@
+// src/App.tsx
+
 import "./index.css";
-import {
-  createBrowserRouter,
-  RouterProvider,
-  Navigate,
-} from "react-router-dom";
+import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
 
 import { AuthProvider } from "./features/auth/hooks/useAuth";
 import { LoginPage } from "./features/auth/pages/LoginPage";
 import { SignUpPage } from "./features/auth/pages/SignUpPage";
 import { HomePage } from "./features/home/pages/HomePage";
 
-import {
-  DashboardOverviewPage,
-  ChapterDashboardPage,
-  CourseReportPage,
-} from "./features/dashboard";
+import { DashboardOverviewPage, ChapterDashboardPage, CourseReportPage } from "./features/dashboard";
 import { AdminQuestionPage } from "./features/admin";
-
 import { Layout } from "./shared/components/layout/Layout";
 import { ProtectedRoute } from "./shared/components/ProtectedRoute";
 import QuizPage from "./features/exam/pages/QuizPage";
+import AllCourse from "./features/exam/pages/AllCourse";
+import { AllDashboard } from "./features/dashboard/pages/AllDashboard";
 
 const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <Navigate to="/home" replace />,
-  },
+  { path: "/", element: <Navigate to="/home" replace /> },
 
-  // ===== AUTH =====
-  {
-    path: "/auth/login",
-    element: <LoginPage />,
-  },
-  {
-    path: "/auth/signup",
-    element: <SignUpPage />,
-  },
+  // ── Auth ──────────────────────────────────────────────────────────────────
+  { path: "/auth/login",  element: <LoginPage /> },
+  { path: "/auth/signup", element: <SignUpPage /> },
 
-  // ===== HOME =====
+  // ── Home ──────────────────────────────────────────────────────────────────
   {
     path: "/home",
-    element: (
-      // <ProtectedRoute>
-      <Layout>
-        <HomePage />
-      </Layout>
-      // </ProtectedRoute>
-    ),
+    element: <Layout><HomePage /></Layout>,
   },
 
-  // ===== DASHBOARD =====
+  // ── Dashboard ─────────────────────────────────────────────────────────────
   {
     path: "/dashboard",
-    element: (
-      <ProtectedRoute>
-        <Layout>
-          <DashboardOverviewPage />
-        </Layout>
-      </ProtectedRoute>
-    ),
+    element: <ProtectedRoute><Layout><DashboardOverviewPage /></Layout></ProtectedRoute>,
   },
   {
     path: "/dashboard/overview",
     element: <Navigate to="/dashboard" replace />,
   },
   {
+    // ChapterDashboardPage: ภาพรวมของบท
     path: "/dashboard/chapter/:chapterId/all",
-    element: (
-      // <ProtectedRoute>
-      <Layout>
-        <ChapterDashboardPage />
-      </Layout>
-      //</ProtectedRoute>
-    ),
+    element: <Layout><ChapterDashboardPage /></Layout>,
   },
   {
-    path: "/dashboard/chapter/:chapterId",
-    element: (
-      <ProtectedRoute>
-        <Layout>
-          <CourseReportPage />
-        </Layout>
-      </ProtectedRoute>
-    ),
-  },
+  path: "/dashboard/chapter/:chapterId/:sessionId",
+  element: (
+    <Layout>
+      <CourseReportPage />
+    </Layout>
+  ),
+},
   {
-    path: "/quiz",
-    element: (
-      <ProtectedRoute>
-        <Layout>
-          <QuizPage />
-        </Layout>
-      </ProtectedRoute>
-    ),
+    path: "/alldashboard",
+    element: <ProtectedRoute><Layout><AllDashboard /></Layout></ProtectedRoute>,
   },
 
-  // ===== HITL ADMIN =====
+  // ── Quiz ──────────────────────────────────────────────────────────────────
+  {
+    path: "/allquiz",
+    element: <ProtectedRoute><Layout><AllCourse /></Layout></ProtectedRoute>,
+  },
+  {
+    // courseId = topic string: "derivatives", "integrals", ...
+    path: "/quiz/:courseId",
+    element: <ProtectedRoute><Layout><QuizPage /></Layout></ProtectedRoute>,
+  },
+
+  // ── Admin ─────────────────────────────────────────────────────────────────
   {
     path: "/admin/questions",
-    element: (
-      <Layout>
-        <AdminQuestionPage />
-      </Layout>
-    ),
+    element: <Layout><AdminQuestionPage /></Layout>,
   },
 
-
-  {
-    path: "*",
-    element: <Navigate to="/auth/login" replace />,
-  },
+  { path: "*", element: <Navigate to="/auth/login" replace /> },
 ]);
 
 function App() {

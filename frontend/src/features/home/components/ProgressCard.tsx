@@ -1,7 +1,7 @@
 import { Card } from "../../../shared/components/ui/Card";
 import { Button } from "../../../shared/components/ui/Button";
 import { RadarChartComponent } from "../../dashboard/components";
-import { DASHBOARD_OVERALL_SKILLS_RADAR } from "../../dashboard/data/mockData";
+import { MOCK_SKILLS_RADAR } from "../../dashboard/data/DashboardMockdata";
 
 interface ProgressCardProps {
   percentage: number;
@@ -26,7 +26,7 @@ export function ProgressCard({
         {/* Skill Diagram */}
         <div className="flex items-center justify-center">
            <RadarChartComponent
-                   data={DASHBOARD_OVERALL_SKILLS_RADAR}
+                   data={MOCK_SKILLS_RADAR}
                    dataKey="limit"
                    angleKey="skill"
                    fill="#3b82f6"

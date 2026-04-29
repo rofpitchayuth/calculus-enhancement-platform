@@ -85,9 +85,9 @@ export interface DashboardStats {
 // --- Overview Stats ---
 
 export interface OverviewStats {
-  totalChapters: string;
-  averageScore: string;
-  totalAttempts: string;
+  totalChapters: number;
+  averageScore: number;
+  totalAttempts: number;
 }
 
 export interface ChapterProgress {

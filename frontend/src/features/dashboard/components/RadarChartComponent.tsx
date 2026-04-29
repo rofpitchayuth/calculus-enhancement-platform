@@ -9,20 +9,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-
-export interface RadarChartData {
-  [key: string]: string | number;
-}
-
-interface RadarChartComponentProps {
-  data: RadarChartData[];
-  dataKey: string;
-  angleKey?: string;
-  title?: string;
-  fill?: string;
-  height?: number;
-}
-
+import type { RadarChartComponentProps } from "../types/dashboard.type"
 /**
  * Radar Chart Component - ใช้แสดง skills analysis
  */

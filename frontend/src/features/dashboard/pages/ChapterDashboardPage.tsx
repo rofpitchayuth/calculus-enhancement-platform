@@ -1,235 +1,256 @@
-import type { ChapterDashboardPageProps } from "../types/dashboard.types";
-import { StatCard, DashboardCard, BloomBar, LineChartComponent, RadarChartComponent } from "../components";
+// src/features/dashboard/pages/ChapterDashboardPage.tsx
+
+import { useState, useEffect, useMemo } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { StatCard, DashboardCard, BloomBar, LineChartComponent, RadarChartComponent } from '../components';
 import {
-  CHAPTER_NAMES,
-  BLOOM_LEVELS,
-  CHAPTER_STRENGTHS,
-  CHAPTER_WEAKNESSES,
-} from "../data/mockData";
-import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { dashboardService } from "../services/dashboard.service";
+  fetchChapterStats,
+  fetchChapterAttempts,
+  fetchSkillsRadar,
+  fetchChapterSessions,
+} from '../api/dashboard.api';
+import type { ChapterStats, ChapterAttemptRecord, RadarSkill, ChapterSession } from '../api/dashboard.api';
 
-export function ChapterDashboardPage({ chapterId }: ChapterDashboardPageProps) {
-  const chapterName =
-    (chapterId && CHAPTER_NAMES[chapterId]) || "Differential";
+// ── ตรงกับ topic IDs ใน AllCourse และ AllDashboard ─────────────────────────
+const CHAPTERS_MAP: Record<string, string> = {
+  'limits_and_continuity': 'Limits & Continuity',
+  'derivatives':            'Derivatives',
+  'integrals':              'Integrals',
+  'applications':           'Applications',
+};
 
+function TrendBadge({ delta, positiveIsGood = true, unit = '' }: {
+  delta: number; positiveIsGood?: boolean; unit?: string;
+}) {
+  if (delta === 0) return null;
+  const isGood = positiveIsGood ? delta > 0 : delta < 0;
+  return (
+    <span className={`text-sm font-semibold ${isGood ? 'text-green-600' : 'text-red-500'}`}>
+      ({delta > 0 ? '+' : ''}{delta}{unit})
+    </span>
+  );
+}
+
+export function ChapterDashboardPage() {
   const navigate = useNavigate();
+  // chapterId มาจาก URL: /dashboard/chapter/:chapterId/all
+  const { chapterId = 'derivatives' } = useParams<{ chapterId: string }>();
+  const chapterName = CHAPTERS_MAP[chapterId] ?? chapterId;
 
-  const [chapter] = useState(chapterId || "differential");
-  const [mode, setMode] = useState("all");
-
-  const [overviewStats, setOverviewStats] = useState<any>(null);
-  const [skillsRadar, setSkillsRadar] = useState<any[]>([]);
-  const [recentAttempts, setRecentAttempts] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [chapterStats, setChapterStats] = useState<ChapterStats | null>(null);
+  const [attempts, setAttempts]         = useState<ChapterAttemptRecord[]>([]);
+  const [radarData, setRadarData]       = useState<RadarSkill[]>([]);
+  const [sessions, setSessions]         = useState<ChapterSession[]>([]);
+  const [loading, setLoading]           = useState(true);
 
   useEffect(() => {
-    const fetchChapterData = async () => {
+    const load = async () => {
       try {
         setLoading(true);
-        // Note: For MVP, we are using the global overview and recent attempts
-        // In a full implementation, you'd have chapter-specific endpoints.
-        const [overviewRes, radarRes, recentRes] = await Promise.all([
-          dashboardService.getOverviewStats(),
-          dashboardService.getSkillsRadar(),
-          dashboardService.getRecentAttempts()
+        const [stats, attemptsRes, radar, sessionsRes] = await Promise.all([
+          fetchChapterStats(chapterId),       // filter by main_topic
+          fetchChapterAttempts(chapterId),    // filter by main_topic
+          fetchSkillsRadar(),
+          fetchChapterSessions(chapterId),    // รายการ sessions ของ topic นี้
         ]);
-
-        setOverviewStats(overviewRes);
-        setSkillsRadar(radarRes.data);
-        setRecentAttempts(recentRes.data);
-      } catch (error) {
-        console.error("Failed to fetch chapter dashboard data:", error);
+        setChapterStats(stats);
+        setAttempts(attemptsRes.data);
+        setRadarData(radar.data);
+        setSessions(sessionsRes.data);
+      } catch (err) {
+        console.error('Failed to fetch chapter data:', err);
       } finally {
         setLoading(false);
       }
     };
+    load();
+  }, [chapterId]);
 
-    fetchChapterData();
-  }, [chapter]);
+  const { latestScore, scoreTrend, latestAvgTime, timeTrend } = useMemo(() => {
+    if (attempts.length === 0) return { latestScore: 0, scoreTrend: 0, latestAvgTime: 0, timeTrend: 0 };
+    const last = attempts[attempts.length - 1];
+    const prev = attempts.length >= 2 ? attempts[attempts.length - 2] : null;
+    return {
+      latestScore:   last.score,
+      scoreTrend:    prev ? Math.round(last.score - prev.score) : 0,
+      latestAvgTime: last.avgTime,
+      timeTrend:     prev ? Math.round(last.avgTime - prev.avgTime) : 0,
+    };
+  }, [attempts]);
 
-  const handleNavigate = (nextChapter = chapter, nextMode = mode) => {
-    if (nextMode === "all") {
-      navigate(`/dashboard/chapter/${nextChapter}/all`);
-    } else {
-      navigate(`/dashboard/chapter/${nextChapter}`);
-    }
-  };
+  const radarChartData = useMemo(
+    () => radarData.map((r) => ({
+      skill: r.skill,
+      value: Math.round((r.limit + r.differential + r.integral) / 3),
+    })),
+    [radarData],
+  );
 
-  if (loading || !overviewStats) {
+  const progressChartData = useMemo(
+    () => attempts.map((a) => ({
+      attempt: `ครั้งที่ ${a.attempt}`,
+      score:   a.score,
+      avgTime: a.avgTime,
+    })),
+    [attempts],
+  );
+
+  if (loading || !chapterStats) {
     return (
-      <div className="min-h-screen bg-blue-50 flex items-center justify-center border-t-4 border-[#003B62]">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-[#003B62] mx-auto"></div>
+      <div className="min-h-screen bg-blue-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-[#003B62]" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-blue-50 px-4  py-4">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-4xl font-extrabold text-[#003B62]">
-          {chapterName.toUpperCase()} DASHBOARD
-        </h1>
+    <div className="min-h-screen bg-blue-50 px-4 py-4">
+
+      {/* Dropdown — ภาพรวม / แต่ละ session */}
+      <div className="flex justify-center mb-2">
         <select
-          className="border rounded-full px-4 py-1 text-sm bg-white"
-          value={mode}
+          className="border rounded-full px-10 py-1 text-sm bg-white shadow-sm"
+          value="all"
           onChange={(e) => {
-            const value = e.target.value;
-            setMode(value);
-            handleNavigate(chapter, value);
+            const val = e.target.value;
+            if (val !== 'all') navigate(`/dashboard/chapter/${chapterId}/${val}`);
           }}
         >
-          <option value="all">ภาพรวม</option>
-          <option value="attempt1">ครั้งที่ 1</option>
+          <option value="all">ภาพรวม {chapterName}</option>
+          {sessions.map((s) => (
+            <option key={s.sessionId} value={s.sessionId}>
+              ครั้งที่ {s.attempt} ({s.date})
+            </option>
+          ))}
         </select>
       </div>
 
-      {/* top stat cards */}
+      <h1 className="text-4xl font-extrabold text-[#003B62] mb-6">
+        {chapterName.toUpperCase()} DASHBOARD
+      </h1>
+
+      {/* Summary Stats */}
       <div className="grid grid-cols-4 gap-4 mb-6 bg-white shadow-md p-4 rounded-3xl">
         <StatCard
-          label="คะแนนเฉลี่ยรวม"
-          value={overviewStats.averageScore}
-          sub="(รวมทุกบท)"
-          subClass="text-gray-500 text-xs mt-1"
+          label="คะแนนล่าสุด"
+          value={`${latestScore.toFixed(0)}%`}
+          sub={scoreTrend !== 0 ? <TrendBadge delta={scoreTrend} positiveIsGood /> : undefined}
         />
-        <StatCard label="ระดับความเชี่ยวชาญ" value="ปานกลาง" />
+        <StatCard label="ระดับความเชี่ยวชาญ" value={chapterStats.proficiencyLevel} />
         <StatCard
-          label="จำนวนรอบที่ทำทั้งหมด"
-          value={overviewStats.totalAttempts}
+          label="เวลาเฉลี่ยต่อข้อ"
+          value={`${Math.round(latestAvgTime || chapterStats.avgTimePerQuestion)} วินาที`}
+          sub={timeTrend !== 0 ? <TrendBadge delta={timeTrend} positiveIsGood={false} /> : undefined}
         />
-        <StatCard label="จำนวนบท" value={overviewStats.totalChapters} />
+        <StatCard label="จำนวนรอบที่ทำ" value={`${chapterStats.totalAttempts} รอบ`} />
       </div>
 
-      {/* graphs row 1 */}
-
+      {/* Row 1: Radar + Progress */}
       <div className="grid grid-cols-3 gap-4 mb-4">
         <DashboardCard>
-          {skillsRadar.length > 0 && (
-            <RadarChartComponent
-              data={skillsRadar}
-              dataKey={chapter} // Use the current chapter as the data key (e.g. 'limit')
-              angleKey="skill"
-              fill="#3b82f6"
-              height={280}
-            />
+          {radarChartData.length > 0 && (
+            <RadarChartComponent data={radarChartData} dataKey="value" angleKey="skill" fill="#3b82f6" height={280} />
           )}
         </DashboardCard>
         <div className="col-span-2">
           <DashboardCard title="กราฟพัฒนาการคะแนน">
-            {recentAttempts.length > 0 ? (
-              <LineChartComponent
-                data={recentAttempts}
-                dataKey="score"
-                xAxisKey="date"
-                stroke="#10b981"
-              />
+            {progressChartData.length > 0 ? (
+              <LineChartComponent data={progressChartData} dataKey="score" xAxisKey="attempt" stroke="#1D4ED8" height={260} />
             ) : (
-              <div className="h-[280px] flex items-center justify-center text-gray-400">ยังไม่มีข้อมูลการทำแบบทดสอบ</div>
+              <div className="h-[260px] flex items-center justify-center text-gray-400">ยังไม่มีข้อมูล</div>
             )}
           </DashboardCard>
         </div>
       </div>
 
-
-      {/* graphs row 2 */}
-      <div className="grid grid-cols-3 gap-4 mb-4 ">
-        <div className="col-span-2 h-full">
+      {/* Row 2: Time Chart + Bloom */}
+      <div className="grid grid-cols-3 gap-4 mb-6">
+        <div className="col-span-2">
           <DashboardCard title="กราฟเวลาเฉลี่ยต่อข้อ (วินาที)">
-            {recentAttempts.length > 0 ? (
-              <LineChartComponent
-                data={recentAttempts}
-                dataKey="avgTime"
-                xAxisKey="date"
-                stroke="#f59e0b"
-              />
+            {progressChartData.length > 0 ? (
+              <LineChartComponent data={progressChartData} dataKey="avgTime" xAxisKey="attempt" stroke="#1D4ED8" height={260} />
             ) : (
-              <div className="h-[280px] flex items-center justify-center text-gray-400">ยังไม่มีข้อมูลการทำแบบทดสอบ</div>
+              <div className="h-[260px] flex items-center justify-center text-gray-400">ยังไม่มีข้อมูล</div>
             )}
           </DashboardCard>
         </div>
-
         <DashboardCard title="BLOOM'S LEVEL">
-          <div className=" text-sm text-gray-700 space-y-2">
-
+          <div className="space-y-4">
             <div className="space-y-2">
-              {BLOOM_LEVELS.map((level) => (
+              {chapterStats.bloomLevels.map((level) => (
                 <BloomBar key={level.label} label={level.label} percent={level.percent} />
               ))}
             </div>
-
-            <div className="mt-3 text-xs">
-              <div>
-                <h4 className="font-semibold mb-1">STRENGTHS</h4>
-                <div className="flex gap-2 flex-wrap mb-2">
-                  {CHAPTER_STRENGTHS.map((strength, idx) => (
-                    <span
-                      key={`${strength}-${idx}`}
-                      className="px-2 py-1 bg-yellow-100 text-gray-600 rounded-full text-xs font-tiny"
-                    >
-                      {strength}
-                    </span>
-                  ))}
-                </div>
+            <div className="border-t pt-3">
+              <h4 className="font-semibold text-xs text-gray-700 mb-2">STRENGTHS</h4>
+              <div className="flex gap-2 flex-wrap">
+                {chapterStats.strengths.map((s, i) => (
+                  <span key={i} className="px-2 py-1 bg-yellow-100 text-gray-700 rounded-full text-xs">{s}</span>
+                ))}
               </div>
-              <div>
-                <h4 className="font-semibold mb-1">WEAKNESSES</h4>
-                <div className="flex gap-2 flex-wrap mb-2">
-                  {CHAPTER_WEAKNESSES.map((weakness, idx) => (
-                    <span
-                      key={`${weakness}-${idx}`}
-                      className="px-2 py-1 bg-blue-100 text-gray-600 rounded-full text-xs font-tiny"
-                    >
-                      {weakness}
-                    </span>
-                  ))}
-                </div>
+            </div>
+            <div>
+              <h4 className="font-semibold text-xs text-gray-700 mb-2">WEAKNESSES</h4>
+              <div className="flex gap-2 flex-wrap">
+                {chapterStats.weaknesses.map((w, i) => (
+                  <span key={i} className="px-2 py-1 bg-blue-100 text-gray-700 rounded-full text-xs">{w}</span>
+                ))}
               </div>
-              <div className="border text-gray-500 mt-4 px-3 py-2 rounded-lg text-xs">
-                คำแนะนำ : พยายามฝึกทำแบบทดสอบในระดับที่สูงขึ้นเพื่อพัฒนาความเชี่ยวชาญในบทนี้ และเน้นทบทวนหัวข้อที่เป็นจุดอ่อนเพื่อเพิ่มคะแนนในรอบถัดไป
-              </div>
-
             </div>
           </div>
         </DashboardCard>
       </div>
 
-      {/* table */}
-      <div className="mt-6">
-        <h2 className="text-2xl font-semibold text-[#003B62] mb-3">
-          รายละเอียดในการทำแบบทดสอบแต่ละครั้ง
-        </h2>
-        <DashboardCard>
+      {/* Attempts Table */}
+      <h2 className="text-2xl font-semibold text-[#003B62] mb-3">รายละเอียดในการทำแบบทดสอบแต่ละครั้ง</h2>
+      <DashboardCard>
+        <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b">
-                <th className="py-2 text-left">ครั้งที่</th>
-                <th className="py-2 text-left">วันที่</th>
-                <th className="py-2 text-left">คะแนน</th>
-                <th className="py-2 text-left">เวลาต่อข้อ (วิ)</th>
+              <tr className="border-b bg-gray-50">
+                <th className="py-3 px-3 text-left font-semibold">ครั้งที่</th>
+                <th className="py-3 px-3 text-left font-semibold">วันที่</th>
+                <th className="py-3 px-3 text-left font-semibold">คะแนน</th>
+                <th className="py-3 px-3 text-left font-semibold">เวลาต่อข้อ</th>
+                <th className="py-3 px-3 text-left font-semibold">จุดเด่น</th>
+                <th className="py-3 px-3 text-left font-semibold">จุดที่ควรปรับปรุง</th>
               </tr>
             </thead>
             <tbody>
-              {recentAttempts.length > 0 ? (
-                recentAttempts.map((attempt, idx) => (
-                  <tr key={idx} className="border-b">
-                    <td className="py-2">{attempt.attempt}</td>
-                    <td className="py-2">{attempt.date}</td>
-                    <td className="py-2">{attempt.score}%</td>
-                    <td className="py-2">{attempt.avgTime}</td>
+              {attempts.length > 0 ? attempts.map((attempt, idx) => {
+                const strength = chapterStats.strengths[idx % Math.max(chapterStats.strengths.length, 1)] ?? '-';
+                const weakness = chapterStats.weaknesses[idx % Math.max(chapterStats.weaknesses.length, 1)] ?? '-';
+                return (
+                  <tr key={idx} className={idx < attempts.length - 1 ? 'border-b' : ''}>
+                    <td className="py-3 px-3">{attempt.attempt}</td>
+                    <td className="py-3 px-3">{attempt.date}</td>
+                    <td className="py-3 px-3">
+                      <span className={`px-2 py-1 rounded text-xs font-semibold ${
+                        attempt.score >= 80 ? 'bg-green-100 text-green-800'
+                        : attempt.score >= 60 ? 'bg-blue-100 text-blue-800'
+                        : 'bg-red-100 text-red-800'
+                      }`}>
+                        {attempt.score.toFixed(1)}%
+                      </span>
+                    </td>
+                    <td className="py-3 px-3">{attempt.avgTime} วิ</td>
+                    <td className="py-3 px-3">
+                      <span className="px-2 py-1 bg-yellow-100 text-gray-700 rounded-full text-xs">{strength}</span>
+                    </td>
+                    <td className="py-3 px-3">
+                      <span className="px-2 py-1 bg-blue-100 text-gray-700 rounded-full text-xs">{weakness}</span>
+                    </td>
                   </tr>
-                ))
-              ) : (
+                );
+              }) : (
                 <tr>
-                  <td colSpan={4} className="py-8 text-center text-gray-500">ยังไม่มีประวัติการทำแบบทดสอบ</td>
+                  <td colSpan={6} className="py-8 text-center text-gray-500">ยังไม่มีประวัติการทำแบบทดสอบ</td>
                 </tr>
               )}
             </tbody>
           </table>
-        </DashboardCard>
-      </div>
+        </div>
+      </DashboardCard>
     </div>
   );
 }
-
-

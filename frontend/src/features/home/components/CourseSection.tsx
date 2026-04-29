@@ -14,6 +14,7 @@ interface CourseSectionProps {
   courses: Course[];
   onViewAll?: () => void;
   onStartCourse?: (courseId: string | number) => void;
+  
 }
 
 export function CourseSection({

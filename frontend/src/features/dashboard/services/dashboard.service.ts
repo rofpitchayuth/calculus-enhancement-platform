@@ -1,184 +1,445 @@
-/**
- * dashboard.service.ts — Infrastructure / Data Access Layer
- * =================================================================
- * Unified service for all dashboard-related data fetching.
- */
+// src/features/dashboard/services/dashboardService.ts
 
-import axios from 'axios';
-import type { 
-  DashboardStats, 
-  ArchetypeKey, 
-  UnifiedDashboardData,
+import {
+  mockQuizResults,
+  mockQuizSessions,
+  mockQuestions,
+ // mockStudentKnowledge,
+} from "../data/mockData";
+import type {
+  ChapterStats,
+  CourseReportData,
   OverviewStats,
-  ChapterProgress
-} from "../types/dashboard.types";
+  ChapterProgress,
+  BloomLevelStats,
+  SkillBreakdown,
+  ErrorAnalysisItem,
+  AttemptRecord,
+  RadarChartData,
+  LineChartData,
+  DonutChartData,
+} from "../types/dashboard.type";
 
-import { API_BASE_URL as API_BASE } from '../../../shared/api/config';
-const API_URL = `${API_BASE}/dashboard`;
+// ===== Constants =====
+const CHAPTERS = [
+  { id: 'limits_and_continuity', name: 'Limits & Continuity',  topic: 'limit'         },
+  { id: 'derivatives',           name: 'Derivatives',           topic: 'differential'  },
+  { id: 'integrals',             name: 'Integrals',             topic: 'integral'      },
+  { id: 'applications',          name: 'Applications',          topic: 'applications'  },
+];
 
-/** Timeout for the dashboard stats request (10 seconds). */
-const DASHBOARD_TIMEOUT_MS = 10_000;
-
-// --- Mock Data ---
-
-const ARCHETYPE_META: Record<ArchetypeKey, { label: string; description: string }> = {
-  high_achiever: {
-    label: "High Achiever 🏆",
-    description: "You are consistently mastering new concepts and building on prior knowledge. Keep pushing — you're on the right track!",
-  },
-  careless: {
-    label: "Careless Genius ⚡",
-    description: "Your conceptual understanding is strong, but small errors cost you marks. Slow down on sign handling and constant terms to unlock your full potential.",
-  },
-  developing: {
-    label: "Developing ⬆️",
-    description: "Your mastery is growing with each attempt. Focus on the highlighted weak areas and you'll see a big jump soon.",
-  },
-  struggling: {
-    label: "Needs Support 💪",
-    description: "Don't give up — every expert was once a beginner. Review the fundamentals in your weakest skills and retry those topics.",
-  },
-  steady: {
-    label: "Steady Learner 🎯",
-    description: "You perform consistently across all topics. Challenge yourself with harder problems to break through to the next level.",
-  },
+const PROFICIENCY_LEVELS = {
+  excellent: { min: 85, label: 'ดีมาก' },
+  good: { min: 70, label: 'ดี' },
+  fair: { min: 50, label: 'ปานกลาง' },
+  poor: { min: 0, label: 'ต้องปรับปรุง' },
 };
 
-const MOCK_DASHBOARD_STATS: DashboardStats = {
-  archetype: { key: "developing", ...ARCHETYPE_META["developing"] },
-  skills: [
-    { skill: "Limits", mastery: 0.72 },
-    { skill: "Derivatives", mastery: 0.65 },
-    { skill: "Integrals", mastery: 0.48 },
-    { skill: "Applications", mastery: 0.55 },
-    { skill: "Series", mastery: 0.38 },
-  ],
-  progression: [
-    { attempt: 1, mastery: 0.32, date: "2025-11-01" },
-    { attempt: 2, mastery: 0.41, date: "2025-11-05" },
-    { attempt: 3, mastery: 0.49, date: "2025-11-08" },
-    { attempt: 4, mastery: 0.57, date: "2025-11-12" },
-    { attempt: 5, mastery: 0.61, date: "2025-11-15" },
-    { attempt: 6, mastery: 0.65, date: "2025-11-18" },
-  ],
-  weaknesses: [
-    { error_code: "Sign Error", frequency: 7, skill: "Derivatives" },
-    { error_code: "Forgot +C", frequency: 5, skill: "Integrals" },
-    { error_code: "Chain Rule Misapplication", frequency: 4, skill: "Derivatives" },
-  ],
-  total_attempts: 6,
-  average_mastery: 0.556,
-};
+// ===== Helper Functions =====
 
-const MOCK_OVERVIEW: OverviewStats = {
-  totalChapters: "3 บท",
-  averageScore: "75%",
-  totalAttempts: "9 รอบ",
-};
+/**
+ * คำนวณระดับความเชี่ยวชาญ
+ */
+export function getProficiencyLevel(score: number): string {
+  if (score >= PROFICIENCY_LEVELS.excellent.min) return PROFICIENCY_LEVELS.excellent.label;
+  if (score >= PROFICIENCY_LEVELS.good.min) return PROFICIENCY_LEVELS.good.label;
+  if (score >= PROFICIENCY_LEVELS.fair.min) return PROFICIENCY_LEVELS.fair.label;
+  return PROFICIENCY_LEVELS.poor.label;
+}
 
-const MOCK_CHAPTER_PROGRESS: ChapterProgress = {
-  limit: { completed: 75, total: 100 },
-  differential: { completed: 78, total: 100 },
-  integral: { completed: 65, total: 100 },
-};
+/**
+ * ดึงข้อมูลการสอบของบทเดียว
+ */
+function getChapterResults(chapterId: string, userId: number): typeof mockQuizResults {
+  return mockQuizResults.filter((result) => {
+    const question = mockQuestions.find((q) => q.id === result.question_id);
+    return result.user_id === userId && question?.main_topic === chapterId;
+  });
+}
 
-const MOCK_RECENT_ATTEMPTS = {
-  data: [
-    { id: 1, date: "2025-11-20", score: 85, chapter: "Limits" },
-    { id: 2, date: "2025-11-18", score: 72, chapter: "Differential" },
-    { id: 3, date: "2025-11-15", score: 68, chapter: "Integral" },
-  ]
-};
+/**
+ * คำนวณสถิติของบท
+ */
+export function calculateChapterStats(chapterId: string, userId: number): ChapterStats {
+  const results = getChapterResults(chapterId, userId);
+  const questions = mockQuestions.filter((q) => q.main_topic === chapterId);
+  const sessions = mockQuizSessions.filter((s) => s.user_id === userId);
 
-// --- Helpers ---
+  if (results.length === 0) {
+    return {
+      chapterId,
+      chapterName: chapterId,
+      averageScore: 0,
+      totalAttempts: 0,
+      totalQuestions: questions.length,
+      correctAnswers: 0,
+      incorrectAnswers: 0,
+      avgTimePerQuestion: 0,
+      proficiencyLevel: getProficiencyLevel(0),
+      strengths: [],
+      weaknesses: [],
+      bloomLevels: [],
+      skillBreakdown: [],
+    };
+  }
 
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('access_token');
-  return { 
-    'Content-Type': 'application/json',
-    ...(token ? { Authorization: `Bearer ${token}` } : {})
-  };
-};
+  const correctAnswers = results.filter((r) => r.is_correct).length;
+  const incorrectAnswers = results.filter((r) => !r.is_correct).length;
+  const averageScore = (correctAnswers / results.length) * 100;
+  const avgTimePerQuestion = results.reduce((sum, r) => sum + r.response_time, 0) / results.length;
 
-function resolveArchetype(
-  raw: Partial<DashboardStats["archetype"]> & { key: ArchetypeKey }
-): DashboardStats["archetype"] {
-  const meta = ARCHETYPE_META[raw.key] ?? ARCHETYPE_META["developing"];
+  // Calculate Bloom Levels
+  const bloomLevelStats = calculateBloomLevelStats(results);
+
+  // Calculate Skill Breakdown
+  const skillBreakdown = calculateSkillBreakdown(results);
+
+  // Identify Strengths & Weaknesses
+  const strengths = identifyTopSkills(skillBreakdown, 3);
+  const weaknesses = identifyBottomSkills(skillBreakdown, 3);
+
   return {
-    key: raw.key,
-    label: raw.label ?? meta.label,
-    description: raw.description ?? meta.description,
+    chapterId,
+    chapterName: chapterId,
+    averageScore,
+    totalAttempts: sessions.length,
+    totalQuestions: questions.length,
+    correctAnswers,
+    incorrectAnswers,
+    avgTimePerQuestion: Math.round(avgTimePerQuestion * 10) / 10,
+    proficiencyLevel: getProficiencyLevel(averageScore),
+    strengths,
+    weaknesses,
+    bloomLevels: bloomLevelStats,
+    skillBreakdown,
   };
 }
 
-// --- Service ---
+/**
+ * คำนวณสถิติ Bloom's Level
+ */
+function calculateBloomLevelStats(results: typeof mockQuizResults): BloomLevelStats[] {
+  const bloomMap = new Map<string, { count: number; correct: number }>();
 
+  results.forEach((result) => {
+    const question = mockQuestions.find((q) => q.id === result.question_id);
+    if (question) {
+      const level = question.bloom_level;
+      if (!bloomMap.has(level)) {
+        bloomMap.set(level, { count: 0, correct: 0 });
+      }
+      const stats = bloomMap.get(level)!;
+      stats.count++;
+      if (result.is_correct) stats.correct++;
+    }
+  });
+
+  return Array.from(bloomMap.entries()).map(([label, stats]) => ({
+    label: capitalizeBloomLevel(label),
+    percent: Math.round((stats.correct / stats.count) * 100),
+    count: stats.count,
+  }));
+}
+
+/**
+ * Capitalize Bloom Level
+ */
+function capitalizeBloomLevel(level: string): string {
+  const bloomMap: Record<string, string> = {
+    remember: 'Remember',
+    understand: 'Understand',
+    apply: 'Apply',
+    analyze: 'Analyze',
+    evaluate: 'Evaluate',
+    create: 'Create',
+  };
+  return bloomMap[level] || level;
+}
+
+/**
+ * คำนวณ Skill Breakdown
+ */
+function calculateSkillBreakdown(results: typeof mockQuizResults): SkillBreakdown[] {
+  const skillMap = new Map<string, { correct: number; incorrect: number }>();
+
+  results.forEach((result) => {
+    const skill = result.skill_tag;
+    if (!skillMap.has(skill)) {
+      skillMap.set(skill, { correct: 0, incorrect: 0 });
+    }
+    const stats = skillMap.get(skill)!;
+    if (result.is_correct) {
+      stats.correct++;
+    } else {
+      stats.incorrect++;
+    }
+  });
+
+  return Array.from(skillMap.entries()).map(([skill, stats]) => {
+    const total = stats.correct + stats.incorrect;
+    return {
+      skill,
+      correct: stats.correct,
+      incorrect: stats.incorrect,
+      accuracy: Math.round((stats.correct / total) * 100),
+    };
+  });
+}
+
+/**
+ * หา Top Skills (ตอบถูกเยอะ)
+ */
+function identifyTopSkills(skillBreakdown: SkillBreakdown[], limit: number): string[] {
+  return skillBreakdown
+    .sort((a, b) => b.accuracy - a.accuracy)
+    .slice(0, limit)
+    .map((s) => s.skill);
+}
+
+/**
+ * หา Weak Skills (ตอบผิดเยอะ)
+ */
+function identifyBottomSkills(skillBreakdown: SkillBreakdown[], limit: number): string[] {
+  return skillBreakdown
+    .sort((a, b) => a.accuracy - b.accuracy)
+    .slice(0, limit)
+    .map((s) => s.skill);
+}
+
+/**
+ * ดึงข้อมูลทั่วไปของ User
+ */
+export function calculateOverviewStats(userId: number): OverviewStats {
+  const userResults = mockQuizResults.filter((r) => r.user_id === userId);
+  const userSessions = mockQuizSessions.filter((s) => s.user_id === userId);
+
+  if (userResults.length === 0) {
+    return {
+      totalChapters: CHAPTERS.length,
+      averageScore: 0,
+      totalAttempts: 0,
+      proficiencyLevel: getProficiencyLevel(0),
+      avgTimePerQuestion: 0,
+    };
+  }
+
+  const correctAnswers = userResults.filter((r) => r.is_correct).length;
+  const averageScore = (correctAnswers / userResults.length) * 100;
+  const avgTimePerQuestion = userResults.reduce((sum, r) => sum + r.response_time, 0) / userResults.length;
+
+  return {
+    totalChapters: CHAPTERS.length,
+    averageScore: Math.round(averageScore * 10) / 10,
+    totalAttempts: userSessions.length,
+    proficiencyLevel: getProficiencyLevel(averageScore),
+    avgTimePerQuestion: Math.round(avgTimePerQuestion * 10) / 10,
+  };
+}
+
+/**
+ * ดึงความก้าวหน้าของแต่ละบท
+ */
+export function getChapterProgressList(userId: number): ChapterProgress[] {
+  return CHAPTERS.map((chapter) => {
+    const results = getChapterResults(chapter.topic, userId);
+   // const questions = mockQuestions.filter((q) => q.main_topic === chapter.topic);
+    const sessions = mockQuizSessions.filter((s) => s.user_id === userId);
+
+    if (results.length === 0) {
+      return {
+        chapter: chapter.name,
+        score: 0,
+        attempts: 0,
+        lastAttemptDate: '-',
+        avgTime: 0,
+        correctCount: 0,
+        incorrectCount: 0,
+      };
+    }
+
+    const correctCount = results.filter((r) => r.is_correct).length;
+    const incorrectCount = results.length - correctCount;
+    const score = (correctCount / results.length) * 100;
+    const avgTime = results.reduce((sum, r) => sum + r.response_time, 0) / results.length;
+
+    const lastAttempt = results.reduce((latest, current) => {
+      const latestSession = mockQuizSessions.find((s) => s.id === latest.session_id);
+      const currentSession = mockQuizSessions.find((s) => s.id === current.session_id);
+      const latestDate = new Date(latestSession?.start_time || '');
+      const currentDate = new Date(currentSession?.start_time || '');
+      return currentDate > latestDate ? current : latest;
+    });
+
+    const lastAttemptSession = mockQuizSessions.find((s) => s.id === lastAttempt.session_id);
+    return {
+      chapter: chapter.name,
+      score: Math.round(score * 10) / 10,
+      attempts: sessions.length,
+      lastAttemptDate: new Date(lastAttemptSession?.start_time || '').toLocaleDateString('th-TH'),
+      avgTime: Math.round(avgTime * 10) / 10,
+      correctCount,
+      incorrectCount,
+    };
+  });
+}
+
+/**
+ * ดึงข้อมูลรายการผลสอบแต่ละครั้ง
+ */
+export function getChapterAttempts(chapterId: string, userId: number): AttemptRecord[] {
+  const sessions = mockQuizSessions.filter((s) => s.user_id === userId);
+  const results = getChapterResults(chapterId, userId);
+
+  if (results.length === 0) return [];
+
+  return sessions.map((session, idx) => ({
+    attempt: idx + 1,
+    date: new Date(session.start_time).toLocaleDateString('th-TH'),
+    score: Math.round(session.total_score * 10) / 10,
+    avgTime: Math.round(session.total_score / session.total_questions),
+    correctCount: results.filter((r) => r.session_id === session.id && r.is_correct).length,
+    totalQuestions: session.total_questions,
+  }));
+}
+
+/**
+ * ดึงข้อมูล Course Report
+ */
+export function generateCourseReport(sessionId: number, userId: number): CourseReportData {
+  const session = mockQuizSessions.find((s) => s.id === sessionId && s.user_id === userId);
+  if (!session) throw new Error('Session not found');
+
+  const results = mockQuizResults.filter((r) => r.session_id === sessionId && r.user_id === userId);
+  const correctAnswers = results.filter((r) => r.is_correct).length;
+  const incorrectAnswers = results.filter((r) => !r.is_correct).length;
+
+  const avgTimePerQuestion = results.reduce((sum, r) => sum + r.response_time, 0) / results.length;
+
+  const skillBreakdown = calculateSkillBreakdown(results);
+  const strengths = identifyTopSkills(skillBreakdown, 3);
+  const weaknesses = identifyBottomSkills(skillBreakdown, 3);
+
+  const errorAnalysis = generateErrorAnalysis(results);
+
+  // Determine chapter from results
+  const firstQuestion = results.length > 0 ? mockQuestions.find((q) => q.id === results[0].question_id) : null;
+  const chapterId = firstQuestion?.main_topic || 'unknown';
+
+  return {
+    sessionId,
+    chapterId,
+    chapterName: chapterId,
+    totalScore: session.total_score,
+    totalQuestions: session.total_questions,
+    correctAnswers,
+    incorrectAnswers,
+    avgTimePerQuestion: Math.round(avgTimePerQuestion * 10) / 10,
+    strengths,
+    weaknesses,
+    errorAnalysis,
+    skillBreakdown,
+  };
+}
+
+/**
+ * สร้าง Error Analysis
+ */
+function generateErrorAnalysis(results: typeof mockQuizResults): ErrorAnalysisItem[] {
+  const errorMap = new Map<string, { count: number; questions: number[] }>();
+
+  results.forEach((result) => {
+    if (!result.is_correct) {
+      const skill = result.skill_tag;
+      if (!errorMap.has(skill)) {
+        errorMap.set(skill, { count: 0, questions: [] });
+      }
+      const data = errorMap.get(skill)!;
+      data.count++;
+      data.questions.push(result.question_id);
+    }
+  });
+
+  let id = 1;
+  return Array.from(errorMap.entries()).map(([topic, data]) => {
+    const totalAttempts = results.filter((r) => r.skill_tag === topic).length;
+    const errorRate = Math.round((data.count / totalAttempts) * 100);
+
+    return {
+      id: id++,
+      topic,
+      errorCount: data.count,
+      errorRate: `${errorRate}%`,
+      suggestion: `ทบทวนเรื่อง ${topic} และฝึกทำข้อสอบเพิ่มเติม`,
+      questions: data.questions,
+    };
+  });
+}
+
+/**
+ * สร้าง Radar Chart Data
+ */
+export function generateRadarChartData(userId: number): RadarChartData[] {
+  const radarData: RadarChartData[] = [];
+
+  CHAPTERS.forEach((chapter) => {
+    const stats = calculateChapterStats(chapter.topic, userId);
+    radarData.push({
+      skill: chapter.name,
+      [userId]: stats.averageScore,
+    });
+  });
+
+  return radarData;
+}
+
+/**
+ * สร้าง Line Chart Data (Progress)
+ */
+export function generateProgressChartData(chapterId: string, userId: number): LineChartData[] {
+  const attempts = getChapterAttempts(chapterId, userId);
+  return attempts.map((attempt) => ({
+    attempt: attempt.attempt,
+    date: attempt.date,
+    score: attempt.score,
+    avgTime: attempt.avgTime,
+  }));
+}
+
+/**
+ * สร้าง Donut Chart Data (Score Distribution)
+ */
+export function generateScoreDistributionData(sessionId: number, userId: number): DonutChartData[] {
+  const report = generateCourseReport(sessionId, userId);
+  const correctPercent = Math.round((report.correctAnswers / report.totalQuestions) * 100);
+  const incorrectPercent = 100 - correctPercent;
+
+  return [
+    {
+      name: 'ตอบถูก',
+      value: correctPercent,
+      color: '#10b981',
+    },
+    {
+      name: 'ตอบผิด',
+      value: incorrectPercent,
+      color: '#ef4444',
+    },
+  ];
+}
+
+/**
+ * Export เป็น service object
+ */
 export const dashboardService = {
-  /**
-   * Fetches all data needed for the unified dashboard.
-   */
-  async getUnifiedDashboardData(userId?: number): Promise<UnifiedDashboardData> {
-    if (import.meta.env.VITE_USE_MOCK_DASHBOARD === "true") {
-      console.info("[dashboardService] Forced mock mode active.");
-      return new Promise((resolve) => {
-        setTimeout(() => resolve({
-          ...MOCK_DASHBOARD_STATS,
-          overview: MOCK_OVERVIEW,
-          chapterProgress: MOCK_CHAPTER_PROGRESS,
-        }), 800);
-      });
-    }
-
-    try {
-      const statsUrl = userId
-        ? `${API_BASE}/dashboard/stats?user_id=${userId}`
-        : `${API_BASE}/dashboard/stats`;
-
-      const [statsRes, overviewRes, progressRes] = await Promise.all([
-        axios.get(statsUrl, { headers: getAuthHeaders(), timeout: DASHBOARD_TIMEOUT_MS }),
-        axios.get(`${API_URL}/overview`, { headers: getAuthHeaders() }),
-        axios.get(`${API_URL}/chapter-progress`, { headers: getAuthHeaders() })
-      ]);
-
-      const stats = statsRes.data as DashboardStats;
-
-      return {
-        ...stats,
-        archetype: resolveArchetype(stats.archetype),
-        overview: overviewRes.data,
-        chapterProgress: progressRes.data.data
-      };
-    } catch (err: any) {
-      console.warn("[dashboardService] Backend error or unreachable — using mock data.", err);
-      return {
-        ...MOCK_DASHBOARD_STATS,
-        overview: MOCK_OVERVIEW,
-        chapterProgress: MOCK_CHAPTER_PROGRESS,
-      };
-    }
-  },
-
-  // Keep individual methods for flexibility if needed
-  getOverviewStats: async () => {
-    const response = await axios.get(`${API_URL}/overview`, { headers: getAuthHeaders() });
-    return response.data;
-  },
-
-  getChapterProgress: async () => {
-    const response = await axios.get(`${API_URL}/chapter-progress`, { headers: getAuthHeaders() });
-    return response.data;
-  },
-
-  getSkillsRadar: async () => {
-    const response = await axios.get(`${API_URL}/skills-radar`, { headers: getAuthHeaders() });
-    return response.data;
-  },
-
-  getRecentAttempts: async () => {
-    if (import.meta.env.VITE_USE_MOCK_DASHBOARD === "true") {
-      return MOCK_RECENT_ATTEMPTS;
-    }
-    const response = await axios.get(`${API_URL}/recent-attempts`, { headers: getAuthHeaders() });
-    return response.data;
-  },
+  calculateOverviewStats,
+  calculateChapterStats,
+  getChapterProgressList,
+  getChapterAttempts,
+  generateCourseReport,
+  generateRadarChartData,
+  generateProgressChartData,
+  generateScoreDistributionData,
+  getProficiencyLevel,
 };
+
+export default dashboardService;
