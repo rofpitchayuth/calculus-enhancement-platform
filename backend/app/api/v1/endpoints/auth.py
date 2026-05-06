@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
-from app.core.security import get_current_user_id
+from app.core.security import get_current_user_id, get_current_admin_user_id
 from app.schemas.auth import RegisterRequest, LoginRequest, AuthResponse, UserResponse
 from app.services.auth_service import AuthService
 
@@ -13,6 +13,7 @@ async def register(
     user_data: RegisterRequest,
     db: Session = Depends(get_db)
 ):
+    """Register new user"""
     auth_service = AuthService(db)
     return await auth_service.register_user(user_data)
 
@@ -38,21 +39,9 @@ async def get_current_user(
 async def get_all_users(
     skip: int = 0,
     limit: int = 100,
-    current_user_id: int = Depends(get_current_user_id),
+    admin_id: int = Depends(get_current_admin_user_id),
     db: Session = Depends(get_db)
 ):
-    """Get all users (admin only)"""
-    from repositories.user_repository import UserRepository
-    
-    user_repo = UserRepository(db)
-    current_user = user_repo.get_user_by_id(current_user_id)
-    
-    # Check if user is admin
-    if current_user.role != "admin":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Not enough permissions"
-        )
-    
-    users = user_repo.get_all_users(skip=skip, limit=limit)
-    return [UserResponse.model_validate(user) for user in users]
+    """Get all users (admin only via RBAC dependency)"""
+    auth_service = AuthService(db)
+    return await auth_service.get_all_users(skip=skip, limit=limit)

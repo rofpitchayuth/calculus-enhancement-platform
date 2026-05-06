@@ -4,8 +4,7 @@ from sqlalchemy import and_, not_
 from typing import Optional
 
 from app.models.question import Question
-from app.models.result import QuizAttempt
-from app.services.kt_service import KTService
+from app.models.result import QuizAttempt, StudentStats
 
 class RecommendationService:
     @staticmethod
@@ -16,19 +15,15 @@ class RecommendationService:
         difficulty_adjustment: str = "normal"
     ) -> Optional[Question]:
         """
-        Calculates the ZPD (Zone of Proximal Development) for a student 
-        and returns the most suitable next question for Practice Mode.
+        Calculates the ZPD (Zone of Proximal Development) for a student
+        based on StudentStats.skill_mastery and returns the most suitable next question.
         """
         
-        # 1. Fetch current mastery from KT Engine
-        mastery = await KTService.predict_mastery(
-            student_id=str(user_id),
-            history=[], 
-            target_skill_id=sub_topic
-        )
-        
-        if mastery is None:
-            mastery = 0.5
+        # 1. Fetch current mastery from StudentStats directly
+        stats = db.query(StudentStats).filter(StudentStats.user_id == user_id).first()
+        mastery = 0.5
+        if stats and stats.skill_mastery:
+            mastery = stats.skill_mastery.get(sub_topic, 0.5)
             
         # 2. Anti-repetition: Filter recently correct questions (last 7 days)
         seven_days_ago = datetime.utcnow() - timedelta(days=7)
@@ -43,10 +38,6 @@ class RecommendationService:
         excluded_ids = [r[0] for r in recent_correct_ids if r[0] is not None]
         
         # 3. ZPD Adjustment Logic
-        # - normal: [mastery, mastery + 0.2]
-        # - harder: [mastery + 0.2, mastery + 0.4]
-        # - easier: [mastery - 0.2, mastery]
-        
         if difficulty_adjustment == "harder":
             target_min = min(0.8, mastery + 0.2)
             target_max = min(1.0, mastery + 0.4)
@@ -57,6 +48,7 @@ class RecommendationService:
             target_min = mastery
             target_max = min(1.0, mastery + 0.2)
         
+        # Handle string and Enum types for sub_topic query
         question = db.query(Question).filter(
             and_(
                 Question.sub_topic == sub_topic,

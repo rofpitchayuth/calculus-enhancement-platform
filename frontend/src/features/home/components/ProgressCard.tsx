@@ -1,15 +1,47 @@
+// src/features/home/components/ProgressCard.tsx
+// Progress summary card displayed on the home page.
+// Radar chart data is received via props from the parent (real API data).
+
 import { Card } from "../../../shared/components/ui/Card";
 import { Button } from "../../../shared/components/ui/Button";
 import { RadarChartComponent } from "../../dashboard/components";
-import { MOCK_SKILLS_RADAR } from "../../dashboard/data/DashboardMockdata";
+import type { RadarSkill } from "../../dashboard/types/dashboard.types";
 
 interface ProgressCardProps {
   percentage: number;
   level: string;
   masterTopics: string[];
   improvementTopics: string[];
+  radarData: RadarSkill[];
   onViewOverall?: () => void;
   onViewDetailed?: () => void;
+}
+
+/**
+ * Transform backend RadarSkill[] (skill × topic matrix) into a per-topic
+ * summary array that the single-axis RadarChart can render.
+ *
+ * Input shape:  [{skill:"Concept", limit:80, differential:70, integral:60, applications:50}, ...]
+ * Output shape: [{skill:"LIMIT", score:75}, {skill:"DIFFERENTIAL", score:68}, ...]
+ *
+ * Each output point = average accuracy across all cognitive skills for that topic.
+ */
+function mapRadarDataForChart(
+  radarData: RadarSkill[],
+): { skill: string; score: number }[] {
+  const topics = ["limit", "differential", "integral", "applications"] as const;
+  const labels: Record<string, string> = {
+    limit: "LIMIT",
+    differential: "DIFFERENTIAL",
+    integral: "INTEGRAL",
+    applications: "APPLICATIONS",
+  };
+
+  return topics.map((topicKey) => {
+    const total = radarData.reduce((sum, r) => sum + r[topicKey], 0);
+    const avg = radarData.length > 0 ? Math.round(total / radarData.length) : 0;
+    return { skill: labels[topicKey], score: avg };
+  });
 }
 
 export function ProgressCard({
@@ -17,17 +49,21 @@ export function ProgressCard({
   level,
   masterTopics,
   improvementTopics,
+  radarData,
   onViewOverall,
   onViewDetailed,
 }: ProgressCardProps) {
+  // Transform the backend radar data to the shape the RadarChart expects
+  const chartData = mapRadarDataForChart(radarData);
+
   return (
     <Card className="shadow-lg h-full pr-8">
       <div className="grid grid-cols-2 gap-8">
         {/* Skill Diagram */}
         <div className="flex items-center justify-center">
            <RadarChartComponent
-                   data={MOCK_SKILLS_RADAR}
-                   dataKey="limit"
+                   data={chartData}
+                   dataKey="score"
                    angleKey="skill"
                    fill="#3b82f6"
                    height={230}

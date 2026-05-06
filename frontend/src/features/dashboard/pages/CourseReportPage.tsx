@@ -1,20 +1,22 @@
 // src/features/dashboard/pages/CourseReportPage.tsx
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { DashboardCard, DonutChartComponent } from '../components';
 import { dashboardService } from '../services/dashboard.service';
-import { fetchSessionReport, fetchChapterSessions } from '../api/dashboard.api';
-import type { SessionReport, ChapterSession } from '../api/dashboard.api';
+import { useSessionReport } from '../hooks/useDashboard';
 import { QuizResultTable } from '../components/QuizResultTable';
 
-// ── ตรงกับ topic IDs เดียวกับ ChapterDashboardPage ─────────────────────────
+// --- Constants & Config ---
+
 const CHAPTERS_MAP: Record<string, string> = {
-  'limits_and_continuity': 'Limits & Continuity',
-  'derivatives':            'Derivatives',
-  'integrals':              'Integrals',
-  'applications':           'Applications',
+  'LIMIT':            'LIMIT',
+  'DIFFERENTIAL':       'DIFFERENTIAL',
+  'INTEGRAL':         'INTEGRAL',
+  'APPLICATIONS':      'APPLICATIONS',
 };
+
+// --- Local Presentation Components ---
 
 function DifficultyStars({ level }: { level: number }) {
   return (
@@ -34,43 +36,32 @@ function accuracyToLabel(accuracy: number) {
   return                     { label: 'ควรปรับปรุง', color: 'text-red-500'    };
 }
 
+// --- Main Page Component ---
 
 export function CourseReportPage() {
-  // chapterId และ sessionId มาจาก URL: /dashboard/chapter/:chapterId/:sessionId
+  const navigate = useNavigate();
+  
+  // chapterId and sessionId from URL: /dashboard/chapter/:chapterId/:sessionId
   const { chapterId = 'derivatives', sessionId: sessionIdParam } = useParams<{
     chapterId: string;
     sessionId: string;
   }>();
-  const sessionId   = Number(sessionIdParam) || 0;
-  const navigate    = useNavigate();
+  
+  const sessionId = Number(sessionIdParam) || 0;
   const chapterName = CHAPTERS_MAP[chapterId] ?? chapterId;
 
-  const [report, setReport]       = useState<SessionReport | null>(null);
-  const [sessions, setSessions]   = useState<ChapterSession[]>([]);
-  const [loading, setLoading]     = useState(true);
+  const {
+    report,
+    sessions,
+    loading,
+    error
+  } = useSessionReport(chapterId, sessionId);
+
   const [showTable, setShowTable] = useState(false);
 
-  useEffect(() => {
-    const load = async () => {
-      try {
-        setLoading(true);
-        // ดึงพร้อมกัน: report ของ session นี้ + รายการ sessions ทั้งหมดของ topic
-        const [reportData, sessionsRes] = await Promise.all([
-          fetchSessionReport(sessionId),
-          fetchChapterSessions(chapterId),   // ← ใช้ chapterId จาก URL ไม่ใช่จาก report
-        ]);
-        setReport(reportData);
-        setSessions(sessionsRes.data);
-      } catch (err) {
-        console.error('Failed to fetch report data:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
-  }, [chapterId, sessionId]);
+  // --- Render Logic ---
 
-  if (loading || !report) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-blue-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-[#003B62]" />
@@ -78,13 +69,25 @@ export function CourseReportPage() {
     );
   }
 
-  const accuracy       = Math.round((report.correctAnswers / report.totalQuestions) * 100);
-  const difficultyLevel = 4;
+  if (error || !report) {
+    return (
+      <div className="min-h-screen bg-blue-50 flex items-center justify-center p-8">
+        <div className="bg-white p-8 rounded-2xl shadow-lg text-center max-w-md">
+          <p className="text-red-500 font-semibold mb-2">Error Loading Session Report</p>
+          <p className="text-gray-600 text-sm">{error || 'Data could not be retrieved.'}</p>
+        </div>
+      </div>
+    );
+  }
+
+  const accuracy = Math.round((report.correctAnswers / report.totalQuestions) * 100);
+  // Map 0.0–1.0 difficulty scale to 1–5 star rating
+  const difficultyLevel = Math.max(1, Math.min(5, Math.round(report.avgDifficulty * 5)));
 
   return (
     <div className="min-h-screen bg-blue-50 px-4 py-4">
 
-      {/* Dropdown — ภาพรวม / แต่ละ session */}
+      {/* Navigation Filter */}
       <div className="flex justify-center mb-2">
         <select
           className="border rounded-full px-10 py-1 text-sm bg-white shadow-sm"
@@ -107,19 +110,19 @@ export function CourseReportPage() {
         </select>
       </div>
 
-      {/* Title */}
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-4xl font-extrabold text-[#003B62]">
-          {chapterName.toUpperCase()} DASHBOARD
+      {/* Header */}
+      <div className="flex flex-col md:flex-row items-center justify-between mb-6 gap-4">
+        <h1 className="text-4xl font-extrabold text-[#003B62] uppercase">
+          {chapterName} REPORT
         </h1>
         <DifficultyStars level={difficultyLevel} />
       </div>
 
-      {/* Main Grid */}
-      <div className="grid grid-cols-2 gap-4 mb-4">
-        {/* Donut */}
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+        {/* Main Score Donut */}
         <DashboardCard>
-          <div className="flex items-center justify-center h-full">
+          <div className="flex items-center justify-center h-full p-4">
             <DonutChartComponent
               data={report.scoreDistribution.map((item, i) => ({
                 ...item,
@@ -133,9 +136,9 @@ export function CourseReportPage() {
           </div>
         </DashboardCard>
 
-        {/* Stats + Chips + Skill Breakdown */}
+        {/* Breakdown Panel */}
         <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-2 mb-4 bg-white shadow-md p-4 rounded-3xl">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4 bg-white shadow-md p-4 rounded-3xl">
             <div className="bg-white rounded-2xl px-5 py-4 border">
               <p className="text-xs text-gray-500 mb-1">ระดับความเชี่ยวชาญ</p>
               <p className="text-2xl font-bold text-[#003B62]">
@@ -170,7 +173,7 @@ export function CourseReportPage() {
           </div>
 
           <div className="bg-white rounded-2xl shadow-md p-4">
-            <h4 className="font-semibold text-gray-700 mb-3">คะแนนในแต่ละทักษะ</h4>
+            <h4 className="font-semibold text-gray-700 mb-3 uppercase text-xs">คะแนนในแต่ละทักษะ</h4>
             <div className="space-y-3">
               {report.skillBreakdown.map((skill) => {
                 const { label, color } = accuracyToLabel(skill.accuracy);
@@ -191,8 +194,8 @@ export function CourseReportPage() {
         </div>
       </div>
 
-      {/* Error Analysis */}
-      <h2 className="text-2xl font-semibold text-[#003B62] mb-3">ตารางข้อผิดพลาด (ERROR ANALYSIS)</h2>
+      {/* Error Analysis Table */}
+      <h2 className="text-2xl font-semibold text-[#003B62] mb-3 uppercase">ตารางข้อผิดพลาด (Error Analysis)</h2>
       <div className="bg-white rounded-2xl shadow-md">
         <div className="overflow-x-auto rounded-2xl">
           <table className="w-full text-sm">
@@ -224,17 +227,21 @@ export function CourseReportPage() {
         </div>
       </div>
 
-      {/* ดูข้อสอบ */}
+      {/* Detail Toggle */}
       <button
         type="button"
         onClick={() => setShowTable(!showTable)}
         className="mt-6 w-full bg-yellow-300 hover:bg-yellow-400 transition-colors text-gray-800 font-semibold py-3 rounded-2xl shadow-md flex items-center justify-center gap-2"
       >
-        ดูข้อสอบ <span className="text-xs">{showTable ? '▲' : '▼'}</span>
+        {showTable ? 'ซ่อนรายละเอียดข้อสอบ' : 'ดูรายละเอียดข้อสอบทั้งหมด'} 
+        <span className="text-xs">{showTable ? '▲' : '▼'}</span>
       </button>
+      
       {showTable && (
-      <QuizResultTable questions={report.quizQuestions ?? []} />
-)}
+        <div className="mt-4 animate-in fade-in slide-in-from-top-4 duration-300">
+          <QuizResultTable questions={report.quizQuestions ?? []} />
+        </div>
+      )}
     </div>
   );
 }

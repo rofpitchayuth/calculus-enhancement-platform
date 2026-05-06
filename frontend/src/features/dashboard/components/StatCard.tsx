@@ -1,7 +1,7 @@
 // src/features/dashboard/components/StatCard.tsx
 
 import type { ReactNode } from "react";
-import type { StatCardProps } from "../types/dashboard.type";
+import type { StatCardProps } from "../types/dashboard.types";
 
 /**
  * Override `sub` ให้รับ ReactNode ได้ (เดิมเป็น string)

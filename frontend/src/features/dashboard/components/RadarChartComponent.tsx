@@ -9,7 +9,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import type { RadarChartComponentProps } from "../types/dashboard.type"
+import type { RadarChartComponentProps } from "../types/dashboard.types"
 /**
  * Radar Chart Component - ใช้แสดง skills analysis
  */

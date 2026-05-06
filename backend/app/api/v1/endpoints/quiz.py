@@ -21,11 +21,7 @@ def start_quiz(
     db: Session = Depends(get_db),
     current_user_id: int = Depends(get_current_user_id)
 ):
-    """
-    Start a new quiz session
-    - Generates questions based on topic/criteria
-    - Returns session_id for tracking
-    """
+    """Start a new quiz session"""
     if request.user_id != current_user_id:
         raise HTTPException(status_code=403, detail="Cannot start quiz for another user")
     
@@ -45,12 +41,7 @@ def submit_answer(
     db: Session = Depends(get_db),
     current_user_id: int = Depends(get_current_user_id)
 ):
-    """
-    Submit an answer to a question
-    - Checks correctness
-    - Updates IBKT mastery model
-    - Returns updated mastery probability
-    """
+    """Submit an answer to a question"""
     if request.user_id != current_user_id:
         raise HTTPException(status_code=403, detail="Cannot submit answer for another user")
     
@@ -67,40 +58,13 @@ def submit_answer(
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
 
-@router.get("/mastery/{user_id}/{skill_id}")
-def get_mastery(
-    user_id: int,
-    skill_id: str,
-    db: Session = Depends(get_db),
-    current_user_id: int = Depends(get_current_user_id)
-):
-    """
-    Get current mastery level for a specific skill
-    (Utility endpoint for dashboard)
-    """
-    if user_id != current_user_id:
-        raise HTTPException(status_code=403, detail="Cannot view other user's mastery")
-    
-    # Return mock data for now
-    p_mastery = 0.5
-    
-    return {
-        "user_id": user_id,
-        "skill_id": skill_id,
-        "mastery_probability": p_mastery
-    }
-
 @router.post("/end", response_model=QuizEndResponse)
 def end_quiz(
     request: QuizEndRequest,
     db: Session = Depends(get_db),
     current_user_id: int = Depends(get_current_user_id)
 ):
-    """
-    End an active quiz session
-    - Calculates the total score for the session based on all attempts
-    - Marks session end time
-    """
+    """End an active quiz session"""
     if request.user_id != current_user_id:
         raise HTTPException(status_code=403, detail="Cannot end quiz for another user")
     

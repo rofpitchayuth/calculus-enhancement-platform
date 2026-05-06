@@ -59,3 +59,20 @@ def get_current_user_id(credentials: HTTPAuthorizationCredentials = Depends(secu
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid token"
         )
+
+def get_current_admin_user_id(
+    user_id: int = Depends(get_current_user_id),
+    db: Session = Depends(lambda: next(get_db_for_security()))
+) -> int:
+    from app.models.user import User
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user or user.role != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not enough permissions"
+        )
+    return user_id
+
+def get_db_for_security():
+    from app.core.database import get_db
+    yield next(get_db())

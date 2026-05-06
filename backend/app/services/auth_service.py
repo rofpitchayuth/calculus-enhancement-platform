@@ -100,3 +100,7 @@ class AuthService:
             )
         
         return UserResponse.model_validate(user)
+
+    async def get_all_users(self, skip: int = 0, limit: int = 100) -> list[UserResponse]:
+        users = self.user_repo.get_all_users(skip=skip, limit=limit)
+        return [UserResponse.model_validate(u) for u in users]

@@ -1,10 +1,11 @@
 from pydantic import BaseModel, Field
 from typing import List, Optional, Any
 from datetime import datetime
+from app.models.question import MainTopic
 
 class QuizStartRequest(BaseModel):
     user_id: int
-    topic: Optional[str] = None
+    topic: Optional[MainTopic] = None
     num_questions: int = Field(default=5, ge=1, le=20)
 
 class QuizSubmitAnswerRequest(BaseModel):
@@ -12,7 +13,7 @@ class QuizSubmitAnswerRequest(BaseModel):
     session_id: int
     question_id: int
     user_answer: str # "A", "B", "C", etc.
-    skill_id: str = Field(..., description="Main skill for this question (e.g., 'limits', 'derivatives')")
+    skill_id: MainTopic = Field(..., description="Main skill for this question (e.g., 'LIMIT', 'DIFFERENTIAL')")
     response_latency: float = Field(0.0, description="Time taken to answer in seconds")
 
 class QuestionResponse(BaseModel):

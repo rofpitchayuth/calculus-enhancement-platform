@@ -24,7 +24,6 @@ export function DashboardLayoutPage({
       {/* Conditionally render pages with mode state */}
       {isOverviewMode ? (
         <ChapterDashboardPage 
-          chapterId={chapterId} 
           userId={userId}
           mode={mode}
           setMode={setMode}

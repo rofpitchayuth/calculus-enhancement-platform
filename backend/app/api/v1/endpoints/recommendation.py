@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
+from typing import Optional
 
 from app.core.database import get_db
 from app.core.security import get_current_user_id
 from app.services.recommendation_service import RecommendationService
-from app.schemas.question import Question as QuestionSchema # Assuming standard question schema exists
 
 router = APIRouter()
 

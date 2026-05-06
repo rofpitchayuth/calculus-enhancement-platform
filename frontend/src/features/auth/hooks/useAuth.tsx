@@ -1,7 +1,13 @@
-import { useState, useEffect, createContext, useContext} from 'react';
+import { useState, useEffect, createContext, useContext } from 'react';
 import type { ReactNode } from 'react';
-import { authApi } from '../service/authAPI';
-import type { LoginCredentials, SignUpData, AuthState } from '../types/auth.type';
+import { authApi } from '../service/auth.service';
+import type { 
+  LoginCredentials, 
+  SignUpData, 
+  AuthState, 
+  User, 
+  StudentStats 
+} from '../types/auth.type';
 
 interface AuthContextType extends AuthState {
   login: (credentials: LoginCredentials) => Promise<void>;
@@ -15,35 +21,40 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AuthState>({
     user: null,
+    studentStats: null,
     token: null,
     isAuthenticated: false,
     isLoading: true,
     error: null,
   });
 
+  // Re-hydrate session on mount
   useEffect(() => {
     const initializeAuth = async () => {
       const token = authApi.getToken();
       
       if (token) {
         try {
-          const user = await authApi.getCurrentUser();
+          const currentUser = await authApi.getCurrentUser();
           setState({
-            user,
+            user: currentUser,
+            studentStats: currentUser.student_stats || null, 
             token,
             isAuthenticated: true,
             isLoading: false,
             error: null,
           });
         } catch (error) {
+          // Token might be invalid/expired
           authApi.logout();
-          setState({
+          setState(prev => ({
+            ...prev,
             user: null,
+            studentStats: null,
             token: null,
             isAuthenticated: false,
             isLoading: false,
-            error: null,
-          });
+          }));
         }
       } else {
         setState(prev => ({
@@ -62,7 +73,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const response = await authApi.login(credentials);
       setState({
-        user: response.user,
+        user: response.user, 
+        studentStats: response.user.student_stats || null, 
         token: response.token.access_token,
         isAuthenticated: true,
         isLoading: false,
@@ -85,6 +97,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const response = await authApi.signUp(data);
       setState({
         user: response.user,
+        studentStats: response.user.student_stats || null,
         token: response.token.access_token,
         isAuthenticated: true,
         isLoading: false,
@@ -104,6 +117,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     authApi.logout();
     setState({
       user: null,
+      studentStats: null,
       token: null,
       isAuthenticated: false,
       isLoading: false,
@@ -113,8 +127,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const refreshUser = async () => {
     try {
-      const user = await authApi.getCurrentUser();
-      setState(prev => ({ ...prev, user }));
+      const currentUser = await authApi.getCurrentUser();
+      setState(prev => ({ 
+        ...prev, 
+        user: currentUser,
+        studentStats: currentUser.student_stats || null 
+      }));
     } catch (error) {
       logout();
     }

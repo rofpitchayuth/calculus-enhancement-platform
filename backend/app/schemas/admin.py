@@ -3,10 +3,10 @@ from typing import List, Optional
 from enum import Enum
 
 class MainTopicEnum(str, Enum):
-    derivatives = "derivatives"
-    integrals = "integrals"
-    limits_and_continuity = "limits_and_continuity"
-    applications = "applications"
+    LIMIT = "LIMIT"
+    DIFFERENTIAL = "DIFFERENTIAL"
+    INTEGRAL = "INTEGRAL"
+    APPLICATIONS = "APPLICATIONS"
 
 class BloomLevelEnum(str, Enum):
     remembering = "Remembering"

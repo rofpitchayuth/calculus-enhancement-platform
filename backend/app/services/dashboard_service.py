@@ -9,7 +9,7 @@ import sys, os
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
-from app.models.question import Question
+from app.models.question import Question, MainTopic
 from app.models.result import QuizSession, QuizAttempt
 from app.models.user import User
 from app.schemas.dashboard import (
@@ -18,33 +18,27 @@ from app.schemas.dashboard import (
     DashboardSkillsRadarResponse,
     DashboardRecentAttemptsResponse,
     ChapterProgress, RadarSkill, RecentAttempt,
-    # NEW
     ChapterStatsResponse, BloomLevel,
     ChapterAttemptsResponse, ChapterAttemptRecord,
     SessionReportResponse, SkillBreakdown, ErrorAnalysisItem, ScoreDistributionItem,
-    ChapterSession, ChapterSessionsResponse,  TopicSummary, TopicsSummaryResponse,
+    QuizQuestionItem,
+    ChapterSession, ChapterSessionsResponse, TopicSummary, TopicsSummaryResponse, PROFICIENCY_THRESHOLDS
 )
 
 # Map: frontend chapterId → DB main_topic
 CHAPTER_TOPIC_MAP: dict[str, str] = {
-    "limits_and_continuity": "limit",
-    "derivatives":           "differential",
-    "integrals":             "integral",
-    "applications":          "differential",  # หรือ topic ที่ตรงใน DB
+    "LIMIT":        MainTopic.LIMIT.value,
+    "DIFFERENTIAL": MainTopic.DIFFERENTIAL.value,
+    "INTEGRAL":     MainTopic.INTEGRAL.value,
+    "APPLICATIONS": MainTopic.APPLICATIONS.value,
 }
 
-PROFICIENCY_THRESHOLDS = [
-    (85, "Expert"),
-    (70, "Advanced"),
-    (55, "Intermediate"),
-    (0,  "Beginner"),
-]
-
+# Standardized TOPIC_CONFIG
 TOPIC_CONFIG = [
-    {"topicId": "limits_and_continuity", "displayName": "Limits & Continuity", "dbTopic": "limit"},
-    {"topicId": "derivatives",           "displayName": "Derivatives",          "dbTopic": "differential"},
-    {"topicId": "integrals",             "displayName": "Integrals",            "dbTopic": "integral"},
-    {"topicId": "applications",          "displayName": "Applications",         "dbTopic": "applications"},
+    {"topicId": "LIMIT",        "displayName": "LIMIT",        "dbTopic": MainTopic.LIMIT.value},
+    {"topicId": "DIFFERENTIAL", "displayName": "DIFFERENTIAL", "dbTopic": MainTopic.DIFFERENTIAL.value},
+    {"topicId": "INTEGRAL",     "displayName": "INTEGRAL",     "dbTopic": MainTopic.INTEGRAL.value},
+    {"topicId": "APPLICATIONS", "displayName": "APPLICATIONS", "dbTopic": MainTopic.APPLICATIONS.value},
 ]
 
 def _proficiency(score: float) -> str:
@@ -58,8 +52,6 @@ class DashboardService:
     def __init__(self, db: Session):
         self.db = db
 
-    # ─── Existing methods (ไม่เปลี่ยน) ────────────────────────────────────
-
     def get_overview_stats(self, user_id: int) -> DashboardOverviewStats:
         sessions = self.db.query(QuizSession).filter(
             QuizSession.user_id == user_id,
@@ -69,16 +61,19 @@ class DashboardService:
         total_attempts = len(sessions)
         if total_attempts == 0:
             return DashboardOverviewStats(
-                totalChapters="3 บท", averageScore="0%", totalAttempts="0 รอบ"
+                totalChapters="4 บท", averageScore="0%", totalAttempts="0 รอบ"
             )
 
         average_score = sum(s.total_score or 0 for s in sessions) / total_attempts
         user = self.db.query(User).filter(User.id == user_id).first()
-        student_profile = getattr(user, "current_profile", "Developing (Average)") or "Developing (Average)"
-        avg_mastery = float(getattr(user, "avg_mastery", 0.0) or 0.0)
+        student_profile = "Developing (Average)"
+        avg_mastery = 0.0
+        if user and user.student_stats:
+            student_profile = user.student_stats.current_profile or "Developing (Average)"
+            avg_mastery = float(user.student_stats.avg_mastery or 0.0)
 
         return DashboardOverviewStats(
-            totalChapters="3 บท",
+            totalChapters="4 บท",
             averageScore=f"{round(average_score)}%",
             totalAttempts=f"{total_attempts} รอบ",
             studentProfile=student_profile,
@@ -86,43 +81,109 @@ class DashboardService:
         )
 
     def get_chapter_progress(self, user_id: int) -> DashboardChapterProgressResponse:
-        progress_data = {
-            "limit":       ChapterProgress(completed=0, total=100),
-            "differential":ChapterProgress(completed=0, total=100),
-            "integral":    ChapterProgress(completed=0, total=100),
-        }
-        for topic in ["limit", "differential", "integral"]:
+        """Build chapter-progress dict keyed by UPPERCASE topic ID.
+
+        Uses the standardized TOPIC_CONFIG and compares against
+        MainTopic enum members so the query matches the Enum column
+        in PostgreSQL (values are UPPERCASE).
+        """
+        progress_data: dict[str, ChapterProgress] = {}
+
+        for config in TOPIC_CONFIG:
+            topic_id: str = config["topicId"]        # e.g. "LIMIT"
+            db_topic: str = config["dbTopic"]         # e.g. "LIMIT" (MainTopic.LIMIT.value)
+
+            # Default: 0% completed
+            progress_data[topic_id] = ChapterProgress(completed=0, total=100)
+
             attempts = (
                 self.db.query(QuizAttempt)
                 .join(Question)
-                .filter(QuizAttempt.user_id == user_id, Question.main_topic == topic)
+                .filter(
+                    QuizAttempt.user_id == user_id,
+                    Question.main_topic == db_topic,
+                )
                 .all()
             )
             if attempts:
                 correct = sum(1 for a in attempts if a.is_correct)
-                progress_data[topic] = ChapterProgress(
+                progress_data[topic_id] = ChapterProgress(
                     completed=int((correct / len(attempts)) * 100), total=100
                 )
+
         return DashboardChapterProgressResponse(data=progress_data)
 
     def get_skills_radar(self, user_id: int) -> DashboardSkillsRadarResponse:
-        import random
-        base_radar = [
-            {"skill": "Concept",     "limit": 82, "differential": 78, "integral": 65},
-            {"skill": "Calculation", "limit": 85, "differential": 80, "integral": 70},
-            {"skill": "Application", "limit": 75, "differential": 65, "integral": 55},
-            {"skill": "Analysis",    "limit": 80, "differential": 70, "integral": 60},
-            {"skill": "Evaluation",  "limit": 70, "differential": 60, "integral": 50},
-        ]
-        return DashboardSkillsRadarResponse(data=[
-            RadarSkill(
-                skill=item["skill"],
-                limit=min(100, max(0, item["limit"] + random.randint(-5, 5))),
-                differential=min(100, max(0, item["differential"] + random.randint(-5, 5))),
-                integral=min(100, max(0, item["integral"] + random.randint(-5, 5))),
-            )
-            for item in base_radar
-        ])
+        """Compute radar chart data from real quiz attempts.
+
+        Each RadarSkill row represents a cognitive-skill category (derived from
+        Bloom's Taxonomy levels stored in Question.bloom_level).  The four numeric
+        axes represent accuracy % for each main_topic.
+
+        Bloom → Radar-skill mapping:
+            Remember / Understand → Concept
+            Apply                → Calculation
+            Analyze              → Analysis
+            Evaluate             → Evaluation
+            Create / (unmapped)  → Application
+        """
+        # Map bloom_level strings → radar skill labels
+        BLOOM_TO_SKILL: dict[str, str] = {
+            "Remember":    "Concept",
+            "Understand":  "Concept",
+            "Apply":       "Calculation",
+            "Analyze":     "Analysis",
+            "Evaluate":    "Evaluation",
+            "Create":      "Application",
+        }
+        RADAR_SKILLS = ["Concept", "Calculation", "Application", "Analysis", "Evaluation"]
+        TOPIC_KEYS   = ["limit", "differential", "integral", "applications"]
+
+        # Fetch all attempts for this user with their Question loaded
+        attempts = (
+            self.db.query(QuizAttempt)
+            .join(Question)
+            .filter(QuizAttempt.user_id == user_id)
+            .all()
+        )
+
+        # Accumulate correct/total counts keyed by (radar_skill, topic_key)
+        counts: dict[tuple[str, str], dict[str, int]] = {}
+        for a in attempts:
+            if not a.question:
+                continue
+            bloom = a.question.bloom_level or ""
+            radar_skill = BLOOM_TO_SKILL.get(bloom, "Application")
+            # Normalize main_topic enum value to lowercase axis key
+            raw_topic = (a.question.main_topic or "").strip().upper()
+            topic_key = raw_topic.lower() if raw_topic else "limit"
+
+            key = (radar_skill, topic_key)
+            if key not in counts:
+                counts[key] = {"correct": 0, "total": 0}
+            counts[key]["total"] += 1
+            if a.is_correct:
+                counts[key]["correct"] += 1
+
+        # Build RadarSkill objects with accuracy % (0–100) for each axis
+        radar_data: list[RadarSkill] = []
+        for skill in RADAR_SKILLS:
+            values: dict[str, int] = {}
+            for tk in TOPIC_KEYS:
+                bucket = counts.get((skill, tk))
+                if bucket and bucket["total"] > 0:
+                    values[tk] = round((bucket["correct"] / bucket["total"]) * 100)
+                else:
+                    values[tk] = 0
+            radar_data.append(RadarSkill(
+                skill=skill,
+                limit=values["limit"],
+                differential=values["differential"],
+                integral=values["integral"],
+                applications=values["applications"],
+            ))
+
+        return DashboardSkillsRadarResponse(data=radar_data)
 
     def get_recent_attempts(self, user_id: int, num_attempts: int = 5):
         sessions = (
@@ -347,7 +408,7 @@ class DashboardService:
         error_groups: dict[str, list] = defaultdict(list)
         for a in attempts:
             if not a.is_correct:
-                key = a.error_category or (a.question.main_topic if a.question else "Other")
+                key = (a.error_detail.category if a.error_detail else None) or (a.question.main_topic if a.question else "Other")
                 error_groups[key].append(a)
 
         error_analysis: list[ErrorAnalysisItem] = []
@@ -373,29 +434,39 @@ class DashboardService:
             if a.question and a.question.main_topic:
                 t = a.question.main_topic
                 topic_counts[t] = topic_counts.get(t, 0) + 1
-        dominant_topic = max(topic_counts, key=topic_counts.get) if topic_counts else "limits"
+        dominant_topic = max(topic_counts, key=topic_counts.get) if topic_counts else "limit"
         # Reverse map: DB topic → frontend chapterId
-        REVERSE_MAP = {"limit": "limits", "differential": "derivatives", "integral": "integrals"}
-        chapter_id = REVERSE_MAP.get(dominant_topic, dominant_topic)
+        REVERSE_MAP = {
+            MainTopic.LIMIT.value:        "LIMIT", 
+            MainTopic.DIFFERENTIAL.value: "DIFFERENTIAL", 
+            MainTopic.INTEGRAL.value:     "INTEGRAL",
+            MainTopic.APPLICATIONS.value:  "APPLICATIONS"
+        }
+        chapter_id = REVERSE_MAP.get(dominant_topic, "LIMIT")
         
-        quiz_questions = []
+        # Build validated QuizQuestionItem list for the response
+        quiz_questions: list[QuizQuestionItem] = []
         for idx, attempt in enumerate(attempts):
             if attempt.question:
-                quiz_questions.append({
-                    "question_number": idx + 1,
-                    "question_text":   attempt.question.question_text,
-                    "choices":         attempt.question.choices or [],
-                    "user_answer":     attempt.user_answer or "-",
-                    "correct_answer":  attempt.question.correct_answer,
-                    "is_correct":      attempt.is_correct,
-                })
+                quiz_questions.append(QuizQuestionItem(
+                    question_number=idx + 1,
+                    question_text=attempt.question.question_text,
+                    choices=attempt.question.choices or [],
+                    user_answer=attempt.user_answer or "-",
+                    correct_answer=attempt.question.correct_answer,
+                    is_correct=attempt.is_correct,
+                ))
 
+        # Compute average question difficulty for this session (0.0–1.0 scale)
+        difficulties = [a.question.difficulty for a in attempts if a.question and a.question.difficulty is not None]
+        avg_difficulty = sum(difficulties) / len(difficulties) if difficulties else 0.5
 
         return SessionReportResponse(
             chapterId=chapter_id,
             correctAnswers=correct,
             totalQuestions=total_q,
             avgTimePerQuestion=round(avg_time, 1),
+            avgDifficulty=round(avg_difficulty, 2),
             strengths=strengths or ["—"],
             weaknesses=weaknesses or ["—"],
             skillBreakdown=skill_breakdown,

@@ -1,11 +1,13 @@
 # schemas/dashboard.py
+# Pydantic schemas for all dashboard API responses.
+# These are the single source of truth for the JSON contract
+# between the FastAPI backend and the React frontend.
 
 from pydantic import BaseModel
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Optional
 
-# ─────────────────────────────────────────────
-# Existing schemas (ไม่เปลี่ยน)
-# ─────────────────────────────────────────────
+
+# ─── Overview ──────────────────────────────────────────────────────────────
 
 class DashboardOverviewStats(BaseModel):
     totalChapters: str
@@ -15,6 +17,8 @@ class DashboardOverviewStats(BaseModel):
     avgMastery: float = 0.0
 
 
+# ─── Chapter Progress ─────────────────────────────────────────────────────
+
 class ChapterProgress(BaseModel):
     completed: int
     total: int
@@ -22,30 +26,35 @@ class ChapterProgress(BaseModel):
 class DashboardChapterProgressResponse(BaseModel):
     data: Dict[str, ChapterProgress]
 
+
+# ─── Skills Radar ─────────────────────────────────────────────────────────
+
 class RadarSkill(BaseModel):
     skill: str
     limit: int
     differential: int
     integral: int
+    applications: int
 
 class DashboardSkillsRadarResponse(BaseModel):
     data: List[RadarSkill]
+
+
+# ─── Recent Attempts ──────────────────────────────────────────────────────
 
 class RecentAttempt(BaseModel):
     attempt: int
     score: int
     date: str
-    avgTime: Optional[int]
-    strengths: List[str] = []   # ← เพิ่ม
-    weaknesses: List[str] = []  # ← เพิ่ม
+    avgTime: Optional[int] = None
+    strengths: List[str] = []
+    weaknesses: List[str] = []
 
 class DashboardRecentAttemptsResponse(BaseModel):
     data: List[RecentAttempt]
 
 
-# ─────────────────────────────────────────────
-# NEW: Chapter Stats  (GET /dashboard/chapter/{chapter_id}/stats)
-# ─────────────────────────────────────────────
+# ─── Chapter Stats ────────────────────────────────────────────────────────
 
 class BloomLevel(BaseModel):
     label: str
@@ -60,9 +69,7 @@ class ChapterStatsResponse(BaseModel):
     weaknesses: List[str]
 
 
-# ─────────────────────────────────────────────
-# NEW: Chapter Attempts  (GET /dashboard/chapter/{chapter_id}/attempts)
-# ─────────────────────────────────────────────
+# ─── Chapter Attempts ─────────────────────────────────────────────────────
 
 class ChapterAttemptRecord(BaseModel):
     attempt: int
@@ -74,35 +81,7 @@ class ChapterAttemptsResponse(BaseModel):
     data: List[ChapterAttemptRecord]
 
 
-# ─────────────────────────────────────────────
-# NEW: Session Report  (GET /dashboard/session/{session_id}/report)
-# ─────────────────────────────────────────────
-
-class SkillBreakdown(BaseModel):
-    skill: str
-    accuracy: float          # 0–100
-
-class ErrorAnalysisItem(BaseModel):
-    id: int
-    topic: str
-    errorCount: int
-    errorRate: str           # เช่น "20%"
-    suggestion: str
-
-class ScoreDistributionItem(BaseModel):
-    name: str                # "ถูก" / "ผิด"
-    value: int
-
-class SessionReportResponse(BaseModel):
-    chapterId: str
-    correctAnswers: int
-    totalQuestions: int
-    avgTimePerQuestion: float
-    strengths: List[str]
-    weaknesses: List[str]
-    skillBreakdown: List[SkillBreakdown]
-    errorAnalysis: List[ErrorAnalysisItem]
-    scoreDistribution: List[ScoreDistributionItem]
+# ─── Chapter Sessions ─────────────────────────────────────────────────────
 
 class ChapterSession(BaseModel):
     sessionId: int
@@ -111,13 +90,66 @@ class ChapterSession(BaseModel):
 
 class ChapterSessionsResponse(BaseModel):
     data: List[ChapterSession]
+
+
+# ─── Session Report ───────────────────────────────────────────────────────
+
+class SkillBreakdown(BaseModel):
+    skill: str
+    accuracy: float
+
+class ErrorAnalysisItem(BaseModel):
+    id: int
+    topic: str
+    errorCount: int
+    errorRate: str
+    suggestion: str
+
+class ScoreDistributionItem(BaseModel):
+    name: str
+    value: int
+
+class QuizQuestionItem(BaseModel):
+    """Individual question result within a session report."""
+    question_number: int
+    question_text: str
+    choices: list = []
+    user_answer: str
+    correct_answer: str
+    is_correct: bool
+
+class SessionReportResponse(BaseModel):
+    chapterId: str
+    correctAnswers: int
+    totalQuestions: int
+    avgTimePerQuestion: float
+    avgDifficulty: float = 0.5
+    strengths: List[str]
+    weaknesses: List[str]
+    skillBreakdown: List[SkillBreakdown]
+    errorAnalysis: List[ErrorAnalysisItem]
+    scoreDistribution: List[ScoreDistributionItem]
+    quizQuestions: List[QuizQuestionItem] = []
+
+
+# ─── Topics Summary ──────────────────────────────────────────────────────
+
 class TopicSummary(BaseModel):
-    topicId: str          # frontend id: "derivatives"
-    displayName: str      # "Derivatives"
-    latestScore: float    # คะแนนครั้งล่าสุด (0-100)
-    totalAttempts: int    # จำนวนครั้งที่ทำทั้งหมด
+    topicId: str
+    displayName: str
+    latestScore: float
+    totalAttempts: int
     proficiencyLevel: str
- 
+
 class TopicsSummaryResponse(BaseModel):
     data: List[TopicSummary]
- 
+
+
+# ─── Shared Utility ──────────────────────────────────────────────────────
+
+PROFICIENCY_THRESHOLDS = [
+    (80, "Excellent"),
+    (60, "Good"),
+    (40, "Developing"),
+    (0,  "Beginner"),
+]

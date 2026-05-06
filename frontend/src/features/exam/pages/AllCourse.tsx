@@ -13,28 +13,28 @@ interface Course {
 // Hardcode ตาม main_topic ที่มีใน DB
 const courses: Course[] = [
     {
-        topic: 'limits_and_continuity',
-        title: 'Limits & Continuity',
+        topic: 'LIMIT',
+        title: 'Limit',
         description: 'เรียนรู้แนวคิดลิมิตและความต่อเนื่องของฟังก์ชัน ซึ่งเป็นรากฐานสำคัญของแคลคูลัส',
         numQuestions: 10,
         duration: 60,
     },
     {
-        topic: 'derivatives',
-        title: 'Derivatives',
+        topic: 'DIFFERENTIAL',
+        title: 'Differential',
         description: 'เรียนรู้การหาอนุพันธ์เพื่อวัดอัตราการเปลี่ยนแปลง เช่น ความเร็ว ความชัน หรือการเติบโตของฟังก์ชัน',
         numQuestions: 10,
         duration: 60,
     },
     {
-        topic: 'integrals',
-        title: 'Integrals',
+        topic: 'INTEGRAL',
+        title: 'Integral',
         description: 'เรียนรู้การอินทิเกรตเพื่อหาพื้นที่ใต้กราฟ ปริมาตร และการสะสมของปริมาณต่างๆ',
         numQuestions: 10,
         duration: 60,
     },
     {
-        topic: 'applications',
+        topic: 'APPLICATIONS',
         title: 'Applications',
         description: 'ประยุกต์ใช้แคลคูลัสในการแก้โจทย์ปัญหาจริง เช่น การหาค่าสูงสุด-ต่ำสุด และอัตราการเปลี่ยนแปลง',
         numQuestions: 10,

@@ -127,7 +127,7 @@ class TestSubmitAnswer:
         """Unknown choice letter yields 'unclassified_error'."""
         _setup_db(mock_db, MQ, MS, _make_question(3, CHOICES), _make_session(300, 3))
         from app.services.quiz_service import QuizService
-        r = QuizService(mock_db).submit_answer(3, 300, 3, "Z", "derivatives", 2.0)
+        r = QuizService(mock_db).submit_answer(3, 300, 3, "Z", "derivative", 2.0)
         assert r.is_correct is False
         assert r.error_code == "unclassified_error"
 

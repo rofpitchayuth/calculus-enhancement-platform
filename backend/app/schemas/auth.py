@@ -1,6 +1,9 @@
 from pydantic import BaseModel, EmailStr, Field, field_validator
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 from datetime import datetime
+
+if TYPE_CHECKING:
+    from app.schemas.result import StudentStatsResponse
 
 class LoginRequest(BaseModel):
     email: EmailStr
@@ -32,6 +35,7 @@ class UserResponse(BaseModel):
     role: str
     is_active: bool
     is_verified: bool 
+    student_stats: Optional["StudentStatsResponse"] = None
     created_at: datetime
 
     class Config:
@@ -43,3 +47,7 @@ class AuthResponse(BaseModel):
 
 LoginResponse = AuthResponse
 TokenResponse = Token
+
+# Rebuild model to resolve forward references
+from app.schemas.result import StudentStatsResponse
+UserResponse.model_rebuild()

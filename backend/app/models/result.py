@@ -36,18 +36,16 @@ class QuizAttempt(Base):
     question_id = Column(Integer, ForeignKey("questions.id", ondelete="SET NULL"), nullable=True, index=True)
     
     is_correct = Column(Boolean, default=False) 
-    difficulty = Column(String, nullable=True)
     response_time = Column(Float, nullable=True) 
     skill_tag = Column(String, nullable=True)
     
     user_answer = Column(String, nullable=True)
     error_code = Column(String, ForeignKey("error_codes.code", ondelete="SET NULL"), nullable=True)
-    error_category = Column(String, nullable=True)
     
     user = relationship("User", back_populates="quiz_attempts")
     session = relationship("QuizSession", back_populates="quiz_attempts")
     question = relationship("Question", back_populates="quiz_attempts")
-    error_detail = relationship("ErrorCode")
+    error_detail = relationship("ErrorCode", back_populates="attempts")
     bkt_results = relationship("BKTResult", back_populates="quiz_attempt", cascade="all, delete-orphan")
     
     attempted_at = Column(DateTime, default=datetime.utcnow, index=True)
@@ -55,15 +53,17 @@ class QuizAttempt(Base):
     class Config:
         from_attributes = True
 
-class StudentKnowledge(Base):
-    __tablename__ = "student_knowledge"
+class StudentStats(Base):
+    __tablename__ = "student_stats"
     
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, unique=True, index=True)
     
     skill_mastery = Column(JSONB, default=dict)
+    current_profile = Column(String, default="Developing (Average)")
+    avg_mastery = Column(Float, default=0.0)
     
-    user = relationship("User", back_populates="student_knowledge")
+    user = relationship("User", back_populates="student_stats")
     
     last_updated = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, index=True)
     
@@ -74,9 +74,8 @@ class BKTResult(Base):
     __tablename__ = "bkt_results"
     
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
     quiz_attempt_id = Column(Integer, ForeignKey("quiz_attempts.id", ondelete="CASCADE"), nullable=False, index=True)
-    skill_tag = Column(String, nullable=False)
+    skill_tag = Column(String, nullable=False, index=True)
     
     p_prior = Column(Float, nullable=False)
     p_posterior = Column(Float, nullable=False)

@@ -2,10 +2,12 @@ from pydantic import BaseModel
 from typing import Dict, Optional
 from datetime import datetime
 
-class StudentKnowledgeResponse(BaseModel):
+class StudentStatsResponse(BaseModel):
     id: int
     user_id: int
     skill_mastery: Dict[str, float]
+    current_profile: str
+    avg_mastery: float
     last_updated: datetime
     
     class Config:
@@ -30,12 +32,10 @@ class QuizAttemptResponse(BaseModel):
     session_id: Optional[int] = None
     question_id: Optional[int] = None
     is_correct: bool
-    difficulty: Optional[str] = None
     response_time: Optional[float] = None
     skill_tag: Optional[str] = None
     user_answer: Optional[str] = None
     error_code: Optional[str] = None
-    error_category: Optional[str] = None
     attempted_at: datetime
     
     class Config:
@@ -43,21 +43,11 @@ class QuizAttemptResponse(BaseModel):
 
 class BKTResultResponse(BaseModel):
     id: int
-    user_id: int
     quiz_attempt_id: int
     skill_tag: str
     p_prior: float
     p_posterior: float
     created_at: datetime
-    
-    class Config:
-        from_attributes = True
-
-class StudentKnowledgeResponse(BaseModel):
-    id: int
-    user_id: int
-    skill_mastery: Dict[str, float]
-    last_updated: datetime
     
     class Config:
         from_attributes = True

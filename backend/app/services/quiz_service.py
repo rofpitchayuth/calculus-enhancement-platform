@@ -8,7 +8,7 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
 from app.models.question import Question
-from app.models.result import QuizSession, QuizAttempt, StudentKnowledge, BKTResult
+from app.models.result import QuizSession, QuizAttempt, StudentStats, BKTResult
 from app.schemas.quiz import QuestionResponse, QuizStartResponse, QuizSubmitResponse
 # Import ML client — called at the end of a quiz session to update student profile
 from app.services.ml_client import sync_student_profile
@@ -99,28 +99,59 @@ class QuizService:
             response_time=response_latency,
             skill_tag=skill_id,
             error_code=error_code,
-            difficulty=str(question.difficulty),
             attempted_at=datetime.utcnow()
         )
         self.db.add(attempt)
         self.db.commit()
         self.db.refresh(attempt)
 
-        # 4. Trigger Knowledge Tracing (predict updated mastery)
-        # In this lightning flow, we simulate or call a fast cache.
-        # We'll use the existing mock pattern but with real pre-computed taxonomy.
-        p_mastery_before = 0.5 
-        p_mastery_after = 0.6 if is_correct else 0.4
-        p_correct_next = 0.7
+        # 4. Knowledge Tracing — compute real mastery from BKT results.
+        # Look up the most recent BKT posterior for this user + skill to
+        # serve as p_mastery_before.  After recording the new attempt, store
+        # the updated posterior.
+        latest_bkt = (
+            self.db.query(BKTResult)
+            .filter(BKTResult.skill_tag == skill_id)
+            .join(QuizAttempt)
+            .filter(QuizAttempt.user_id == user_id)
+            .order_by(BKTResult.created_at.desc())
+            .first()
+        )
+        p_mastery_before = latest_bkt.p_posterior if latest_bkt else 0.5
+
+        # Simple BKT update rule (same as used during training):
+        #   p_learn = 0.1, p_guess = 0.2, p_slip = 0.1
+        p_learn, p_guess, p_slip = 0.1, 0.2, 0.1
+        if is_correct:
+            p_mastery_after = (p_mastery_before * (1 - p_slip)) / (
+                p_mastery_before * (1 - p_slip) + (1 - p_mastery_before) * p_guess
+            )
+        else:
+            p_mastery_after = (p_mastery_before * p_slip) / (
+                p_mastery_before * p_slip + (1 - p_mastery_before) * (1 - p_guess)
+            )
+        # Apply learning transition
+        p_mastery_after = p_mastery_after + (1 - p_mastery_after) * p_learn
+        p_correct_next = p_mastery_after * (1 - p_slip) + (1 - p_mastery_after) * p_guess
+
+        # Persist the BKT result for future lookups
+        bkt_record = BKTResult(
+            quiz_attempt_id=attempt.id,
+            skill_tag=skill_id,
+            p_prior=round(p_mastery_before, 4),
+            p_posterior=round(p_mastery_after, 4),
+        )
+        self.db.add(bkt_record)
+        self.db.commit()
 
         return QuizSubmitResponse(
             is_correct=is_correct,
             correct_answer=question.correct_answer,
             error_code=error_code,
             feedback_text=feedback_text,
-            p_mastery_before=p_mastery_before,
-            p_mastery_after=p_mastery_after,
-            p_correct_next=p_correct_next
+            p_mastery_before=round(p_mastery_before, 4),
+            p_mastery_after=round(p_mastery_after, 4),
+            p_correct_next=round(p_correct_next, 4),
         )
     
     

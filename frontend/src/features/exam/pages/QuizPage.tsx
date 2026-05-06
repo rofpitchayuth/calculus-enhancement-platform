@@ -1,5 +1,3 @@
-// src/features/exam/pages/QuizPage.tsx
-
 import { useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -10,16 +8,25 @@ import { GraderLoadingOverlay } from "../components/GraderLoadingOverlay";
 import { mapErrorCodeToThai } from "../utils/errorMapper";
 import { renderMathText } from "../components/mathRenderer";
 
+const TOPIC_MAPPER: Record<string, string> = {
+  limits_and_continuity: 'LIMIT',
+  limit: 'LIMIT',
+  derivatives: 'DIFFERENTIAL',
+  differential: 'DIFFERENTIAL', 
+  integrals: 'INTEGRAL',
+  integral: 'INTEGRAL',
+  applications: 'APPLICATIONS',
+};
+
 const TOPIC_DISPLAY: Record<string, string> = {
-  limits_and_continuity: 'Limits & Continuity',
-  derivatives:           'Derivatives',
-  integrals:             'Integrals',
-  applications:          'Applications',
+  LIMIT: 'LIMIT',
+  DIFFERENTIAL: 'DIFFERENTIAL',
+  INTEGRAL: 'INTEGRAL',
+  APPLICATIONS: 'APPLICATIONS',
 };
 
 export default function QuizPage() {
-  // courseId จาก URL ตรงๆ เป็น topic string เช่น "derivatives"
-  const { courseId: topic = '' } = useParams<{ courseId: string }>();
+  const { courseId = '' } = useParams<{ courseId: string }>();
   const { user } = useAuth();
   const navigate  = useNavigate();
 
@@ -34,20 +41,23 @@ export default function QuizPage() {
   } = useQuizFlow(onFinish);
 
   const hasStarted = useRef(false);
+  
   useEffect(() => {
-    if (user?.id && topic && !hasStarted.current) {
+    if (user?.id && courseId && !hasStarted.current) {
       hasStarted.current = true;
-      // ส่ง topic เป็น string ตรงๆ ไม่ parseInt อีกต่อไป
-      startQuiz(user.id, topic).catch((err) => {
+
+      const backendTopic = TOPIC_MAPPER[courseId.toLowerCase()] || courseId.toUpperCase();
+      
+      startQuiz(user.id, backendTopic).catch((err) => {
         console.error('Failed to start quiz:', err);
       });
     }
-  }, [user?.id, topic, startQuiz]);
+  }, [user?.id, courseId, startQuiz]);
 
   const isLastQuestion = currentIndex === totalQuestions - 1;
   const isGrading      = graderStatus === "loading";
   const hasResult      = graderStatus === "done" && graderResult !== null;
-  const topicName      = TOPIC_DISPLAY[topic] ?? topic;
+  const topicName      = TOPIC_DISPLAY[courseId] ?? courseId;
 
   // ── Loading ──────────────────────────────────────────────────────────────
   if (quizLoading && !currentQuestion) {
@@ -100,40 +110,43 @@ export default function QuizPage() {
               </p>
             </div>
 
-            {(quizEndResult as any).student_profile && (
+            {(quizEndResult as any).student_profile ? (
               <div className="bg-indigo-50 p-6 rounded-xl text-center min-w-[180px]">
                 <p className="text-gray-600 font-medium">AI Profile</p>
                 <p className="text-lg font-bold text-indigo-700 mt-2">
                   {(quizEndResult as any).student_profile}
                 </p>
                 {(quizEndResult as any).avg_mastery != null && (
-                  <p className="text-sm text-gray-500 mt-1">
-                    Mastery: {((quizEndResult as any).avg_mastery * 100).toFixed(1)}%
-                  </p>
-                  
-                  {/* Mastery Progress Bar */}
-                  <div className="mt-3">
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="text-xs font-semibold text-indigo-600">Skill Mastery</span>
-                      <span className="text-xs font-bold text-indigo-700">
-                        {(quizEndResult.skill_mastery * 100).toFixed(1)}%
-                      </span>
+                  <>
+                    <p className="text-sm text-gray-500 mt-1">
+                      Mastery: {((quizEndResult as any).avg_mastery * 100).toFixed(1)}%
+                    </p>
+                    
+                    {/* Mastery Progress Bar */}
+                    <div className="mt-3">
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="text-xs font-semibold text-indigo-600">Skill Mastery</span>
+                        <span className="text-xs font-bold text-indigo-700">
+                          {(quizEndResult.skill_mastery * 100).toFixed(1)}%
+                        </span>
+                      </div>
+                      <div className="w-full bg-indigo-200 rounded-full h-2">
+                        <div 
+                          className="bg-indigo-600 h-2 rounded-full transition-all duration-1000" 
+                          style={{ width: `${quizEndResult.skill_mastery * 100}%` }}
+                        ></div>
+                      </div>
                     </div>
-                    <div className="w-full bg-indigo-200 rounded-full h-2">
-                      <div 
-                        className="bg-indigo-600 h-2 rounded-full transition-all duration-1000" 
-                        style={{ width: `${quizEndResult.skill_mastery * 100}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="mt-4">
-                  <p className="text-sm text-gray-400 italic">
-                    AI Analysis temporarily unavailable
-                  </p>
-                </div>
-              )}
+                  </>
+                )}
+              </div>
+            ) : (
+              <div className="mt-4">
+                <p className="text-sm text-gray-400 italic">
+                  AI Analysis temporarily unavailable
+                </p>
+              </div>
+            )}
             </div>
           </div>
 
@@ -203,7 +216,6 @@ export default function QuizPage() {
             </div>
           </div>
         </div>
-      </div>
     );
   }
 

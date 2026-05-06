@@ -1,30 +1,33 @@
 // src/features/dashboard/components/ChapterCard.tsx
+// Card component for each topic shown on the AllDashboard page.
+// Props use TopicSummary from the backend contract.
 
-
-import type { ChapterSummary, OverviewStats } from "../types/dashboard.types";
+import type { TopicSummary } from "../types/dashboard.types";
 
 /**
- * Chapter Card Component - สำหรับแสดงการ์ดแต่ละบทใน DashboardOverviewPage
+ * Props for ChapterCard.
+ * `chapter` is a TopicSummary from the backend.
+ * `stats` provides shared overview-level numbers for display.
  */
-export function ChapterCard({
-  chapter,
-  stats,
-}: {
-  chapter: ChapterSummary;
-  stats: OverviewStats;
-}) {
-  const trendLabel =
-    chapter.trend === "up"
-      ? "(+)"
-      : chapter.trend === "down"
-        ? "(-)"
-        : "";
+interface ChapterCardProps {
+  chapter: TopicSummary;
+  stats: {
+    proficiencyLevel: string;
+    averageScore: number;
+    totalAttempts: number;
+    totalChapters: number;
+  };
+}
 
+export function ChapterCard({ chapter, stats }: ChapterCardProps) {
   return (
-    <a href={`/dashboard/chapter/${chapter.id}/all`} className="bg-white rounded-2xl shadow-md p-5 flex flex-col justify-between w-full block">
+    <a
+      href={`/dashboard/chapter/${chapter.topicId}/all`}
+      className="bg-white rounded-2xl shadow-md p-5 flex flex-col justify-between w-full block"
+    >
       <div>
-        <h3 className="text-3xl  font-semibold text-[#003B62]">
-          {chapter.title}
+        <h3 className="text-3xl font-semibold text-[#003B62]">
+          {chapter.displayName}
         </h3>
         <div className="flex flex-row mt-3">
           <div className="text-5xl text-blue-900 font-medium w-35 h-35 rounded-full bg-blue-100 border-yellow-100 border-2 flex items-center justify-center mr-4">
@@ -32,51 +35,16 @@ export function ChapterCard({
           </div>
           <div>
             <p className="text-md text-gray-500 mt-2">
-              คะแนนล่าสุด : <span className="text-gray-900 font-bold">{chapter.latestScore}%</span> {trendLabel}
+              คะแนนล่าสุด : <span className="text-gray-900 font-bold">{chapter.latestScore}%</span>
             </p>
             <p className="text-md text-gray-500 mt-2">
-              คะแนนเฉลี่ยรวม : <span className="text-gray-900 font-bold">{stats.averageScore}</span>
+              ความเชี่ยวชาญ : <span className="text-gray-900 font-bold">{chapter.proficiencyLevel}</span>
             </p>
             <p className="text-md text-gray-500 mt-2">
-              ความเชี่ยวชาญ : <span className="text-gray-900 font-bold">{chapter.attempts}</span> 
+              จำนวนครั้งที่ทำ : <span className="text-gray-900 font-bold">{chapter.totalAttempts}</span>
             </p>
-            <p className="text-md text-gray-500 mt-2">
-              จำนวนครั้งที่ทำ : <span className="text-gray-900 font-bold">{stats.totalAttempts}</span>
-            </p>
-          
           </div>
         </div>
-
-
-
-
-
-
-
-
-
-
-
-        {/* <p className="text-sm text-gray-500 mt-1">
-          ทำแบบทดสอบแล้ว {chapter.attempts} รอบ
-        </p>
-      </div>
-
-      <div className="mt-4 flex items-center justify-between">
-        <div>
-          <p className="text-xs text-gray-500">คะแนนล่าสุด</p>
-          <p className="text-xl font-bold text-[#003B62]">
-            {chapter.latestScore}%
-          </p>
-          <p className="text-xs text-gray-500 mt-1">{trendLabel}</p>
-        </div>
-
-        <a
-          href={`/dashboard/chapter/${chapter.id}`}
-          className="text-xs px-3 py-2 rounded-full bg-[#003B62] text-white hover:bg-[#005187] transition-colors"
-        >
-          ดู Dashboard
-        </a> */}
       </div>
     </a>
   );

@@ -22,7 +22,7 @@ const MOCK_QUESTION = {
   ],
   difficulty: 0.5,
   bloom_level: "apply",
-  skill_id: "derivatives",
+  skill_id: "DIFFERENTIAL",
 };
 
 const MOCK_HARDER_QUESTION = {
@@ -40,7 +40,7 @@ describe("useAdaptiveQuiz", () => {
   it("loads the first question on mount with default 'normal' adjustment", async () => {
     mockGetNextQuestion.mockResolvedValueOnce(MOCK_QUESTION);
 
-    const { result } = renderHook(() => useAdaptiveQuiz("derivatives"));
+    const { result } = renderHook(() => useAdaptiveQuiz("DIFFERENTIAL"));
 
     expect(result.current.isLoading).toBe(true);
     expect(result.current.currentQuestion).toBeNull();
@@ -52,7 +52,7 @@ describe("useAdaptiveQuiz", () => {
     expect(result.current.currentQuestion).toEqual(MOCK_QUESTION);
     expect(result.current.error).toBeNull();
 
-    expect(mockGetNextQuestion).toHaveBeenCalledWith("derivatives", "normal");
+    expect(mockGetNextQuestion).toHaveBeenCalledWith("DIFFERENTIAL", "normal");
   });
 
   it("passes difficulty_adjustment parameter when fetchNext is called", async () => {
@@ -60,7 +60,7 @@ describe("useAdaptiveQuiz", () => {
       .mockResolvedValueOnce(MOCK_QUESTION)       
       .mockResolvedValueOnce(MOCK_HARDER_QUESTION);
 
-    const { result } = renderHook(() => useAdaptiveQuiz("derivatives"));
+    const { result } = renderHook(() => useAdaptiveQuiz("DIFFERENTIAL"));
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
@@ -70,7 +70,7 @@ describe("useAdaptiveQuiz", () => {
     });
 
     expect(mockGetNextQuestion).toHaveBeenCalledTimes(2);
-    expect(mockGetNextQuestion).toHaveBeenNthCalledWith(2, "derivatives", "harder");
+    expect(mockGetNextQuestion).toHaveBeenNthCalledWith(2, "DIFFERENTIAL", "harder");
     expect(result.current.currentQuestion).toEqual(MOCK_HARDER_QUESTION);
   });
 
@@ -79,7 +79,7 @@ describe("useAdaptiveQuiz", () => {
       .mockResolvedValueOnce(MOCK_QUESTION)
       .mockResolvedValueOnce({ ...MOCK_QUESTION, id: 44, difficulty: 0.2 });
 
-    const { result } = renderHook(() => useAdaptiveQuiz("integration"));
+    const { result } = renderHook(() => useAdaptiveQuiz("INTEGRAL"));
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
@@ -87,13 +87,13 @@ describe("useAdaptiveQuiz", () => {
       await result.current.fetchNext("easier");
     });
 
-    expect(mockGetNextQuestion).toHaveBeenNthCalledWith(2, "integration", "easier");
+    expect(mockGetNextQuestion).toHaveBeenNthCalledWith(2, "INTEGRAL", "easier");
   });
 
   it("sets error state when the service call fails", async () => {
     mockGetNextQuestion.mockRejectedValueOnce(new Error("Network error"));
 
-    const { result } = renderHook(() => useAdaptiveQuiz("derivatives"));
+    const { result } = renderHook(() => useAdaptiveQuiz("DIFFERENTIAL"));
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
@@ -108,7 +108,7 @@ describe("useAdaptiveQuiz", () => {
       .mockRejectedValueOnce(new Error("Network error"))    
       .mockResolvedValueOnce(MOCK_QUESTION);
 
-    const { result } = renderHook(() => useAdaptiveQuiz("derivatives"));
+    const { result } = renderHook(() => useAdaptiveQuiz("DIFFERENTIAL"));
 
     await waitFor(() => {
       expect(result.current.error).toBe("Network error");
@@ -129,7 +129,7 @@ describe("useAdaptiveQuiz", () => {
     });
     mockGetNextQuestion.mockReturnValueOnce(pendingPromise);
 
-    const { result } = renderHook(() => useAdaptiveQuiz("derivatives"));
+    const { result } = renderHook(() => useAdaptiveQuiz("DIFFERENTIAL"));
 
     expect(result.current.isLoading).toBe(true);
 

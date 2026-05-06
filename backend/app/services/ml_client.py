@@ -50,6 +50,7 @@ MAIN_TOPIC_TO_SKILL_ID: dict = {
     "limit":        "0",
     "differential": "1",
     "integral":     "2",
+    "applications": "3",
 }
 
 # Fallback for any main_topic not in the mapping above.
@@ -182,8 +183,13 @@ def sync_student_profile(
         # ----------------------------------------------------------------
         user = db.query(User).filter(User.id == user_id).first()
         if user:
-            user.current_profile = profile_label
-            user.avg_mastery     = avg_mastery
+            from app.models.result import StudentStats
+            stats = user.student_stats
+            if not stats:
+                stats = StudentStats(user_id=user_id, skill_mastery={})
+                db.add(stats)
+            stats.current_profile = profile_label
+            stats.avg_mastery     = avg_mastery
             db.commit()
             logger.info(
                 "KT profile updated — user_id=%s | label='%s' | "

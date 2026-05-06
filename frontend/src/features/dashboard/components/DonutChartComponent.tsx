@@ -9,7 +9,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-import type { DonutChartComponentProps } from "../types/dashboard.type";
+import type { DonutChartComponentProps } from "../types/dashboard.types";
 
 interface DonutChartProps extends DonutChartComponentProps {
   showLegend?: boolean;

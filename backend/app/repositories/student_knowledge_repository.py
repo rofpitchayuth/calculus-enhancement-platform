@@ -1,12 +1,12 @@
 from typing import Optional, Dict
 from sqlalchemy.orm import Session
 from app.repositories.base import BaseRepository
-from app.models.result import StudentKnowledge
+from app.models.result import StudentStats
 
-class StudentKnowledgeRepository(BaseRepository[StudentKnowledge]):
-    def get_or_create(self, user_id: int) -> StudentKnowledge:
-        sk = self.db.query(StudentKnowledge).filter(
-            StudentKnowledge.user_id == user_id
+class StudentStatsRepository(BaseRepository[StudentStats]):
+    def get_or_create(self, user_id: int) -> StudentStats:
+        sk = self.db.query(StudentStats).filter(
+            StudentStats.user_id == user_id
         ).first()
         if not sk:
             sk = self.create({
@@ -24,3 +24,6 @@ class StudentKnowledgeRepository(BaseRepository[StudentKnowledge]):
     def get_skill_mastery(self, user_id: int, skill_tag: str) -> float:
         sk = self.get_or_create(user_id)
         return sk.skill_mastery.get(skill_tag, 0.2)
+
+# Keep the old class name as an alias for backwards compatibility
+StudentKnowledgeRepository = StudentStatsRepository

@@ -1,23 +1,18 @@
-// src/features/dashboard/pages/ChapterDashboardPage.tsx
-
-import { useState, useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { StatCard, DashboardCard, BloomBar, LineChartComponent, RadarChartComponent } from '../components';
-import {
-  fetchChapterStats,
-  fetchChapterAttempts,
-  fetchSkillsRadar,
-  fetchChapterSessions,
-} from '../api/dashboard.api';
-import type { ChapterStats, ChapterAttemptRecord, RadarSkill, ChapterSession } from '../api/dashboard.api';
+import { useChapterStats } from '../hooks/useDashboard';
 
-// ── ตรงกับ topic IDs ใน AllCourse และ AllDashboard ─────────────────────────
+// --- Constants & Config ---
+
 const CHAPTERS_MAP: Record<string, string> = {
-  'limits_and_continuity': 'Limits & Continuity',
-  'derivatives':            'Derivatives',
-  'integrals':              'Integrals',
-  'applications':           'Applications',
+  'LIMIT': 'LIMIT',
+  'DIFFERENTIAL': 'DIFFERENTIAL',
+  'INTEGRAL': 'INTEGRAL',
+  'APPLICATIONS': 'APPLICATIONS',
 };
+
+// --- Local Presentation Components ---
 
 function TrendBadge({ delta, positiveIsGood = true, unit = '' }: {
   delta: number; positiveIsGood?: boolean; unit?: string;
@@ -33,38 +28,17 @@ function TrendBadge({ delta, positiveIsGood = true, unit = '' }: {
 
 export function ChapterDashboardPage() {
   const navigate = useNavigate();
-  // chapterId มาจาก URL: /dashboard/chapter/:chapterId/all
-  const { chapterId = 'derivatives' } = useParams<{ chapterId: string }>();
+
+  const { chapterId = 'LIMIT' } = useParams<{ chapterId: string }>();
   const chapterName = CHAPTERS_MAP[chapterId] ?? chapterId;
 
-  const [chapterStats, setChapterStats] = useState<ChapterStats | null>(null);
-  const [attempts, setAttempts]         = useState<ChapterAttemptRecord[]>([]);
-  const [radarData, setRadarData]       = useState<RadarSkill[]>([]);
-  const [sessions, setSessions]         = useState<ChapterSession[]>([]);
-  const [loading, setLoading]           = useState(true);
-
-  useEffect(() => {
-    const load = async () => {
-      try {
-        setLoading(true);
-        const [stats, attemptsRes, radar, sessionsRes] = await Promise.all([
-          fetchChapterStats(chapterId),       // filter by main_topic
-          fetchChapterAttempts(chapterId),    // filter by main_topic
-          fetchSkillsRadar(),
-          fetchChapterSessions(chapterId),    // รายการ sessions ของ topic นี้
-        ]);
-        setChapterStats(stats);
-        setAttempts(attemptsRes.data);
-        setRadarData(radar.data);
-        setSessions(sessionsRes.data);
-      } catch (err) {
-        console.error('Failed to fetch chapter data:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
-  }, [chapterId]);
+  const {
+    stats,
+    attempts,
+    sessions,
+    isLoading,
+    error
+  } = useChapterStats(chapterId);
 
   const { latestScore, scoreTrend, latestAvgTime, timeTrend } = useMemo(() => {
     if (attempts.length === 0) return { latestScore: 0, scoreTrend: 0, latestAvgTime: 0, timeTrend: 0 };
@@ -78,14 +52,14 @@ export function ChapterDashboardPage() {
     };
   }, [attempts]);
 
-  const radarChartData = useMemo(
-    () => radarData.map((r) => ({
-      skill: r.skill,
-      value: Math.round((r.limit + r.differential + r.integral) / 3),
-    })),
-    [radarData],
-  );
-
+  // const radarChartData = useMemo(
+  //   () => radarData.map((r) => ({
+  //     skill: r.skill,
+  //     value: Math.round((r.limit + r.differential + r.integral) / 3),
+  //   })),
+  //   [radarData],
+  // );
+  
   const progressChartData = useMemo(
     () => attempts.map((a) => ({
       attempt: `ครั้งที่ ${a.attempt}`,
@@ -95,7 +69,9 @@ export function ChapterDashboardPage() {
     [attempts],
   );
 
-  if (loading || !chapterStats) {
+  // --- Render Logic ---
+
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-blue-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-[#003B62]" />
@@ -103,10 +79,21 @@ export function ChapterDashboardPage() {
     );
   }
 
+  if (error || !stats) {
+    return (
+      <div className="min-h-screen bg-blue-50 flex items-center justify-center p-8">
+        <div className="bg-white p-8 rounded-2xl shadow-lg text-center max-w-md">
+          <p className="text-red-500 font-semibold mb-2">Error Loading Chapter Stats</p>
+          <p className="text-gray-600 text-sm">{error || 'Data could not be retrieved.'}</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-blue-50 px-4 py-4">
 
-      {/* Dropdown — ภาพรวม / แต่ละ session */}
+      {/* Navigation / Filter */}
       <div className="flex justify-center mb-2">
         <select
           className="border rounded-full px-10 py-1 text-sm bg-white shadow-sm"
@@ -125,34 +112,34 @@ export function ChapterDashboardPage() {
         </select>
       </div>
 
-      <h1 className="text-4xl font-extrabold text-[#003B62] mb-6">
-        {chapterName.toUpperCase()} DASHBOARD
+      <h1 className="text-4xl font-extrabold text-[#003B62] mb-6 uppercase">
+        {chapterName} DASHBOARD
       </h1>
 
-      {/* Summary Stats */}
-      <div className="grid grid-cols-4 gap-4 mb-6 bg-white shadow-md p-4 rounded-3xl">
+      {/* Top Metric Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 bg-white shadow-md p-4 rounded-3xl">
         <StatCard
           label="คะแนนล่าสุด"
           value={`${latestScore.toFixed(0)}%`}
           sub={scoreTrend !== 0 ? <TrendBadge delta={scoreTrend} positiveIsGood /> : undefined}
         />
-        <StatCard label="ระดับความเชี่ยวชาญ" value={chapterStats.proficiencyLevel} />
+        <StatCard label="ระดับความเชี่ยวชาญ" value={stats.proficiencyLevel} />
         <StatCard
           label="เวลาเฉลี่ยต่อข้อ"
-          value={`${Math.round(latestAvgTime || chapterStats.avgTimePerQuestion)} วินาที`}
+          value={`${Math.round(latestAvgTime || stats.avgTimePerQuestion)} วินาที`}
           sub={timeTrend !== 0 ? <TrendBadge delta={timeTrend} positiveIsGood={false} /> : undefined}
         />
-        <StatCard label="จำนวนรอบที่ทำ" value={`${chapterStats.totalAttempts} รอบ`} />
+        <StatCard label="จำนวนรอบที่ทำ" value={`${stats.totalAttempts} รอบ`} />
       </div>
 
-      {/* Row 1: Radar + Progress */}
-      <div className="grid grid-cols-3 gap-4 mb-4">
-        <DashboardCard>
+      {/* Visualization Row 1 */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+        {/* <DashboardCard>
           {radarChartData.length > 0 && (
             <RadarChartComponent data={radarChartData} dataKey="value" angleKey="skill" fill="#3b82f6" height={280} />
           )}
-        </DashboardCard>
-        <div className="col-span-2">
+        </DashboardCard> */}
+        <div className="lg:col-span-2">
           <DashboardCard title="กราฟพัฒนาการคะแนน">
             {progressChartData.length > 0 ? (
               <LineChartComponent data={progressChartData} dataKey="score" xAxisKey="attempt" stroke="#1D4ED8" height={260} />
@@ -163,9 +150,9 @@ export function ChapterDashboardPage() {
         </div>
       </div>
 
-      {/* Row 2: Time Chart + Bloom */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
-        <div className="col-span-2">
+      {/* Visualization Row 2 */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+        <div className="lg:col-span-2">
           <DashboardCard title="กราฟเวลาเฉลี่ยต่อข้อ (วินาที)">
             {progressChartData.length > 0 ? (
               <LineChartComponent data={progressChartData} dataKey="avgTime" xAxisKey="attempt" stroke="#1D4ED8" height={260} />
@@ -177,22 +164,22 @@ export function ChapterDashboardPage() {
         <DashboardCard title="BLOOM'S LEVEL">
           <div className="space-y-4">
             <div className="space-y-2">
-              {chapterStats.bloomLevels.map((level) => (
+              {stats.bloomLevels.map((level) => (
                 <BloomBar key={level.label} label={level.label} percent={level.percent} />
               ))}
             </div>
             <div className="border-t pt-3">
-              <h4 className="font-semibold text-xs text-gray-700 mb-2">STRENGTHS</h4>
+              <h4 className="font-semibold text-xs text-gray-700 mb-2 uppercase">Strengths</h4>
               <div className="flex gap-2 flex-wrap">
-                {chapterStats.strengths.map((s, i) => (
+                {stats.strengths.map((s, i) => (
                   <span key={i} className="px-2 py-1 bg-yellow-100 text-gray-700 rounded-full text-xs">{s}</span>
                 ))}
               </div>
             </div>
             <div>
-              <h4 className="font-semibold text-xs text-gray-700 mb-2">WEAKNESSES</h4>
+              <h4 className="font-semibold text-xs text-gray-700 mb-2 uppercase">Weaknesses</h4>
               <div className="flex gap-2 flex-wrap">
-                {chapterStats.weaknesses.map((w, i) => (
+                {stats.weaknesses.map((w, i) => (
                   <span key={i} className="px-2 py-1 bg-blue-100 text-gray-700 rounded-full text-xs">{w}</span>
                 ))}
               </div>
@@ -201,7 +188,7 @@ export function ChapterDashboardPage() {
         </DashboardCard>
       </div>
 
-      {/* Attempts Table */}
+      {/* History Table */}
       <h2 className="text-2xl font-semibold text-[#003B62] mb-3">รายละเอียดในการทำแบบทดสอบแต่ละครั้ง</h2>
       <DashboardCard>
         <div className="overflow-x-auto">
@@ -218,8 +205,8 @@ export function ChapterDashboardPage() {
             </thead>
             <tbody>
               {attempts.length > 0 ? attempts.map((attempt, idx) => {
-                const strength = chapterStats.strengths[idx % Math.max(chapterStats.strengths.length, 1)] ?? '-';
-                const weakness = chapterStats.weaknesses[idx % Math.max(chapterStats.weaknesses.length, 1)] ?? '-';
+                const strength = stats.strengths[idx % Math.max(stats.strengths.length, 1)] ?? '-';
+                const weakness = stats.weaknesses[idx % Math.max(stats.weaknesses.length, 1)] ?? '-';
                 return (
                   <tr key={idx} className={idx < attempts.length - 1 ? 'border-b' : ''}>
                     <td className="py-3 px-3">{attempt.attempt}</td>
