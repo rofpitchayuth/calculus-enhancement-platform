@@ -4,9 +4,21 @@ import { useMemo } from 'react';
 import { RadarChartComponent, LineChartComponent, DashboardCard } from '../components';
 import { useDashboardOverview } from '../hooks/useDashboard';
 import type { LineChartData } from '../types/dashboard.types';
+import char1 from '../components/character/LuckyGuessers.png'
+import char2 from '../components/character/Careless.png'
+import char3 from '../components/character/HighAchiever.png'
+import char4 from '../components/character/Developing.png'
+import char5 from '../components/character/Struggling.png'
 
 interface DashboardOverviewPageProps {
   userId?: number;
+}
+const ImageMap: Record<string, string> = {
+  "Lucky Guesser": char1,
+  "Careless (High Slip)": char2,
+  "High Achiever": char3,
+  "Developing (Average)" : char4,
+  "Struggling": char5,
 }
 
 /**
@@ -176,14 +188,25 @@ export function DashboardOverviewPage({ userId = 1 }: DashboardOverviewPageProps
       </div>
 
       {/* Progress Chart */}
-      <DashboardCard title="คะแนนในแต่ละรอบที่ทำ">
-        {progressChartData.length > 0 ? (
-          <LineChartComponent data={progressChartData} dataKey="score" xAxisKey="name" stroke="#1D4ED8" height={280} />
-        ) : (
-          <div className="h-[280px] flex items-center justify-center text-gray-400">ยังไม่มีข้อมูล</div>
-        )}
-      </DashboardCard>
 
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+      <div className="lg:col-span-2">
+        <DashboardCard title="คะแนนในแต่ละรอบที่ทำ">
+          {progressChartData.length > 0 ? (
+            <LineChartComponent data={progressChartData} dataKey="score" xAxisKey="name" stroke="#1D4ED8" height={280} />
+          ) : (
+            <div className="h-[280px] flex items-center justify-center text-gray-400">ยังไม่มีข้อมูล</div>
+          )}
+        </DashboardCard>
+      </div>
+       <DashboardCard title={`Your Level : ${overviewStats.studentProfile}`}>
+      <img
+              src={ImageMap[overviewStats.studentProfile]}
+              alt={overviewStats.studentProfile}
+              className="w-full h-auto"
+            />
+      </DashboardCard>
+      </div>
       <h2 className="text-2xl font-semibold text-[#003B62] mb-3 mt-6">รายละเอียดสรุปแต่ละบท</h2>
       
       {/* Attempts Table */}

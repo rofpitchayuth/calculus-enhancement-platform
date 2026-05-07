@@ -2,10 +2,10 @@ import { useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { StatCard, DashboardCard, BloomBar, LineChartComponent } from '../components';
 import { useChapterStats } from '../hooks/useDashboard';
-import char1 from '../components/EXCELLENT.png' 
-import char2 from '../components/GOOD.png' 
-import char3 from '../components/DEVELOPING.png' 
-import char4 from '../components/BEGINNER.png'
+import char1 from '../components/Excellent.png' 
+import char2 from '../components/Good.png' 
+import char3 from '../components/Developing.png' 
+import char4 from '../components/Beginner.png'
 // --- Constants & Config ---
 
 const CHAPTERS_MAP: Record<string, string> = {
