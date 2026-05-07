@@ -1,8 +1,11 @@
 import { useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { StatCard, DashboardCard, BloomBar, LineChartComponent, RadarChartComponent } from '../components';
+import { StatCard, DashboardCard, BloomBar, LineChartComponent } from '../components';
 import { useChapterStats } from '../hooks/useDashboard';
-
+import char1 from '../components/EXCELLENT.png' 
+import char2 from '../components/GOOD.png' 
+import char3 from '../components/DEVELOPING.png' 
+import char4 from '../components/BEGINNER.png'
 // --- Constants & Config ---
 
 const CHAPTERS_MAP: Record<string, string> = {
@@ -12,6 +15,12 @@ const CHAPTERS_MAP: Record<string, string> = {
   'APPLICATIONS': 'APPLICATIONS',
 };
 
+const proficiencyImageMap: Record<string, string> = {
+  Excellent: char1,
+  Good: char2,
+  Developing: char3,
+  Beginner: char4,
+}
 // --- Local Presentation Components ---
 
 function TrendBadge({ delta, positiveIsGood = true, unit = '' }: {
@@ -52,14 +61,6 @@ export function ChapterDashboardPage() {
     };
   }, [attempts]);
 
-  // const radarChartData = useMemo(
-  //   () => radarData.map((r) => ({
-  //     skill: r.skill,
-  //     value: Math.round((r.limit + r.differential + r.integral) / 3),
-  //   })),
-  //   [radarData],
-  // );
-  
   const progressChartData = useMemo(
     () => attempts.map((a) => ({
       attempt: `ครั้งที่ ${a.attempt}`,
@@ -134,11 +135,16 @@ export function ChapterDashboardPage() {
 
       {/* Visualization Row 1 */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
-        {/* <DashboardCard>
-          {radarChartData.length > 0 && (
-            <RadarChartComponent data={radarChartData} dataKey="value" angleKey="skill" fill="#3b82f6" height={280} />
-          )}
-        </DashboardCard> */}
+        <div className="lg:col-span-1 flex items-center justify-center">
+          <DashboardCard title={`Your Level : ${stats.proficiencyLevel}`}>
+            <img
+              src={proficiencyImageMap[stats.proficiencyLevel] ?? char4}
+              alt={stats.proficiencyLevel}
+              className="w-full h-auto"
+            />
+          </DashboardCard>
+        </div>
+
         <div className="lg:col-span-2">
           <DashboardCard title="กราฟพัฒนาการคะแนน">
             {progressChartData.length > 0 ? (

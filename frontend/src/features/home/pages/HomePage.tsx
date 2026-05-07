@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { ProgressCard } from "../components/ProgressCard";
 import { CourseSection } from "../components/CourseSection";
 import { useDashboardOverview, useTopicsSummary } from "../../dashboard/hooks/useDashboard";
+import { Calendar } from "../components/Calendar";
 
 // Standardized course metadata — topic IDs match the backend's MainTopic enum.
 // Description and duration are static metadata, not mock data.
@@ -74,8 +75,8 @@ export function HomePage() {
   }
 
   return (
-    <div className="homepage bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 pb-12 bg-blue-50">
+    <div className="homepage bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen ">
+      <div className="max-w-7xl mx-auto px-4 py-8 bg-blue-50">
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-6">
           {/* Progress Section — bound to real API data */}
@@ -87,10 +88,14 @@ export function HomePage() {
               improvementTopics={improvementTopics.length > 0 ? improvementTopics : ["—"]}
               radarData={radarData}
               onViewOverall={() => navigate("/dashboard")}
-              onViewDetailed={() => navigate("/dashboard")}
+              onViewDetailed={() => navigate("/alldashboard")}
             />
           </div>
+          <div>
+              <Calendar onDateSelect={(date) => console.log("Selected:", date)} />
+          </div>
         </div>
+        
 
         {/* Courses Section — built from real topics summary */}
         <CourseSection
