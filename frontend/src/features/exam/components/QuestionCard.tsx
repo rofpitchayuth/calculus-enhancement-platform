@@ -33,7 +33,7 @@ export const QuestionCard = ({
             CALCULUS QUIZ
           </h1>
           <QuizTimer
-            totalSeconds={60 * 60}
+            totalSeconds={totalQuestions * 5 * 60}
             currentIndex={currentIndex}
             totalQuestions={totalQuestions}
             onTimeUp={onTimeUp}

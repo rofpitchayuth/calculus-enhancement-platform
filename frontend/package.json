@@ -17,6 +17,7 @@
     "@tailwindcss/vite": "^4.1.17",
     "@types/axios": "^0.9.36",
     "axios": "^1.13.6",
+    "lucide-react": "^1.14.0",
     "marked": "^17.0.1",
     "mathlive": "^0.109.1",
     "react": "^19.1.16",

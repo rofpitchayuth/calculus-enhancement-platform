@@ -10,9 +10,7 @@ import char3 from '../components/character/HighAchiever.png'
 import char4 from '../components/character/Developing.png'
 import char5 from '../components/character/Struggling.png'
 
-interface DashboardOverviewPageProps {
-  userId?: number;
-}
+
 const ImageMap: Record<string, string> = {
   "Lucky Guesser": char1,
   "Careless (High Slip)": char2,
@@ -54,14 +52,14 @@ function InlineStat({
   );
 }
 
-export function DashboardOverviewPage({ userId = 1 }: DashboardOverviewPageProps) {
-  const { 
-    overviewStats, 
-    chapterList, 
-    radarData, 
-    recentAttempts, 
-    loading, 
-    error 
+export function DashboardOverviewPage() {
+  const {
+    overviewStats,
+    radarData,
+    recentAttempts,
+    skillMastery,
+    loading,
+    error
   } = useDashboardOverview();
 
   // --- Data Transformations (Presentation Logic) ---
@@ -75,20 +73,13 @@ export function DashboardOverviewPage({ userId = 1 }: DashboardOverviewPageProps
     [recentAttempts],
   );
 
-  const { strengths, weaknesses } = useMemo(() => {
-    const sorted = [...chapterList].sort((a, b) => b.score - a.score);
-    return { 
-      strengths: sorted.slice(0, 3), 
-      weaknesses: sorted.slice(-2).reverse() 
-    };
-  }, [chapterList]);
-
+  // Radar chart: each axis = cognitive skill; plotted value = avg accuracy across all 4 topics
   const radarChartData = useMemo(
     () => radarData.map((r) => ({
       skill: r.skill,
-      [userId.toString()]: Math.round((r.limit + r.differential + r.integral) / 3),
+      value: Math.round((r.limit + r.differential + r.integral + r.applications) / 4),
     })),
-    [radarData, userId],
+    [radarData],
   );
 
   // --- Render Logic ---
@@ -120,15 +111,17 @@ export function DashboardOverviewPage({ userId = 1 }: DashboardOverviewPageProps
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
         {/* Radar Chart Section */}
-        <DashboardCard>
-          {radarChartData.length > 0 && (
+        <DashboardCard title="Cognitive Skills Radar">
+          {radarChartData.length > 0 ? (
             <RadarChartComponent
               data={radarChartData}
-              dataKey={userId.toString()}
+              dataKey="value"
               angleKey="skill"
               fill="#1D4ED8"
-              height={320}
+              height={300}
             />
+          ) : (
+            <div className="h-[300px] flex items-center justify-center text-gray-400 text-sm">ยังไม่มีข้อมูล</div>
           )}
         </DashboardCard>
 
@@ -141,33 +134,50 @@ export function DashboardOverviewPage({ userId = 1 }: DashboardOverviewPageProps
           </div>
 
           <div className="bg-white rounded-2xl shadow-md p-5 grid grid-cols-1 md:grid-cols-3 gap-5">
+            {/* STRENGTHS — top-5 skill tags by accuracy % (from backend sub_topic join) */}
             <div>
               <h4 className="font-semibold text-gray-700 mb-3 flex items-center gap-1">
                 <span className="text-yellow-400">★</span> STRENGTHS
               </h4>
               <div className="flex flex-col gap-2">
-                {strengths.map((c) => (
-                  <div key={c.chapter} className="flex items-center justify-between bg-yellow-50 px-3 py-2 rounded-lg">
-                    <span className="text-sm text-gray-700">{c.chapter}</span>
-                    <span className="text-sm font-semibold text-yellow-600">{c.score}%</span>
+                {skillMastery.strengths.length > 0 ? skillMastery.strengths.map((s) => (
+                  <div key={s.skill_tag} className="flex items-center justify-between bg-yellow-50 px-3 py-2 rounded-lg">
+                    <span className="text-sm text-gray-700 font-medium capitalize">
+                      {s.skill_tag.replace(/_/g, ' ')}
+                    </span>
+                    <div className="flex items-center gap-1">
+                      <span className="text-xs font-bold text-yellow-600">{s.accuracy}%</span>
+                      <span className="text-[10px] text-gray-400">({s.attempt_count}x)</span>
+                    </div>
                   </div>
-                ))}
+                )) : (
+                  <p className="text-xs text-gray-400">ยังไม่มีข้อมูล — ทำแบบทดสอบเพื่อดูจุดแข็ง</p>
+                )}
               </div>
             </div>
 
+            {/* WEAKNESSES — bottom-5 skill tags by accuracy % (from backend sub_topic join) */}
             <div>
               <h4 className="font-semibold text-gray-700 mb-3 flex items-center gap-1">
                 <span className="text-red-500">●</span> WEAKNESSES
               </h4>
               <div className="flex flex-col gap-2">
-                {weaknesses.map((c) => (
-                  <div key={c.chapter} className="flex items-center justify-between bg-red-50 px-3 py-2 rounded-lg">
-                    <span className="text-sm text-gray-700">{c.chapter}</span>
-                    <span className="text-sm font-semibold text-red-500">{c.score}%</span>
+                {skillMastery.weaknesses.length > 0 ? skillMastery.weaknesses.map((s) => (
+                  <div key={s.skill_tag} className="flex items-center justify-between bg-red-50 px-3 py-2 rounded-lg">
+                    <span className="text-sm text-gray-700 font-medium capitalize">
+                      {s.skill_tag.replace(/_/g, ' ')}
+                    </span>
+                    <div className="flex items-center gap-1">
+                      <span className="text-xs font-bold text-red-500">{s.accuracy}%</span>
+                      <span className="text-[10px] text-gray-400">({s.attempt_count}x)</span>
+                    </div>
                   </div>
-                ))}
+                )) : (
+                  <p className="text-xs text-gray-400">ยังไม่มีข้อมูล — ทำแบบทดสอบเพื่อดูจุดอ่อน</p>
+                )}
               </div>
             </div>
+
 
             <div>
               <h4 className="font-semibold text-gray-700 mb-3">Progress Trend</h4>

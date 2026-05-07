@@ -5,8 +5,10 @@ from app.models.question import MainTopic
 
 class QuizStartRequest(BaseModel):
     user_id: int
-    topic: Optional[MainTopic] = None
+    topic: Optional[str] = None
     num_questions: int = Field(default=5, ge=1, le=20)
+    difficulty_level: Optional[str] = Field(None, description="'easy', 'medium', 'hard', or 'adaptive'")
+
 
 class QuizSubmitAnswerRequest(BaseModel):
     user_id: int

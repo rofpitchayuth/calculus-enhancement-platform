@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { useAuth } from "../../auth/hooks/useAuth";
@@ -40,24 +40,110 @@ export default function QuizPage() {
     startQuiz, handleSubmit, handleNext, handleFinish,
   } = useQuizFlow(onFinish);
 
-  const hasStarted = useRef(false);
-  
-  useEffect(() => {
-    if (user?.id && courseId && !hasStarted.current) {
-      hasStarted.current = true;
+  const [isConfiguring, setIsConfiguring] = useState(true);
+  const [numQuestions, setNumQuestions] = useState(10);
+  const [difficultyLevel, setDifficultyLevel] = useState<string | undefined>(undefined);
 
+  const handleStartQuiz = () => {
+    if (user?.id && courseId) {
+      setIsConfiguring(false);
       const backendTopic = TOPIC_MAPPER[courseId.toLowerCase()] || courseId.toUpperCase();
       
-      startQuiz(user.id, backendTopic).catch((err) => {
+      startQuiz(user.id, backendTopic, numQuestions, difficultyLevel).catch((err) => {
         console.error('Failed to start quiz:', err);
       });
     }
-  }, [user?.id, courseId, startQuiz]);
+  };
+
+  const formatTopicName = (id: string) => {
+    if (TOPIC_DISPLAY[id]) return TOPIC_DISPLAY[id];
+    if (TOPIC_DISPLAY[id.toUpperCase()]) return TOPIC_DISPLAY[id.toUpperCase()];
+    return id.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  };
 
   const isLastQuestion = currentIndex === totalQuestions - 1;
   const isGrading      = graderStatus === "loading";
   const hasResult      = graderStatus === "done" && graderResult !== null;
-  const topicName      = TOPIC_DISPLAY[courseId] ?? courseId;
+  const topicName      = formatTopicName(courseId);
+
+  // ── Configuration ────────────────────────────────────────────────────────
+  if (isConfiguring) {
+    const configOptions = [
+      { num: 5, time: 25 },
+      { num: 10, time: 50 },
+      { num: 15, time: 75 },
+      { num: 20, time: 100 }
+    ];
+
+    return (
+      <div className="min-h-screen bg-blue-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-[2rem] shadow-xl p-10 max-w-2xl w-full border border-blue-100">
+          <div className="text-center mb-8">
+            <div className="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center text-4xl mx-auto mb-4 shadow-sm">
+              📝
+            </div>
+            <h2 className="text-3xl font-extrabold text-[#003B62] mb-3">
+              เตรียมตัวทำแบบทดสอบ
+            </h2>
+            <div className="flex flex-col items-center gap-2">
+              <p className="text-lg text-gray-500 font-bold bg-blue-50 inline-block px-4 py-1 rounded-full">{topicName}</p>
+              {difficultyLevel && (
+                <p className={`text-sm font-bold px-3 py-1 rounded-full ${
+                  difficultyLevel === 'hard' ? 'bg-indigo-100 text-indigo-700' :
+                  difficultyLevel === 'medium' ? 'bg-blue-100 text-blue-700' :
+                  'bg-emerald-100 text-emerald-700'
+                }`}>
+                  โหมด: {
+                    difficultyLevel === 'hard' ? 'ท้าทายตัวเอง (ยาก)' :
+                    difficultyLevel === 'medium' ? 'ฝึกฝนต่อ (ปานกลาง)' :
+                    'ทบทวนพื้นฐาน (ง่าย)'
+                  }
+                </p>
+              )}
+            </div>
+          </div>
+          
+          <h3 className="text-lg font-bold text-gray-700 mb-6 text-center">เลือกระดับความท้าทาย (จำนวนข้อ)</h3>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
+            {configOptions.map(opt => (
+              <button
+                key={opt.num}
+                onClick={() => setNumQuestions(opt.num)}
+                className={`p-6 rounded-2xl border-2 transition-all duration-300 flex flex-col items-center gap-2 ${
+                  numQuestions === opt.num 
+                    ? 'border-yellow-400 bg-yellow-50 shadow-md transform scale-[1.02]' 
+                    : 'border-gray-100 bg-white hover:border-blue-200 hover:bg-blue-50'
+                }`}
+              >
+                <span className={`text-4xl font-extrabold tracking-tight ${numQuestions === opt.num ? 'text-yellow-600' : 'text-[#003B62]'}`}>
+                  {opt.num} <span className="text-xl">ข้อ</span>
+                </span>
+                <span className={`text-sm font-bold ${numQuestions === opt.num ? 'text-yellow-700' : 'text-gray-400'}`}>
+                  เวลาแนะนำ {opt.time} นาที
+                </span>
+              </button>
+            ))}
+          </div>
+          
+          <div className="flex justify-center gap-4">
+            <button
+              onClick={() => navigate('/home')}
+              className="px-8 py-4 bg-white text-gray-500 font-bold rounded-full hover:bg-gray-100 transition-colors"
+            >
+              ยกเลิก
+            </button>
+            <button
+              onClick={handleStartQuiz}
+              className="bg-[#003B62] text-white px-12 py-4 rounded-full text-lg font-bold shadow-lg hover:bg-[#0a2a4a] hover:shadow-xl transition-all hover:-translate-y-1 active:scale-95"
+            >
+              เริ่มทำแบบทดสอบ 🚀
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // ── Loading ──────────────────────────────────────────────────────────────
   if (quizLoading && !currentQuestion) {
@@ -98,56 +184,53 @@ export default function QuizPage() {
           </h2>
 
           {/* Score banner */}
-          <div className="flex justify-center mb-8 gap-6">
-            <div className="bg-blue-50 p-6 rounded-xl text-center min-w-[180px]">
-              <p className="text-gray-600 font-medium">คะแนนของคุณ</p>
-              <p className="text-4xl font-bold text-blue-600 mt-2">
-                {Math.round(quizEndResult.total_score)}%
-              </p>
-              <p className="text-sm text-gray-500 mt-1">
+          <div className="flex flex-wrap justify-center mb-10 gap-6">
+            {/* Score Card */}
+            <div className="bg-gradient-to-br from-white to-blue-50 border border-blue-100 p-8 rounded-[2rem] text-center min-w-[220px] shadow-sm hover:shadow-md transition-shadow">
+              <p className="text-gray-500 font-bold tracking-wide uppercase text-sm mb-1">คะแนนของคุณ</p>
+              <div className="flex items-baseline justify-center gap-1">
+                <span className="text-6xl font-extrabold text-[#003B62]">
+                  {Math.round(quizEndResult.total_score)}
+                </span>
+                <span className="text-2xl font-bold text-blue-300">%</span>
+              </div>
+              <p className="text-sm font-medium text-blue-600 mt-3 bg-blue-100/50 py-1 px-4 rounded-full inline-block">
                 ถูก {Math.round((quizEndResult.total_score / 100) * quizEndResult.total_questions)}{" "}
                 / {quizEndResult.total_questions} ข้อ
               </p>
             </div>
 
+            {/* AI Profile Card */}
             {(quizEndResult as any).student_profile ? (
-              <div className="bg-indigo-50 p-6 rounded-xl text-center min-w-[180px]">
-                <p className="text-gray-600 font-medium">AI Profile</p>
-                <p className="text-lg font-bold text-indigo-700 mt-2">
+              <div className="bg-gradient-to-br from-white to-yellow-50 border border-yellow-100 p-8 rounded-[2rem] text-center min-w-[250px] shadow-sm hover:shadow-md transition-shadow flex flex-col justify-center">
+                <p className="text-gray-500 font-bold tracking-wide uppercase text-sm mb-1">AI Profile</p>
+                <p className="text-2xl font-extrabold text-yellow-600 mt-2 mb-4">
                   {(quizEndResult as any).student_profile}
                 </p>
                 {(quizEndResult as any).avg_mastery != null && (
-                  <>
-                    <p className="text-sm text-gray-500 mt-1">
-                      Mastery: {((quizEndResult as any).avg_mastery * 100).toFixed(1)}%
-                    </p>
-                    
-                    {/* Mastery Progress Bar */}
-                    <div className="mt-3">
-                      <div className="flex justify-between items-center mb-1">
-                        <span className="text-xs font-semibold text-indigo-600">Skill Mastery</span>
-                        <span className="text-xs font-bold text-indigo-700">
-                          {(quizEndResult.skill_mastery * 100).toFixed(1)}%
-                        </span>
-                      </div>
-                      <div className="w-full bg-indigo-200 rounded-full h-2">
-                        <div 
-                          className="bg-indigo-600 h-2 rounded-full transition-all duration-1000" 
-                          style={{ width: `${quizEndResult.skill_mastery * 100}%` }}
-                        ></div>
-                      </div>
+                  <div className="w-full mt-auto">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Skill Mastery</span>
+                      <span className="text-sm font-extrabold text-yellow-600">
+                        {((quizEndResult as any).skill_mastery * 100).toFixed(1)}%
+                      </span>
                     </div>
-                  </>
+                    <div className="w-full bg-yellow-100/50 rounded-full h-3 border border-yellow-100">
+                      <div 
+                        className="bg-gradient-to-r from-yellow-400 to-yellow-500 h-full rounded-full transition-all duration-1000 shadow-sm" 
+                        style={{ width: `${(quizEndResult as any).skill_mastery * 100}%` }}
+                      ></div>
+                    </div>
+                  </div>
                 )}
               </div>
             ) : (
-              <div className="mt-4">
-                <p className="text-sm text-gray-400 italic">
+              <div className="bg-white border border-dashed border-gray-200 p-8 rounded-[2rem] text-center min-w-[250px] flex items-center justify-center">
+                <p className="text-sm text-gray-400 font-medium">
                   AI Analysis temporarily unavailable
                 </p>
               </div>
             )}
-            </div>
           </div>
 
           {/* Per-question summary */}
@@ -191,31 +274,47 @@ export default function QuizPage() {
 
           {/* Adaptive Next Steps */}
           <div className="mt-12 pt-8 border-t border-gray-100">
-            <h3 className="text-lg font-bold text-center text-gray-800 mb-6">เรียนรู้ต่อในระดับที่คุณต้องการ</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+            <h3 className="text-xl font-extrabold text-center text-[#003B62] mb-8">เรียนรู้ต่อในระดับที่คุณต้องการ</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
               {[
-                { emoji: '🚀', label: 'ท้าทายตัวเอง',  sub: 'ขอโจทย์ที่ยากขึ้น',  color: 'indigo' },
-                { emoji: '🎯', label: 'ฝึกฝนต่อ',      sub: 'ระดับปัจจุบัน',     color: 'blue'   },
-                { emoji: '📖', label: 'ทบทวนพื้นฐาน',  sub: 'ขอโจทย์ง่ายลง',    color: 'gray'   },
+                { 
+                  emoji: '🚀', label: 'ท้าทายตัวเอง', sub: 'ขอโจทย์ที่ยากขึ้น', difficulty: 'hard',
+                  className: "bg-indigo-50 border-indigo-200 text-indigo-700 hover:bg-indigo-600 hover:text-white hover:border-indigo-600 hover:shadow-lg hover:-translate-y-1"
+                },
+                { 
+                  emoji: '🎯', label: 'ฝึกฝนต่อ', sub: 'ระดับปัจจุบัน', difficulty: 'medium',
+                  className: "bg-blue-50 border-blue-200 text-[#003B62] hover:bg-[#003B62] hover:text-white hover:border-[#003B62] hover:shadow-lg hover:-translate-y-1"
+                },
+                { 
+                  emoji: '📖', label: 'ทบทวนพื้นฐาน', sub: 'ขอโจทย์ง่ายลง', difficulty: 'easy',
+                  className: "bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-600 hover:text-white hover:border-emerald-600 hover:shadow-lg hover:-translate-y-1"
+                },
               ].map((btn) => (
                 <button
                   key={btn.label}
-                  onClick={() => user?.id && startQuiz(user.id, topic)}
-                  className={`flex flex-col items-center p-4 rounded-2xl border-2 border-${btn.color}-100 bg-${btn.color}-50 hover:border-${btn.color}-300 transition-all group`}
+                  onClick={() => {
+                    setDifficultyLevel(btn.difficulty);
+                    setIsConfiguring(true);
+                  }}
+                  className={`flex flex-col items-center justify-center p-6 rounded-2xl border-2 transition-all duration-300 group ${btn.className}`}
                 >
-                  <span className="text-2xl mb-2 group-hover:scale-110 transition-transform">{btn.emoji}</span>
-                  <span className={`font-bold text-${btn.color}-700`}>{btn.label}</span>
-                  <span className={`text-xs text-${btn.color}-500 mt-1`}>{btn.sub}</span>
+                  <span className="text-4xl mb-3 group-hover:scale-110 transition-transform duration-300 drop-shadow-sm">{btn.emoji}</span>
+                  <span className="font-bold text-lg">{btn.label}</span>
+                  <span className="text-xs opacity-80 mt-1">{btn.sub}</span>
                 </button>
               ))}
             </div>
-            <div className="flex justify-center">
-              <button onClick={handleFinish} className="px-10 py-3 text-gray-500 hover:text-gray-700 font-medium transition">
+            <div className="flex justify-center mt-10">
+              <button 
+                onClick={handleFinish} 
+                className="px-8 py-3 bg-white border border-gray-200 text-gray-600 hover:text-[#003B62] hover:border-[#003B62] hover:bg-blue-50 rounded-full font-bold transition-all duration-300 shadow-sm"
+              >
                 ← กลับสู่หน้าหลัก
               </button>
             </div>
           </div>
         </div>
+      </div>
     );
   }
 

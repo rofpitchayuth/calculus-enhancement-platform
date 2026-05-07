@@ -2,9 +2,9 @@ import { useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { StatCard, DashboardCard, BloomBar, LineChartComponent } from '../components';
 import { useChapterStats } from '../hooks/useDashboard';
-import char1 from '../components/Excellent.png' 
-import char2 from '../components/Good.png' 
-import char3 from '../components/Developing.png' 
+import char1 from '../components/Excellent.png'
+import char2 from '../components/Good.png'
+import char3 from '../components/Developing.png'
 import char4 from '../components/Beginner.png'
 // --- Constants & Config ---
 
@@ -54,17 +54,17 @@ export function ChapterDashboardPage() {
     const last = attempts[attempts.length - 1];
     const prev = attempts.length >= 2 ? attempts[attempts.length - 2] : null;
     return {
-      latestScore:   last.score,
-      scoreTrend:    prev ? Math.round(last.score - prev.score) : 0,
+      latestScore: last.score,
+      scoreTrend: prev ? Math.round(last.score - prev.score) : 0,
       latestAvgTime: last.avgTime,
-      timeTrend:     prev ? Math.round(last.avgTime - prev.avgTime) : 0,
+      timeTrend: prev ? Math.round(last.avgTime - prev.avgTime) : 0,
     };
   }, [attempts]);
 
   const progressChartData = useMemo(
     () => attempts.map((a) => ({
       attempt: `ครั้งที่ ${a.attempt}`,
-      score:   a.score,
+      score: a.score,
       avgTime: a.avgTime,
     })),
     [attempts],
@@ -175,19 +175,39 @@ export function ChapterDashboardPage() {
               ))}
             </div>
             <div className="border-t pt-3">
-              <h4 className="font-semibold text-xs text-gray-700 mb-2 uppercase">Strengths</h4>
-              <div className="flex gap-2 flex-wrap">
-                {stats.strengths.map((s, i) => (
-                  <span key={i} className="px-2 py-1 bg-yellow-100 text-gray-700 rounded-full text-xs">{s}</span>
-                ))}
+              <h4 className="font-semibold text-xs text-gray-700 mb-3 uppercase flex items-center gap-1">
+                <span className="text-yellow-500">★</span> STRENGTHS
+              </h4>
+              <div className="flex flex-col gap-2">
+                {stats.strengths.length > 0 ? stats.strengths.map((s) => (
+                  <div key={s.skill_tag} className="flex items-center justify-between bg-yellow-50 px-2 py-1.5 rounded-lg border border-yellow-100">
+                    <span className="text-[11px] text-gray-700 font-medium capitalize">
+                      {s.skill_tag.replace(/_/g, ' ')}
+                    </span>
+                    <div className="flex items-center gap-1">
+                      <span className="text-[11px] font-bold text-yellow-600">{s.accuracy}%</span>
+                      <span className="text-[9px] text-gray-400">({s.attempt_count}x)</span>
+                    </div>
+                  </div>
+                )) : <p className="text-[10px] text-gray-400 italic text-center">ยังไม่มีข้อมูล</p>}
               </div>
             </div>
-            <div>
-              <h4 className="font-semibold text-xs text-gray-700 mb-2 uppercase">Weaknesses</h4>
-              <div className="flex gap-2 flex-wrap">
-                {stats.weaknesses.map((w, i) => (
-                  <span key={i} className="px-2 py-1 bg-blue-100 text-gray-700 rounded-full text-xs">{w}</span>
-                ))}
+            <div className="pt-2">
+              <h4 className="font-semibold text-xs text-gray-700 mb-3 uppercase flex items-center gap-1">
+                <span className="text-red-500">●</span> WEAKNESSES
+              </h4>
+              <div className="flex flex-col gap-2">
+                {stats.weaknesses.length > 0 ? stats.weaknesses.map((w) => (
+                  <div key={w.skill_tag} className="flex items-center justify-between bg-red-50 px-2 py-1.5 rounded-lg border border-red-100">
+                    <span className="text-[11px] text-gray-700 font-medium capitalize">
+                      {w.skill_tag.replace(/_/g, ' ')}
+                    </span>
+                    <div className="flex items-center gap-1">
+                      <span className="text-[11px] font-bold text-red-500">{w.accuracy}%</span>
+                      <span className="text-[9px] text-gray-400">({w.attempt_count}x)</span>
+                    </div>
+                  </div>
+                )) : <p className="text-[10px] text-gray-400 italic text-center">ยังไม่มีข้อมูล</p>}
               </div>
             </div>
           </div>
@@ -211,27 +231,30 @@ export function ChapterDashboardPage() {
             </thead>
             <tbody>
               {attempts.length > 0 ? attempts.map((attempt, idx) => {
-                const strength = stats.strengths[idx % Math.max(stats.strengths.length, 1)] ?? '-';
-                const weakness = stats.weaknesses[idx % Math.max(stats.weaknesses.length, 1)] ?? '-';
+                const strengthObj = stats.strengths[idx % Math.max(stats.strengths.length, 1)];
+                const weaknessObj = stats.weaknesses[idx % Math.max(stats.weaknesses.length, 1)];
+                
+                const strengthLabel = strengthObj && typeof strengthObj !== 'string' ? strengthObj.skill_tag.replace(/_/g, ' ') : (strengthObj || '-');
+                const weaknessLabel = weaknessObj && typeof weaknessObj !== 'string' ? weaknessObj.skill_tag.replace(/_/g, ' ') : (weaknessObj || '-');
+
                 return (
                   <tr key={idx} className={idx < attempts.length - 1 ? 'border-b' : ''}>
                     <td className="py-3 px-3">{attempt.attempt}</td>
                     <td className="py-3 px-3">{attempt.date}</td>
                     <td className="py-3 px-3">
-                      <span className={`px-2 py-1 rounded text-xs font-semibold ${
-                        attempt.score >= 80 ? 'bg-green-100 text-green-800'
-                        : attempt.score >= 60 ? 'bg-blue-100 text-blue-800'
-                        : 'bg-red-100 text-red-800'
-                      }`}>
+                      <span className={`px-2 py-1 rounded text-xs font-semibold ${attempt.score >= 80 ? 'bg-green-100 text-green-800'
+                          : attempt.score >= 60 ? 'bg-blue-100 text-blue-800'
+                            : 'bg-red-100 text-red-800'
+                        }`}>
                         {attempt.score.toFixed(1)}%
                       </span>
                     </td>
                     <td className="py-3 px-3">{attempt.avgTime} วิ</td>
                     <td className="py-3 px-3">
-                      <span className="px-2 py-1 bg-yellow-100 text-gray-700 rounded-full text-xs">{strength}</span>
+                      <span className="px-2 py-1 bg-yellow-100 text-gray-700 rounded-full text-xs capitalize">{String(strengthLabel)}</span>
                     </td>
                     <td className="py-3 px-3">
-                      <span className="px-2 py-1 bg-blue-100 text-gray-700 rounded-full text-xs">{weakness}</span>
+                      <span className="px-2 py-1 bg-blue-100 text-gray-700 rounded-full text-xs capitalize">{String(weaknessLabel)}</span>
                     </td>
                   </tr>
                 );

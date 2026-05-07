@@ -37,21 +37,7 @@ export function CourseCard({
       <p className="text-gray-600 text-sm mb-4 line-clamp-3">
         {description}
       </p>
-
-      {/* Course Info */}
-      <div className="space-y-2 mb-3 text-sm text-gray-600">
-        <div className="flex justify-between ">
-          <span>
-            <div className="border rounded-full p-1 px-2 border-blue-200 mr-1 w-max">จำนวนข้อ {questionCount} ข้อ </div>
-          </span>
-          <span>
-            <div className="border rounded-full p-1 px-2 border-blue-200 w-max">
-              เวลาในการทำข้อสอบ {duration} นาที
-            </div>
-          </span>
-        </div>
-      </div>
-
+      
       <Button
         variant="primary"
         size="sm"

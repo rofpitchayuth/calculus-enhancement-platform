@@ -14,6 +14,7 @@ import type {
   SessionReportResponse,
   TopicSummary,
   ChapterProgressItem,
+  SkillTagMasteryResponse,
 } from '../types/dashboard.types';
 
 /**
@@ -26,6 +27,7 @@ export function useDashboardOverview() {
   const [chapterProgress, setChapterProgress] = useState<ChapterProgressItem[]>([]);
   const [radarData, setRadarData] = useState<RadarSkill[]>([]);
   const [recentAttempts, setRecentAttempts] = useState<RecentAttempt[]>([]);
+  const [skillMastery, setSkillMastery] = useState<SkillTagMasteryResponse>({ strengths: [], weaknesses: [] });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -33,16 +35,18 @@ export function useDashboardOverview() {
     setIsLoading(true);
     setError(null);
     try {
-      const [overview, progress, radar, attempts] = await Promise.all([
+      const [overview, progress, radar, attempts, mastery] = await Promise.all([
         dashboardService.fetchOverviewStats(),
         dashboardService.fetchChapterProgress(),
         dashboardService.fetchSkillsRadar(),
         dashboardService.fetchRecentAttempts(),
+        dashboardService.fetchSkillTagsMastery(),
       ]);
 
       setOverviewStats(overview);
       setRadarData(radar.data);
       setRecentAttempts(attempts.data);
+      setSkillMastery(mastery);
 
       // Transform the progress dict into a flat array for UI components
       const mappedProgress = Object.entries(progress.data).map(([topic, stats]) => ({
@@ -69,6 +73,7 @@ export function useDashboardOverview() {
     chapterList: chapterProgress,
     radarData,
     recentAttempts,
+    skillMastery,
     isLoading,
     // Alias: the overview page destructures `loading` instead of `isLoading`
     loading: isLoading,

@@ -39,7 +39,7 @@ function mapRadarDataForChart(
 
   return topics.map((topicKey) => {
     const total = radarData.reduce((sum, r) => sum + r[topicKey], 0);
-    const avg = radarData.length > 0 ? Math.round(total / radarData.length) : 0;
+    const avg = radarData.length > 0 ? Math.round(total / radarData.length) *10 : 0;
     return { skill: labels[topicKey], score: avg };
   });
 }

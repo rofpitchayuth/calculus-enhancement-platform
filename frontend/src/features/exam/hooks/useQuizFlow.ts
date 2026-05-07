@@ -19,7 +19,7 @@ export interface UseQuizFlowReturn {
   graderResult:     GraderResponse | null;
   graderError:      string | null;
   // topic: string เพิ่มเข้ามาใน startQuiz
-  startQuiz:        (userId: number, topic: string, numQuestions?: number) => Promise<void>;
+  startQuiz:        (userId: number, topic: string, numQuestions?: number, difficultyLevel?: string) => Promise<void>;
   handleSubmit:     (userId: number) => Promise<void>;
   handleNext:       (userId: number) => Promise<void>;
   handleFinish:     () => void;
@@ -59,13 +59,13 @@ export function useQuizFlow(onFinish: () => void): UseQuizFlowReturn {
 
   // รับ topic เป็น string แทน numQuestions ที่เป็น number
   const startQuiz = useCallback(
-    async (userId: number, topic: string, numQuestions = 10) => {
+    async (userId: number, topic: string, numQuestions = 10, difficultyLevel?: string) => {
       setSelectedChoiceState("");
       setGraderStatus("idle");
       setGraderResult(null);
       setGraderError(null);
       setQuizEndResult(null);
-      await startQuizSession(userId, topic, numQuestions);
+      await startQuizSession(userId, topic, numQuestions, difficultyLevel);
     },
     [startQuizSession]
   );

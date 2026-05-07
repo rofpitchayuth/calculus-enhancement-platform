@@ -26,35 +26,35 @@ export function QuestionInputForm({ input, setInput, onGenerate, isLoading }: Qu
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 space-y-6">
-      <h2 className="text-xl font-bold text-gray-800">1. Input Question Details</h2>
-      
-      <div className="space-y-4">
-        <MathImageUploader 
-          onLatexChange={handleMathChange} 
-          initialValue={input.question_text}
-          label="Question Text (Auto-OCR or Visual Editor)"
-        />
-        
-        <div className="space-y-2">
-          <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider">
-            Raw Source / Markdown
-          </label>
-          <textarea
-            name="question_text"
-            value={input.question_text}
-            onChange={handleChange}
-            rows={3}
-            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none text-sm font-mono bg-gray-50"
-            placeholder="LaTeX formula will appear here..."
+    <div className="space-y-8">
+      <div className="grid grid-cols-1 gap-8">
+        <div className="bg-slate-50 rounded-3xl p-8 border border-slate-100 shadow-inner">
+          <MathImageUploader 
+            onLatexChange={handleMathChange} 
+            initialValue={input.question_text}
+            label="Question Text (Auto-OCR or Visual Editor)"
           />
+          
+          <div className="mt-6 space-y-3">
+            <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">
+              Raw Source / LaTeX Editor
+            </label>
+            <textarea
+              name="question_text"
+              value={input.question_text}
+              onChange={handleChange}
+              rows={4}
+              className="w-full px-6 py-4 border-2 border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all outline-none text-sm font-mono bg-white shadow-sm"
+              placeholder="LaTeX formula will appear here..."
+            />
+          </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {(["a", "b", "c", "d", "e"] as const).map((letter) => (
-          <div key={letter} className="space-y-1">
-            <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider">
+          <div key={letter} className="relative group">
+            <label className="absolute -top-2 left-4 px-2 bg-white text-[10px] font-black text-blue-500 uppercase tracking-widest z-10">
               Choice {letter.toUpperCase()}
             </label>
             <input
@@ -62,30 +62,35 @@ export function QuestionInputForm({ input, setInput, onGenerate, isLoading }: Qu
               name={`choice_${letter}`}
               value={input[`choice_${letter}`]}
               onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-              placeholder={`Answer for ${letter.toUpperCase()}`}
+              className="w-full px-6 py-4 border-2 border-slate-100 rounded-2xl focus:ring-4 focus:ring-blue-50 focus:border-blue-400 outline-none transition-all bg-white group-hover:border-slate-200"
+              placeholder={`Enter answer ${letter.toUpperCase()}`}
             />
           </div>
         ))}
       </div>
 
-      <div className="pt-4">
+      <div className="pt-6">
         <button
           onClick={onGenerate}
           disabled={isLoading || !input.question_text}
-          className={`w-full py-3 rounded-lg font-bold text-white transition-all ${
+          className={`w-full py-5 rounded-2xl font-black text-lg uppercase tracking-[0.2em] transition-all relative overflow-hidden group ${
             isLoading || !input.question_text
-              ? "bg-gray-300 cursor-not-allowed"
-              : "bg-blue-600 hover:bg-blue-700 shadow-md"
+              ? "bg-slate-100 text-slate-400 cursor-not-allowed"
+              : "bg-[#003B62] text-white hover:bg-[#002b4a] shadow-xl shadow-blue-100 hover:shadow-blue-200 active:scale-[0.98]"
           }`}
         >
           {isLoading ? (
-            <span className="flex items-center justify-center gap-2">
-              <span className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full" />
-              AI Analyzing... (30-90s)
+            <span className="flex items-center justify-center gap-3">
+              <span className="animate-spin h-6 w-6 border-3 border-white border-t-transparent rounded-full" />
+              AI is Analyzing Taxonomy...
             </span>
           ) : (
-            "✨ Auto-Analyze with AI"
+            <>
+              <span className="relative z-10 flex items-center justify-center gap-2">
+                ✨ Generate AI Draft Analysis
+              </span>
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-[shimmer_2s_infinite]"></div>
+            </>
           )}
         </button>
       </div>

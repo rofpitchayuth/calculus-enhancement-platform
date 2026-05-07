@@ -22,7 +22,9 @@ from app.schemas.dashboard import (
     ChapterAttemptsResponse, ChapterAttemptRecord,
     SessionReportResponse, SkillBreakdown, ErrorAnalysisItem, ScoreDistributionItem,
     QuizQuestionItem,
-    ChapterSession, ChapterSessionsResponse, TopicSummary, TopicsSummaryResponse, PROFICIENCY_THRESHOLDS
+    ChapterSession, ChapterSessionsResponse, TopicSummary, TopicsSummaryResponse,
+    SkillTagMastery, SkillTagMasteryResponse,
+    PROFICIENCY_THRESHOLDS
 )
 
 # Map: frontend chapterId → DB main_topic
@@ -268,24 +270,33 @@ class DashboardService:
             for label, count in bloom_counts.items()
         ]
 
-        # Strengths / weaknesses from skill_tag
+        # Strengths / weaknesses from sub_topic granularity
         skill_stats: dict[str, dict] = {}
         for a in attempts:
-            tag = a.skill_tag or "Other"
+            if not a.question or not a.question.sub_topic:
+                continue
+            tag = a.question.sub_topic
             if tag not in skill_stats:
                 skill_stats[tag] = {"correct": 0, "total": 0}
             skill_stats[tag]["total"] += 1
             if a.is_correct:
                 skill_stats[tag]["correct"] += 1
 
-        skill_scores = {
-            tag: (v["correct"] / v["total"]) * 100
+        skill_mastery_list = [
+            SkillTagMastery(
+                skill_tag=tag,
+                accuracy=round((v["correct"] / v["total"]) * 100, 1),
+                attempt_count=v["total"]
+            )
             for tag, v in skill_stats.items()
-            if v["total"] > 0
-        }
-        sorted_skills = sorted(skill_scores.items(), key=lambda x: x[1], reverse=True)
-        strengths  = [s[0] for s in sorted_skills[:3]]
-        weaknesses = [s[0] for s in sorted_skills[-2:] if s[1] < 70]
+        ]
+
+        # Sort for strengths (descending accuracy) and weaknesses (ascending accuracy)
+        strengths = sorted(skill_mastery_list, key=lambda x: x.accuracy, reverse=True)[:5]
+        weaknesses = sorted(
+            [s for s in skill_mastery_list if s.accuracy < 70],
+            key=lambda x: x.accuracy
+        )[:5]
 
         # Total distinct sessions for this topic
         session_ids = {a.session_id for a in attempts if a.session_id}
@@ -296,8 +307,8 @@ class DashboardService:
             totalAttempts=total_attempts,
             avgTimePerQuestion=round(avg_time, 1),
             bloomLevels=bloom_levels,
-            strengths=strengths or ["—"],
-            weaknesses=weaknesses or ["—"],
+            strengths=strengths,
+            weaknesses=weaknesses,
         )
 
     def get_chapter_attempts(self, chapter_id: str, user_id: int) -> ChapterAttemptsResponse:
@@ -573,3 +584,57 @@ class DashboardService:
             ))
     
         return TopicsSummaryResponse(data=result)
+
+    def get_skill_mastery(self, user_id: int) -> SkillTagMasteryResponse:
+        """
+        GET /dashboard/skill-tags/mastery
+
+        Join QuizAttempt → Question and group by sub_topic to compute
+        accuracy % per skill tag.  Returns top-5 strengths and bottom-5
+        weaknesses (only skills with at least 1 attempt are included;
+        weaknesses are capped to skills where accuracy < 70%).
+        """
+        attempts = (
+            self.db.query(QuizAttempt)
+            .join(Question, QuizAttempt.question_id == Question.id)
+            .filter(
+                QuizAttempt.user_id == user_id,
+                Question.sub_topic.isnot(None),
+            )
+            .all()
+        )
+
+        # Accumulate correct / total per sub_topic
+        stats: dict[str, dict] = {}
+        for a in attempts:
+            if not a.question or not a.question.sub_topic:
+                continue
+            tag = a.question.sub_topic  # Enum value string e.g. "chain_rule"
+            if tag not in stats:
+                stats[tag] = {"correct": 0, "total": 0}
+            stats[tag]["total"] += 1
+            if a.is_correct:
+                stats[tag]["correct"] += 1
+
+        if not stats:
+            return SkillTagMasteryResponse(strengths=[], weaknesses=[])
+
+        # Build list with accuracy %
+        skill_list = [
+            SkillTagMastery(
+                skill_tag=tag,
+                accuracy=round((v["correct"] / v["total"]) * 100, 1),
+                attempt_count=v["total"],
+            )
+            for tag, v in stats.items()
+            if v["total"] >= 1
+        ]
+
+        # Sort descending for strengths, ascending for weaknesses
+        by_acc_desc = sorted(skill_list, key=lambda s: s.accuracy, reverse=True)
+        by_acc_asc  = sorted(skill_list, key=lambda s: s.accuracy)
+
+        strengths  = by_acc_desc[:5]
+        weaknesses = [s for s in by_acc_asc if s.accuracy < 70.0][:5]
+
+        return SkillTagMasteryResponse(strengths=strengths, weaknesses=weaknesses)

@@ -9,7 +9,7 @@ const getAuthHeaders = () => {
 };
 
 export const quizService = {
-    startQuiz: async (userId: number, topic: string, numQuestions: number): Promise<QuizSession> => {
+    startQuiz: async (userId: number, topic: string, numQuestions: number, difficultyLevel?: string): Promise<QuizSession> => {
         const headers = getAuthHeaders();
         const response = await axios.post<QuizSession>(
             `${API_URL}/quiz/start`,
@@ -17,6 +17,7 @@ export const quizService = {
                 user_id:       userId,
                 topic:         topic,
                 num_questions: numQuestions,
+                difficulty_level: difficultyLevel
             },
             { headers }
         );
@@ -47,6 +48,15 @@ export const quizService = {
         const response = await axios.post(
             `${API_URL}/quiz/end`,
             { user_id: userId, session_id: sessionId },
+            { headers }
+        );
+        return response.data;
+    },
+
+    getAvailableSkillTags: async (): Promise<string[]> => {
+        const headers = getAuthHeaders();
+        const response = await axios.get<string[]>(
+            `${API_URL}/quiz/skill-tags`,
             { headers }
         );
         return response.data;

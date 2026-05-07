@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from typing import List
 
 from app.core.database import get_db
 from app.core.security import get_current_user_id
@@ -14,6 +15,12 @@ from app.schemas.quiz import (
 )
 
 router = APIRouter()
+
+@router.get("/skill-tags", response_model=List[str])
+def get_skill_tags(db: Session = Depends(get_db)):
+    """Get all unique skill tags available in the questions database"""
+    service = QuizService(db)
+    return service.get_all_skill_tags()
 
 @router.post("/start", response_model=QuizStartResponse)
 def start_quiz(
@@ -30,7 +37,8 @@ def start_quiz(
         return service.generate_quiz(
             user_id=request.user_id,
             topic=request.topic,
-            num_questions=request.num_questions
+            num_questions=request.num_questions,
+            difficulty_level=request.difficulty_level
         )
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))

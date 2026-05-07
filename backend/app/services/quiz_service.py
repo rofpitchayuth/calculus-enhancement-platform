@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import func
+from sqlalchemy import func, String
 from typing import List, Optional
 from datetime import datetime
 import sys
@@ -16,14 +16,36 @@ from app.services.ml_client import sync_student_profile
 class QuizService:
     def __init__(self, db: Session):
         self.db = db
-    
-    def generate_quiz(self, user_id: int, topic: Optional[str] = None, num_questions: int = 5) -> QuizStartResponse:
-        query = self.db.query(Question)
+    def get_all_skill_tags(self) -> List[str]:
+        # Extract unique tags from the JSONB skill_tags array
+        tags = self.db.query(func.jsonb_array_elements_text(Question.skill_tags)).filter(Question.skill_tags != None).distinct().all()
+        # Tags is a list of tuples like [('algebra',), ('geometry',)]
+        return [t[0] for t in tags if t[0]]
+        
+    def generate_quiz(self, user_id: int, topic: Optional[str] = None, num_questions: int = 5, difficulty_level: Optional[str] = None) -> QuizStartResponse:
+        base_query = self.db.query(Question)
         
         if topic:
-            query = query.filter(Question.main_topic == topic)
-        
+            base_query = base_query.filter(
+                (func.cast(Question.main_topic, String).ilike(f"%{topic}%")) |
+                (func.cast(Question.sub_topic, String).ilike(f"%{topic}%")) |
+                (func.cast(Question.skill_tags, String).ilike(f"%{topic}%"))
+            )
+            
+        query = base_query
+        if difficulty_level == "easy":
+            query = query.filter(Question.difficulty <= 0.4)
+        elif difficulty_level == "hard":
+            query = query.filter(Question.difficulty >= 0.7)
+        elif difficulty_level == "medium":
+            query = query.filter(Question.difficulty.between(0.4, 0.7))
+            
         questions = query.order_by(func.random()).limit(num_questions).all()
+        
+        # Fallback if strict difficulty filter results in too few questions
+        if len(questions) < num_questions and difficulty_level:
+            questions = base_query.order_by(func.random()).limit(num_questions).all()
+            
         
         if not questions:
             raise ValueError("No questions available for the specified criteria")

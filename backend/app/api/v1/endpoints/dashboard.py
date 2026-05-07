@@ -17,6 +17,7 @@ from app.schemas.dashboard import (
     SessionReportResponse,
     ChapterSessionsResponse, 
     TopicsSummaryResponse,
+    SkillTagMasteryResponse,
 )
 
 router = APIRouter()
@@ -101,3 +102,15 @@ def get_topics_summary(
 ):
     """คะแนนล่าสุดของแต่ละ topic — ใช้ใน AllDashboard"""
     return DashboardService(db).get_topics_summary(current_user_id)
+
+
+@router.get("/skill-tags/mastery", response_model=SkillTagMasteryResponse)
+def get_skill_tags_mastery(
+    db: Session = Depends(get_db),
+    current_user_id: int = Depends(get_current_user_id),
+):
+    """
+    Top-5 strengths + bottom-5 weaknesses ตาม sub_topic accuracy %.
+    ใช้แสดง Strengths/Weaknesses panel บน Overview Dashboard
+    """
+    return DashboardService(db).get_skill_mastery(current_user_id)

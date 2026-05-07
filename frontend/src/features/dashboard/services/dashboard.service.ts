@@ -13,6 +13,7 @@ import type {
   ChapterSessionsResponse,
   SessionReportResponse,
   TopicsSummaryResponse,
+  SkillTagMasteryResponse,
 } from '../types/dashboard.types';
 
 // Proficiency thresholds mirroring the backend's PROFICIENCY_THRESHOLDS
@@ -93,6 +94,15 @@ export const dashboardService = {
    */
   fetchTopicsSummary: async (): Promise<TopicsSummaryResponse> => {
     const response = await apiClient.get<TopicsSummaryResponse>('/dashboard/topics/summary');
+    return response.data;
+  },
+
+  /**
+   * Per-sub_topic accuracy: top-5 strengths + bottom-5 weaknesses.
+   * Endpoint: GET /dashboard/skill-tags/mastery
+   */
+  fetchSkillTagsMastery: async (): Promise<SkillTagMasteryResponse> => {
+    const response = await apiClient.get<SkillTagMasteryResponse>('/dashboard/skill-tags/mastery');
     return response.data;
   },
 

@@ -11,11 +11,11 @@ export const useQuiz = () => {
     const [error, setError]             = useState<string | null>(null);
 
     // เพิ่ม topic: string เข้ามา — ส่งตรงไปยัง backend เพื่อ filter ข้อสอบตาม main_topic
-    const startQuiz = async (userId: number, topic: string, numQuestions: number = 10) => {
+    const startQuiz = async (userId: number, topic: string, numQuestions: number = 10, difficultyLevel?: string) => {
         try {
             setLoading(true);
             setError(null);
-            const data = await quizService.startQuiz(userId, topic, numQuestions);
+            const data = await quizService.startQuiz(userId, topic, numQuestions, difficultyLevel);
             setQuiz(data);
             setCurrentIndex(0);
         } catch (err: any) {

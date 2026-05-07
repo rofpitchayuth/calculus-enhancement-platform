@@ -67,9 +67,10 @@ export interface ChapterStatsResponse {
   totalAttempts: number;
   avgTimePerQuestion: number;
   bloomLevels: BloomLevel[];
-  strengths: string[];
-  weaknesses: string[];
+  strengths: SkillTagMastery[];
+  weaknesses: SkillTagMastery[];
 }
+
 
 // ─── Chapter Attempts ──────────────────────────────────────────────────
 
@@ -170,3 +171,34 @@ export interface LineChartData {
   score: number;
   avgTime: number;
 }
+
+/** Used by RadarChartComponent — generic shape where angleKey is "skill" and value lives in dataKey */
+export interface RadarChartComponentProps {
+  data: Record<string, unknown>[];
+  dataKey: string;
+  angleKey?: string;
+  title?: string;
+  fill?: string;
+  height?: number;
+}
+
+/** One axis on the SkillsRadarChart (DKT-GRU mastery, 0–1 scale) */
+export interface SkillMastery {
+  skill: string;
+  mastery: number;
+}
+
+// ─── Skill-Tag Mastery ─────────────────────────────────────────────────
+
+/** Per-sub_topic accuracy record returned by GET /dashboard/skill-tags/mastery */
+export interface SkillTagMastery {
+  skill_tag: string;    // e.g. "chain_rule"
+  accuracy: number;     // 0.0 – 100.0
+  attempt_count: number;
+}
+
+export interface SkillTagMasteryResponse {
+  strengths: SkillTagMastery[];
+  weaknesses: SkillTagMastery[];
+}
+

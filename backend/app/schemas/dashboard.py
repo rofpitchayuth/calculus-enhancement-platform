@@ -60,13 +60,18 @@ class BloomLevel(BaseModel):
     label: str
     percent: float
 
+class SkillTagMastery(BaseModel):
+    skill_tag: str        # sub_topic label e.g. "chain_rule"
+    accuracy: float       # 0.0 – 100.0 % correct
+    attempt_count: int    # total questions attempted for this skill
+
 class ChapterStatsResponse(BaseModel):
     proficiencyLevel: str
     totalAttempts: int
     avgTimePerQuestion: float
     bloomLevels: List[BloomLevel]
-    strengths: List[str]
-    weaknesses: List[str]
+    strengths: List[SkillTagMastery]
+    weaknesses: List[SkillTagMastery]
 
 
 # ─── Chapter Attempts ─────────────────────────────────────────────────────
@@ -153,3 +158,8 @@ PROFICIENCY_THRESHOLDS = [
     (40, "Developing"),
     (0,  "Beginner"),
 ]
+
+
+class SkillTagMasteryResponse(BaseModel):
+    strengths:  List[SkillTagMastery]   # top 5 by accuracy (min 3 attempts)
+    weaknesses: List[SkillTagMastery]   # bottom 5 by accuracy (min 3 attempts)
