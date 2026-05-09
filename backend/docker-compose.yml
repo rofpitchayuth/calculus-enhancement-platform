@@ -1,0 +1,49 @@
+services:
+  db:
+    image: postgres:18-alpine
+    container_name: calculus-db
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: ${POSTGRES_DB:-calculus_db}
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    networks:
+      - calculus-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-calculus_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    image: rofpitchayuth/calculus-backend:latest
+    container_name: calculus-backend
+    restart: always
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-password}@db:5432/${POSTGRES_DB:-calculus_db}
+      - SECRET_KEY=${SECRET_KEY}
+      - ALGORITHM=HS256
+      - ACCESS_TOKEN_EXPIRE_MINUTES=30
+      - KT_SERVICE_URL=${KT_SERVICE_URL}
+      - LLM_SERVICE_URL=${LLM_SERVICE_URL}
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - calculus-network
+      - proxy
+
+
+networks:
+  calculus-network:
+    driver: bridge
+  proxy:
+    external: true
+
+
+volumes:
+  postgres_data:
