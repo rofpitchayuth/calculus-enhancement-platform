@@ -165,8 +165,6 @@ class ClassifyResponse(BaseModel):
     error_code_D: ErrorCodeEnum
     error_code_E: ErrorCodeEnum
 
-    @field_validator("difficulty", "discrimination", mode="before")
-
     @field_validator(
         "error_code_A", "error_code_B", "error_code_C", "error_code_D", "error_code_E", 
         mode="before"
@@ -180,6 +178,7 @@ class ClassifyResponse(BaseModel):
         logger.warning(f"Gemini hallucinated an error code: {clean_v}. Defaulting to unclassified_error.")
         return "unclassified_error"
 
+    @field_validator("difficulty", "discrimination", mode="before")
     @classmethod
     def clamp_to_unit_interval(cls, v):
         try:
