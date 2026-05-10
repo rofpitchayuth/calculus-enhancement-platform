@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Navbar } from "../../../shared/components/layout/Navbar";
 import { CourseSection } from "../components/CourseSection";
 import { useTopicsSummary } from "../../dashboard/hooks/useDashboard";
+import { useAuth } from "../../../features/auth/hooks/useAuth.tsx";
 import logo from "../components/logo.png";
 
 
@@ -21,10 +22,20 @@ const COURSE_METADATA: Record<string, { description: string; }> = {
 };
 export default function LandingPage() {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const { topics } = useTopicsSummary();
 
+  // Define default topics to display when user is not authenticated or data is loading
+  const defaultTopics = [
+    { topicId: "LIMIT", displayName: "LIMIT" },
+    { topicId: "DIFFERENTIAL", displayName: "DIFFERENTIAL" },
+    { topicId: "INTEGRAL", displayName: "INTEGRAL" },
+    { topicId: "APPLICATIONS", displayName: "APPLICATIONS" },
+  ];
 
-  const courses = topics.map((t) => {
+  const topicsToDisplay = (topics && topics.length > 0) ? topics : defaultTopics;
+
+  const courses = topicsToDisplay.map((t) => {
     const meta = COURSE_METADATA[t.topicId] || {
       description: "",
     };
@@ -32,6 +43,8 @@ export default function LandingPage() {
       id: t.topicId,
       title: t.displayName,
       description: meta.description,
+      questionCount: 0,
+      duration: 0,
     };
   });
 
@@ -98,12 +111,12 @@ export default function LandingPage() {
           </p>
 
         </div>
-        <div className="max-w-7xl mx-auto px-4 py-8 bg-blue-50">
+        <div className="max-w-5xl mx-auto px-4 py-8 bg-blue-50">
           <CourseSection
-          courses={courses}
-          onViewAll={() => navigate("/allquiz")}
-          onStartCourse={(courseId) => navigate(`/quiz/${courseId}`)}
-        />
+            courses={courses}
+            onViewAll={() => navigate(isAuthenticated ? "/allquiz" : "/auth/login")}
+            onStartCourse={(courseId) => navigate(isAuthenticated ? `/quiz/${courseId}` : "/auth/login")}
+          />
         </div>
       </div>
 

@@ -34,7 +34,7 @@ export function SignUpForm() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 ">
+    <div className="w-full max-w-md">
       <Card title="Create Account">
         <form onSubmit={handleSubmit} className="space-y-6">
           <FormField
@@ -88,19 +88,18 @@ export function SignUpForm() {
             variant="primary"
             size="lg"
             disabled={isLoading}
-            className="w-full bg-gradient-to-r from-green-600 to-blue-600 text-white py-3 rounded-lg hover:from-green-700 hover:to-blue-700"
+            className="w-full bg-yellow-500 text-white py-3 rounded-xl hover:bg-yellow-600 shadow-md hover:shadow-lg transition-all font-bold"
           >
             {isLoading ? "Creating Account..." : "Sign Up"}
           </Button>
 
-          <div className="text-center pt-4">
-            <p className="text-gray-600 mb-3">Already have an account?</p>
+          <div className="text-center pt-6 border-t border-gray-100 mt-6">
+            <p className="text-gray-600 mb-4 text-sm">Already have an account?</p>
             <Button
               type="button"
-              variant="ghost"
               size="md"
               onClick={() => navigate("/auth/login")}
-              className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 font-medium"
+              className="bg-[#1e3a8a] hover:bg-blue-800 text-white px-8 py-2 rounded-full font-bold transition-all shadow-sm hover:shadow-md"
             >
               Sign In
             </Button>

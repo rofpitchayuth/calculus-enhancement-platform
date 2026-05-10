@@ -37,7 +37,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10">
+    <div className="w-full max-w-md ">
       <Card title="Welcome Back">
         <form onSubmit={handleSubmit} className="space-y-6">
           <FormField
@@ -67,19 +67,18 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
             variant="primary"
             size="lg"
             disabled={isLoading}
-            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg hover:from-blue-700 hover:to-purple-700"
+            className="w-full bg-[#1e3a8a] text-white py-3 rounded-xl hover:bg-blue-800 shadow-md hover:shadow-lg transition-all font-bold"
           >
             {isLoading ? "Signing In..." : "Sign In"}
           </Button>
 
-          <div className="text-center pt-4">
-            <p className="text-gray-600 mb-3">Don't have an account?</p>
+          <div className="text-center pt-6 border-t border-gray-100 mt-6">
+            <p className="text-gray-600 mb-4 text-sm">Don't have an account?</p>
             <Button
               type="button"
-              variant="ghost"
               size="md"
               onClick={() => navigate("/auth/signup")}
-              className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 font-medium"
+              className="bg-yellow-500 hover:bg-yellow-600 text-white px-8 py-2 rounded-full font-bold transition-all shadow-sm hover:shadow-md"
             >
               Create New Account
             </Button>
