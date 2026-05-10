@@ -51,65 +51,70 @@ export function Navbar({ className = "" }: NavbarProps) {
 
 
 
-        <ul className="flex items-center space-x-6">
-          <li className="relative">
-            <NavLink
-              to="/home"
-              end
-              className={({ isActive }: { isActive: boolean }) =>
-                `relative px-1 py-0.1 transition-colors hover:text-blue-600 ${isActive ? "text-gray-900 font-medium" : ""
-                }`
-              }
-            >
-              {({ isActive }: { isActive: boolean }) => (
-                <>
-                  Home
-                  {isActive && (
-                    <span className="absolute -top-1 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-yellow-400 rounded-full" />
-                  )}
-                </>
-              )}
-            </NavLink>
-          </li>
+        {isAuthenticated && (
+  <ul className="flex items-center space-x-6">
+    <li className="relative">
+      <NavLink
+        to="/home"
+        end
+        className={({ isActive }: { isActive: boolean }) =>
+          `relative px-1 py-0.1 transition-colors hover:text-blue-600 ${
+            isActive ? "text-gray-900 font-medium" : ""
+          }`
+        }
+      >
+        {({ isActive }: { isActive: boolean }) => (
+          <>
+            Home
+            {isActive && (
+              <span className="absolute -top-1 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-yellow-400 rounded-full" />
+            )}
+          </>
+        )}
+      </NavLink>
+    </li>
 
-          <li className="relative">
-            <NavLink
-              to="/allquiz"
-              className={({ isActive }: { isActive: boolean }) =>
-                `relative px-1 py-0.1 transition-colors hover:text-blue-600 ${isActive ? "text-gray-900 font-medium" : ""
-                }`
-              }
-            >
-              {({ isActive }: { isActive: boolean }) => (
-                <>
-                  Course
-                  {isActive && (
-                    <span className="absolute -top-1 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-yellow-400 rounded-full" />
-                  )}
-                </>
-              )}
-            </NavLink>
-          </li>
+    <li className="relative">
+      <NavLink
+        to="/allquiz"
+        className={({ isActive }: { isActive: boolean }) =>
+          `relative px-1 py-0.1 transition-colors hover:text-blue-600 ${
+            isActive ? "text-gray-900 font-medium" : ""
+          }`
+        }
+      >
+        {({ isActive }: { isActive: boolean }) => (
+          <>
+            Course
+            {isActive && (
+              <span className="absolute -top-1 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-yellow-400 rounded-full" />
+            )}
+          </>
+        )}
+      </NavLink>
+    </li>
 
-          <li className="relative">
-            <NavLink
-              to="/alldashboard"
-              className={({ isActive }: { isActive: boolean }) =>
-                `relative px-1 py-0.1 transition-colors hover:text-blue-600 ${isActive ? "text-gray-900 font-medium" : ""
-                }`
-              }
-            >
-              {({ isActive }: { isActive: boolean }) => (
-                <>
-                  Dashboard
-                  {isActive && (
-                    <span className="absolute -top-1 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-yellow-400 rounded-full" />
-                  )}
-                </>
-              )}
-            </NavLink>
-          </li>
-        </ul>
+    <li className="relative">
+      <NavLink
+        to="/alldashboard"
+        className={({ isActive }: { isActive: boolean }) =>
+          `relative px-1 py-0.1 transition-colors hover:text-blue-600 ${
+            isActive ? "text-gray-900 font-medium" : ""
+          }`
+        }
+      >
+        {({ isActive }: { isActive: boolean }) => (
+          <>
+            Dashboard
+            {isActive && (
+              <span className="absolute -top-1 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-yellow-400 rounded-full" />
+            )}
+          </>
+        )}
+      </NavLink>
+    </li>
+  </ul>
+)}
       </div>
 
 
