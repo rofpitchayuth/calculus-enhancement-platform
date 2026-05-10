@@ -7,6 +7,7 @@ import { AuthProvider } from "./features/auth/hooks/useAuth";
 import { LoginPage } from "./features/auth/pages/LoginPage";
 import { SignUpPage } from "./features/auth/pages/SignUpPage";
 import { HomePage } from "./features/home/pages/HomePage";
+import LandingPage from "./features/home/pages/LandingPage";
 
 import { DashboardOverviewPage, ChapterDashboardPage, CourseReportPage } from "./features/dashboard";
 import { AdminQuestionPage } from "./features/admin";
@@ -17,7 +18,7 @@ import AllCourse from "./features/exam/pages/AllCourse";
 import { AllDashboard } from "./features/dashboard/pages/AllDashboard";
 
 const router = createBrowserRouter([
-  { path: "/", element: <Navigate to="/home" replace /> },
+  { path: "/", element: <LandingPage /> },
 
   // ── Auth ──────────────────────────────────────────────────────────────────
   { path: "/auth/login",  element: <LoginPage /> },

@@ -34,7 +34,7 @@ export function SignUpForm() {
   };
 
   return (
-    <div className="max-w-md mx-auto">
+    <div className="max-w-md mx-auto mt-10 ">
       <Card title="Create Account">
         <form onSubmit={handleSubmit} className="space-y-6">
           <FormField
