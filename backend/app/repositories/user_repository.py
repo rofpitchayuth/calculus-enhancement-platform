@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
-from models.user import User
-from schemas.auth import RegisterRequest
-from core.security import get_password_hash
+from app.models.user import User
+from app.schemas.auth import RegisterRequest
+from app.core.security import get_password_hash
 from typing import Optional
 
 class UserRepository:
@@ -15,7 +15,7 @@ class UserRepository:
         db_user = User(
             email=user_data.email,
             hashed_password=hashed_password,
-            fullName=user_data.fullName,
+            full_name=user_data.full_name,
             role=user_data.role,
             is_verified=False
         )

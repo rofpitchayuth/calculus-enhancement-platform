@@ -1,9 +1,10 @@
 from pydantic import BaseModel, EmailStr, Field, field_validator
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 from datetime import datetime
-from models.user import UserRole
 
-# Request schemas
+if TYPE_CHECKING:
+    from app.schemas.result import StudentStatsResponse
+
 class LoginRequest(BaseModel):
     email: EmailStr
     password: str = Field(max_length=70, description="Password max 70 characters")
@@ -11,8 +12,9 @@ class LoginRequest(BaseModel):
 class RegisterRequest(BaseModel):
     email: EmailStr
     password: str = Field(min_length=6, max_length=70, description="Password 6-70 characters")
-    fullName: str = Field(min_length=1, max_length=100)
-    role: UserRole = UserRole.STUDENT
+    full_name: str = Field(min_length=1, max_length=100)
+    role: str = Field(default="student", description="User role, always student")
+     
     
     @field_validator('password')
     @classmethod
@@ -29,10 +31,11 @@ class Token(BaseModel):
 class UserResponse(BaseModel):
     id: int
     email: str
-    fullName: str
-    role: UserRole
+    full_name: str
+    role: str
     is_active: bool
     is_verified: bool 
+    student_stats: Optional["StudentStatsResponse"] = None
     created_at: datetime
 
     class Config:
@@ -44,3 +47,7 @@ class AuthResponse(BaseModel):
 
 LoginResponse = AuthResponse
 TokenResponse = Token
+
+# Rebuild model to resolve forward references
+from app.schemas.result import StudentStatsResponse
+UserResponse.model_rebuild()
