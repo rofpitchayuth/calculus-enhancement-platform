@@ -109,6 +109,26 @@ export function Navbar({ className = "" }: NavbarProps) {
               )}
             </NavLink>
           </li>
+          {user?.role === "admin" && (
+            <li className="relative">
+              <NavLink
+                to="/admin/questions"
+                className={({ isActive }: { isActive: boolean }) =>
+                  `relative px-1 py-0.1 transition-colors hover:text-blue-600 ${isActive ? "text-gray-900 font-medium" : ""
+                  }`
+                }
+              >
+                {({ isActive }: { isActive: boolean }) => (
+                  <>
+                    Question Bank
+                    {isActive && (
+                      <span className="absolute -top-1 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-yellow-400 rounded-full" />
+                    )}
+                  </>
+                )}
+              </NavLink>
+            </li>
+          )}
         </ul>
       </div>
 

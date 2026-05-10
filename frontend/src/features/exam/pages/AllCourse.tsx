@@ -138,10 +138,6 @@ export default function AllCourse() {
 
                         {/* ฝั่งขวา: ข้อมูล + ปุ่ม (Main Topic) */}
                         <div className="flex flex-col items-end gap-3 flex-shrink-0 py-2">
-                            <div className="text-right text-sm text-gray-700 leading-relaxed font-medium">
-                                <div>{course.numQuestions} Questions</div>
-                                <div>{course.duration} Minutes</div>
-                            </div>
                             <button
                                 onClick={() => navigate(`/quiz/${course.topic}`)}
                                 className="bg-[#0a2a4a] hover:bg-[#143b66] text-white text-sm font-bold px-8 py-2 rounded-full transition-all shadow-lg active:scale-95"
@@ -158,8 +154,8 @@ export default function AllCourse() {
                 <div className="flex items-center gap-3 mb-6">
                     <div className="w-10 h-10 bg-yellow-400 rounded-xl flex items-center justify-center text-xl">🏷️</div>
                     <div>
-                        <h2 className="text-2xl font-bold text-gray-800">ฝึกตามทักษะ (Skill Tags จากระบบ)</h2>
-                        <p className="text-gray-500 text-sm">เลือกทำโจทย์ที่เน้นเฉพาะทักษะ (ดึงข้อมูลแบบ Real-time จากฐานข้อมูล)</p>
+                        <h2 className="text-2xl font-bold text-gray-800">ฝึกตามทักษะ</h2>
+                        <p className="text-gray-500 text-sm">เลือกทำโจทย์ที่เน้นเฉพาะทักษะ</p>
                     </div>
                 </div>
 

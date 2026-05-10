@@ -23,7 +23,7 @@ from app.schemas.dashboard import (
     SessionReportResponse, SkillBreakdown, ErrorAnalysisItem, ScoreDistributionItem,
     QuizQuestionItem,
     ChapterSession, ChapterSessionsResponse, TopicSummary, TopicsSummaryResponse,
-    SkillTagMastery, SkillTagMasteryResponse,
+    SkillTagMastery, SkillTagMasteryResponse, SkillMasteryGroup,
     PROFICIENCY_THRESHOLDS
 )
 
@@ -116,30 +116,37 @@ class DashboardService:
         return DashboardChapterProgressResponse(data=progress_data)
 
     def get_skills_radar(self, user_id: int) -> DashboardSkillsRadarResponse:
-        """Compute radar chart data from real quiz attempts.
-
-        Each RadarSkill row represents a cognitive-skill category (derived from
-        Bloom's Taxonomy levels stored in Question.bloom_level).  The four numeric
-        axes represent accuracy % for each main_topic.
-
-        Bloom → Radar-skill mapping:
-            Remember / Understand → Concept
-            Apply                → Calculation
-            Analyze              → Analysis
-            Evaluate             → Evaluation
-            Create / (unmapped)  → Application
+        """Compute radar chart data using authentic 6-level Bloom's Taxonomy.
+        
+        Returns accuracy % for each cognitive level:
+        Remembering, Understanding, Applying, Analyzing, Evaluating, Creating.
         """
-        # Map bloom_level strings → radar skill labels
-        BLOOM_TO_SKILL: dict[str, str] = {
-            "Remember":    "Concept",
-            "Understand":  "Concept",
-            "Apply":       "Calculation",
-            "Analyze":     "Analysis",
-            "Evaluate":    "Evaluation",
-            "Create":      "Application",
+        BLOOM_LEVELS = [
+            "Remembering",
+            "Understanding",
+            "Applying",
+            "Analyzing",
+            "Evaluating",
+            "Creating"
+        ]
+        
+        # Map raw DB strings to standardized Bloom's levels
+        DB_TO_BLOOM: dict[str, str] = {
+            "Remember":    "Remembering",
+            "Remembering": "Remembering",
+            "Understand":  "Understanding",
+            "Understanding": "Understanding",
+            "Apply":       "Applying",
+            "Applying":    "Applying",
+            "Analyze":     "Analyzing",
+            "Analyzing":   "Analyzing",
+            "Evaluate":    "Evaluating",
+            "Evaluating":  "Evaluating",
+            "Create":      "Creating",
+            "Creating":    "Creating",
         }
-        RADAR_SKILLS = ["Concept", "Calculation", "Application", "Analysis", "Evaluation"]
-        TOPIC_KEYS   = ["limit", "differential", "integral", "applications"]
+        
+        TOPIC_KEYS = ["limit", "differential", "integral", "applications"]
 
         # Fetch all attempts for this user with their Question loaded
         attempts = (
@@ -154,8 +161,13 @@ class DashboardService:
         for a in attempts:
             if not a.question:
                 continue
-            bloom = a.question.bloom_level or ""
-            radar_skill = BLOOM_TO_SKILL.get(bloom, "Application")
+            
+            raw_bloom = a.question.bloom_level or ""
+            radar_skill = DB_TO_BLOOM.get(raw_bloom, raw_bloom)
+            
+            if radar_skill not in BLOOM_LEVELS:
+                continue
+
             # Normalize main_topic enum value to lowercase axis key
             raw_topic = (a.question.main_topic or "").strip().upper()
             topic_key = raw_topic.lower() if raw_topic else "limit"
@@ -167,9 +179,9 @@ class DashboardService:
             if a.is_correct:
                 counts[key]["correct"] += 1
 
-        # Build RadarSkill objects with accuracy % (0–100) for each axis
+        # Build RadarSkill objects for all 6 levels
         radar_data: list[RadarSkill] = []
-        for skill in RADAR_SKILLS:
+        for skill in BLOOM_LEVELS:
             values: dict[str, int] = {}
             for tk in TOPIC_KEYS:
                 bucket = counts.get((skill, tk))
@@ -202,15 +214,16 @@ class DashboardService:
             duration = (s.end_time - s.start_time).total_seconds()
             avg_time = int(duration / s.total_questions) if s.total_questions else 0
 
-            # ดึง skill_tag จาก attempts ของ session นี้
+            # ดึง attempts พร้อม question เพื่อเอา sub_topic (แทนที่จะเป็น main_topic จาก skill_tag)
             attempts = (
                 self.db.query(QuizAttempt)
+                .join(Question)
                 .filter(QuizAttempt.session_id == s.id)
                 .all()
             )
 
-            correct_tags   = [a.skill_tag for a in attempts if a.is_correct and a.skill_tag]
-            incorrect_tags = [a.skill_tag for a in attempts if not a.is_correct and a.skill_tag]
+            correct_tags   = [a.question.sub_topic for a in attempts if a.is_correct and a.question and a.question.sub_topic]
+            incorrect_tags = [a.question.sub_topic for a in attempts if not a.is_correct and a.question and a.question.sub_topic]
 
             # นับความถี่แล้วเอา top 2
             from collections import Counter
@@ -589,52 +602,99 @@ class DashboardService:
         """
         GET /dashboard/skill-tags/mastery
 
-        Join QuizAttempt → Question and group by sub_topic to compute
-        accuracy % per skill tag.  Returns top-5 strengths and bottom-5
-        weaknesses (only skills with at least 1 attempt are included;
-        weaknesses are capped to skills where accuracy < 70%).
+        Compute accuracy % for BOTH sub_topic (Enums) and skill_tags (JSONB list).
+        Returns top-5 strengths and bottom-5 weaknesses for each category.
         """
         attempts = (
             self.db.query(QuizAttempt)
             .join(Question, QuizAttempt.question_id == Question.id)
-            .filter(
-                QuizAttempt.user_id == user_id,
-                Question.sub_topic.isnot(None),
-            )
+            .filter(QuizAttempt.user_id == user_id)
             .all()
         )
 
-        # Accumulate correct / total per sub_topic
-        stats: dict[str, dict] = {}
+        print(f"\n{'='*60}")
+        print(f"[DEBUG MASTER] User ID: {user_id}")
+        print(f"[DEBUG MASTER] Total attempts found with Question join: {len(attempts)}")
+
+        sub_topic_stats: dict[str, dict] = {}
+        skill_tag_stats: dict[str, dict] = {}
+
+        # Log first 5 for sample
+        for i, a in enumerate(attempts[:5]):
+            q = a.question
+            print(f"  Attempt {i+1}: ID={a.id}, Q_ID={a.question_id}, Correct={a.is_correct}, SubTopic={q.sub_topic}, Tags={q.skill_tags}")
+
         for a in attempts:
-            if not a.question or not a.question.sub_topic:
+            if not a.question:
+                # Fallback: If no question link, use the broad skill_tag column from QuizAttempt
+                if a.skill_tag:
+                    st = str(a.skill_tag)
+                    if st not in sub_topic_stats:
+                        sub_topic_stats[st] = {"correct": 0, "total": 0}
+                    sub_topic_stats[st]["total"] += 1
+                    if a.is_correct:
+                        sub_topic_stats[st]["correct"] += 1
                 continue
-            tag = a.question.sub_topic  # Enum value string e.g. "chain_rule"
-            if tag not in stats:
-                stats[tag] = {"correct": 0, "total": 0}
-            stats[tag]["total"] += 1
+            
+            # 1. Process sub_topic (Priority: granular metadata from Question table)
+            target_st = a.question.sub_topic
+            if target_st:
+                st = getattr(target_st, 'value', str(target_st))
+            else:
+                # Fallback to broad skill_tag if sub_topic is missing
+                st = str(a.skill_tag) if a.skill_tag else "General"
+
+            if st not in sub_topic_stats:
+                sub_topic_stats[st] = {"correct": 0, "total": 0}
+            sub_topic_stats[st]["total"] += 1
             if a.is_correct:
-                stats[tag]["correct"] += 1
+                sub_topic_stats[st]["correct"] += 1
+            
+            # 2. Process skill_tags (JSONB List of strings)
+            tags = a.question.skill_tags or []
+            if isinstance(tags, list) and len(tags) > 0:
+                for t in tags:
+                    if not t: continue
+                    if t not in skill_tag_stats:
+                        skill_tag_stats[t] = {"correct": 0, "total": 0}
+                    skill_tag_stats[t]["total"] += 1
+                    if a.is_correct:
+                        skill_tag_stats[t]["correct"] += 1
+            else:
+                # Fallback: if no granular tags, we don't add to skill_tag_stats to keep it clean
+                pass
 
-        if not stats:
-            return SkillTagMasteryResponse(strengths=[], weaknesses=[])
+        def _build_list(stats_dict: dict) -> list[SkillTagMastery]:
+            return [
+                SkillTagMastery(
+                    skill_tag=tag,
+                    accuracy=round((v["correct"] / v["total"]) * 100, 1),
+                    attempt_count=v["total"],
+                )
+                for tag, v in stats_dict.items()
+                if v["total"] >= 1
+            ]
 
-        # Build list with accuracy %
-        skill_list = [
-            SkillTagMastery(
-                skill_tag=tag,
-                accuracy=round((v["correct"] / v["total"]) * 100, 1),
-                attempt_count=v["total"],
-            )
-            for tag, v in stats.items()
-            if v["total"] >= 1
-        ]
+        def _extract_sw(items: list[SkillTagMastery]):
+            # Sort descending for strengths, ascending for weaknesses
+            desc = sorted(items, key=lambda s: s.accuracy, reverse=True)
+            asc  = sorted(items, key=lambda s: s.accuracy)
+            return desc[:5], [s for s in asc if s.accuracy < 70.0][:5]
 
-        # Sort descending for strengths, ascending for weaknesses
-        by_acc_desc = sorted(skill_list, key=lambda s: s.accuracy, reverse=True)
-        by_acc_asc  = sorted(skill_list, key=lambda s: s.accuracy)
+        st_list = _build_list(sub_topic_stats)
+        sg_list = _build_list(skill_tag_stats)
 
-        strengths  = by_acc_desc[:5]
-        weaknesses = [s for s in by_acc_asc if s.accuracy < 70.0][:5]
+        print(f"[DEBUG MASTER] Aggregated SubTopics Count: {len(st_list)}, SkillTags Count: {len(sg_list)}")
 
-        return SkillTagMasteryResponse(strengths=strengths, weaknesses=weaknesses)
+        st_strengths, st_weaknesses = _extract_sw(st_list)
+        sg_strengths, sg_weaknesses = _extract_sw(sg_list)
+
+        resp = SkillTagMasteryResponse(
+            strengths=SkillMasteryGroup(subTopics=st_strengths, skillTags=sg_strengths),
+            weaknesses=SkillMasteryGroup(subTopics=st_weaknesses, skillTags=sg_weaknesses)
+        )
+        print(f"[DEBUG MASTER] Final Strengths SubTopics: {[s.skill_tag for s in resp.strengths.subTopics]}")
+        print(f"{'='*60}\n")
+        return resp
+
+

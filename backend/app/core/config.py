@@ -5,7 +5,7 @@ from typing import Optional
 
 class Settings(BaseSettings):
     DATABASE_URL: str = Field(
-        default="postgresql://postgres:rofpun@localhost:15432/calculus_db"
+        default="postgresql://postgres:rofpun@localhost:5432/calculus_db"
     )
 
     SECRET_KEY: str = Field(
@@ -17,20 +17,16 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = Field(default="Calculus Enhancement Platform")
     API_V1_STR: str = "/api/v1"
 
-    # CORS configuration
     ALLOWED_ORIGINS: str = Field(
         default="http://localhost:3000,http://localhost:5173"
     )
 
-    # Services
-    KT_SERVICE_URL: str = Field(default="http://localhost:8002")
-    LLM_SERVICE_URL: str = Field(default="http://localhost:8001")
+    KT_SERVICE_URL: str = Field(default="http://localhost:8001")
+    LLM_SERVICE_URL: str = Field(default="http://localhost:8002")
 
-    # เพิ่มสองตัวนี้
     HF_TOKEN: Optional[str] = None
     GEMINI_API_KEY: Optional[str] = None
 
-    # ใช้แทน class Config
     model_config = ConfigDict(
         env_file=".env",
         case_sensitive=True,
@@ -43,4 +39,3 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
-

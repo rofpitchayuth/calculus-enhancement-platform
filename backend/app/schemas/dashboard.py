@@ -160,6 +160,10 @@ PROFICIENCY_THRESHOLDS = [
 ]
 
 
+class SkillMasteryGroup(BaseModel):
+    subTopics: List[SkillTagMastery] = []
+    skillTags: List[SkillTagMastery] = []
+
 class SkillTagMasteryResponse(BaseModel):
-    strengths:  List[SkillTagMastery]   # top 5 by accuracy (min 3 attempts)
-    weaknesses: List[SkillTagMastery]   # bottom 5 by accuracy (min 3 attempts)
+    strengths:  SkillMasteryGroup
+    weaknesses: SkillMasteryGroup

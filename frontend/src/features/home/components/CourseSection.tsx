@@ -37,19 +37,20 @@ export function CourseSection({
         </Button>
       </div>
 
-      {/* Course Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Course Cards Horizontal Scroll */}
+      <div className="flex overflow-x-auto gap-6 pb-6 custom-scrollbar">
         {courses.map((course) => (
-          <CourseCard
-            key={course.id}
-            id={course.id}
-            title={course.title}
-            description={course.description}
-            questionCount={course.questionCount}
-            duration={course.duration}
-            thumbnail={course.thumbnail}
-            onClick={() => onStartCourse?.(course.id)}
-          />
+          <div key={course.id} className="w-[350px] flex-shrink-0">
+            <CourseCard
+              id={course.id}
+              title={course.title}
+              description={course.description}
+              questionCount={course.questionCount}
+              duration={course.duration}
+              thumbnail={course.thumbnail}
+              onClick={() => onStartCourse?.(course.id)}
+            />
+          </div>
         ))}
       </div>
     </section>

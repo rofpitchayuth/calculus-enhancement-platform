@@ -10,12 +10,30 @@ import type { RadarSkill } from "../../dashboard/types/dashboard.types";
 interface ProgressCardProps {
   percentage: number;
   level: string;
-  masterTopics: string[];
-  improvementTopics: string[];
   radarData: RadarSkill[];
   onViewOverall?: () => void;
   onViewDetailed?: () => void;
 }
+
+/**
+ * StatusThaiMap
+ * Maps English backend status enums to Thai display strings for the UI.
+ */
+const StatusThaiMap: Record<string, string> = {
+  "Lucky Guesser": "🎲 นักเดามือทอง",
+  "High Achiever": "🏆 ยอดฝีมือแคลคูลัส",
+  "Careless": "😅 นักสะดุดยอดหญ้า",
+  "Careless (High Slip)": "😅 นักสะดุดยอดหญ้า",
+  "Developing": "🚀 นักสู้ผู้กำลังพัฒนา",
+  "Developing (Average)": "🚀 นักสู้ผู้กำลังพัฒนา",
+  "Struggling": "💦 นักสู้(สู้ชีวิต)",
+};
+
+/**
+ * getThaiStatus
+ * Helper function to retrieve the Thai display string for a given status.
+ */
+const getThaiStatus = (status: string) => StatusThaiMap[status] || status;
 
 /**
  * Transform backend RadarSkill[] (skill × topic matrix) into a per-topic
@@ -39,7 +57,7 @@ function mapRadarDataForChart(
 
   return topics.map((topicKey) => {
     const total = radarData.reduce((sum, r) => sum + r[topicKey], 0);
-    const avg = radarData.length > 0 ? Math.round(total / radarData.length) *10 : 0;
+    const avg = radarData.length > 0 ? Math.round(total / radarData.length) : 0;
     return { skill: labels[topicKey], score: avg };
   });
 }
@@ -47,14 +65,22 @@ function mapRadarDataForChart(
 export function ProgressCard({
   percentage,
   level,
-  masterTopics,
-  improvementTopics,
   radarData,
   onViewOverall,
   onViewDetailed,
 }: ProgressCardProps) {
   // Transform the backend radar data to the shape the RadarChart expects
   const chartData = mapRadarDataForChart(radarData);
+
+  // Deriving unified topic lists from the EXACT same data source as the Radar Chart
+  // to ensure UI consistency across all progress visualization elements.
+  const unifiedMasterTopics = chartData
+    .filter((d) => d.score >= 60)
+    .map((d) => d.skill);
+  
+  const unifiedImprovementTopics = chartData
+    .filter((d) => d.score < 60)
+    .map((d) => d.skill);
 
   return (
     <Card className="shadow-lg h-full pr-8">
@@ -77,26 +103,32 @@ export function ProgressCard({
           <span className="font-bold text-gray-900">
             {percentage}%
           </span>{" "}
+        </p>
+        <p>
           ระดับรวม{" "}
           <span className="font-bold text-gray-900">
-            {level}
+            {getThaiStatus(level)}
           </span>
         </p>
-
+      
           <div className="space-y-3 mb-4">
             <div>
               <p className="text-sm font-medium text-gray-600 mb-2">
                 บทที่ได้:
               </p>
               <div className="flex gap-2 flex-wrap">
-                {masterTopics.map((topic) => (
-                  <span
-                    key={topic}
-                    className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm font-medium"
-                  >
-                    {topic}
-                  </span>
-                ))}
+                {unifiedMasterTopics.length > 0 ? (
+                  unifiedMasterTopics.map((topic) => (
+                    <span
+                      key={topic}
+                      className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm font-medium"
+                    >
+                      {topic}
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-gray-400 text-sm">—</span>
+                )}
               </div>
             </div>
 
@@ -105,14 +137,18 @@ export function ProgressCard({
                 บทที่ควรปรับปรุง:
               </p>
               <div className="flex gap-2 flex-wrap">
-                {improvementTopics.map((topic) => (
-                  <span
-                    key={topic}
-                    className="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-sm font-medium"
-                  >
-                    {topic}
-                  </span>
-                ))}
+                {unifiedImprovementTopics.length > 0 ? (
+                  unifiedImprovementTopics.map((topic) => (
+                    <span
+                      key={topic}
+                      className="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-sm font-medium"
+                    >
+                      {topic}
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-gray-400 text-sm">—</span>
+                )}
               </div>
             </div>
           </div>

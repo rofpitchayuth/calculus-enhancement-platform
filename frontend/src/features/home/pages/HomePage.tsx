@@ -2,7 +2,44 @@ import { useNavigate } from "react-router-dom";
 import { ProgressCard } from "../components/ProgressCard";
 import { CourseSection } from "../components/CourseSection";
 import { useDashboardOverview, useTopicsSummary } from "../../dashboard/hooks/useDashboard";
-import { Calendar } from "../components/Calendar";
+import { DashboardCard } from "../../dashboard/components";
+import char1 from '../../dashboard/components/character/LuckyGuessers.png'
+import char2 from '../../dashboard/components/character/Careless.png'
+import char3 from '../../dashboard/components/character/HighAchiever.png'
+import char4 from '../../dashboard/components/character/Developing.png'
+import char5 from '../../dashboard/components/character/Struggling.png'
+
+/**
+ * ImageMap
+ * Maps English backend status keys to local image assets.
+ */
+const ImageMap: Record<string, string> = {
+  "Lucky Guesser": char1,
+  "Careless (High Slip)": char2,
+  "High Achiever": char3,
+  "Developing (Average)": char4,
+  "Struggling": char5,
+};
+
+/**
+ * StatusThaiMap
+ * Maps English backend status enums to Thai display strings.
+ */
+const StatusThaiMap: Record<string, string> = {
+  "Lucky Guesser": "นักเดามือทอง",
+  "High Achiever": "ยอดฝีมือแคลคูลัส",
+  "Careless": "นักสะดุดยอดหญ้า",
+  "Careless (High Slip)": "นักสะดุดยอดหญ้า",
+  "Developing": "นักสู้ผู้กำลังพัฒนา",
+  "Developing (Average)": "นักสู้ผู้กำลังพัฒนา",
+  "Struggling": "นักสู้(สู้ชีวิต)",
+};
+
+/**
+ * getThaiStatus
+ * Helper function to retrieve the Thai display string for a given status.
+ */
+const getThaiStatus = (status: string) => StatusThaiMap[status] || status;
 
 const COURSE_METADATA: Record<string, { description: string;}> = {
   LIMIT: {
@@ -27,8 +64,6 @@ export function HomePage() {
   const isLoading = overviewLoading || topicsLoading;
 
   const sortedChapters = [...chapterList].sort((a, b) => b.score - a.score);
-  const masterTopics = sortedChapters.filter((c) => c.score >= 60).map((c) => c.chapter);
-  const improvementTopics = sortedChapters.filter((c) => c.score < 60).map((c) => c.chapter);
   const avgScore = chapterList.length > 0
     ? Math.round(chapterList.reduce((sum, c) => sum + c.score, 0) / chapterList.length)
     : 0;
@@ -53,7 +88,7 @@ export function HomePage() {
   }
 
   return (
-    <div className="homepage bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen ">
+    <div className="homepage bg-gradient-to-br from-slate-50 to-slate-100">
       <div className="max-w-7xl mx-auto px-4 py-8 bg-blue-50">
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-6">
@@ -61,15 +96,23 @@ export function HomePage() {
             <ProgressCard
               percentage={avgScore}
               level={overviewStats?.studentProfile ?? "Beginner"}
-              masterTopics={masterTopics.length > 0 ? masterTopics : ["—"]}
-              improvementTopics={improvementTopics.length > 0 ? improvementTopics : ["—"]}
               radarData={radarData}
               onViewOverall={() => navigate("/dashboard")}
               onViewDetailed={() => navigate("/alldashboard")}
             />
           </div>
           <div>
-              <Calendar onDateSelect={(date) => console.log("Selected:", date)} />
+            {overviewStats && (
+              <DashboardCard title={`Your Level : ${getThaiStatus(overviewStats.studentProfile)}`}>
+                <div className="flex justify-center items-center h-full">
+                  <img
+                    src={ImageMap[overviewStats.studentProfile]}
+                    alt={overviewStats.studentProfile}
+                    className="w-full max-h-[200px] object-contain"
+                  />
+                </div>
+              </DashboardCard>
+            )}
           </div>
         </div>
         

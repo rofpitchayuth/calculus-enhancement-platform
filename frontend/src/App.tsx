@@ -71,7 +71,13 @@ const router = createBrowserRouter([
   // ── Admin ─────────────────────────────────────────────────────────────────
   {
     path: "/admin/questions",
-    element: <Layout><AdminQuestionPage /></Layout>,
+    element: (
+      <ProtectedRoute roles={["admin"]}>
+        <Layout>
+          <AdminQuestionPage />
+        </Layout>
+      </ProtectedRoute>
+    ),
   },
 
   { path: "*", element: <Navigate to="/auth/login" replace /> },

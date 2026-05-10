@@ -121,6 +121,7 @@ class ErrorCodeEnum(str, Enum):
     trig_evaluation_error = "trig_evaluation_error"
     exponent_rule_error = "exponent_rule_error"
     logarithm_rule_error = "logarithm_rule_error"
+    power_rule_error = "power_rule_error"
     unclassified_error = "unclassified_error"
     conceptual_misunderstanding = "conceptual_misunderstanding"
     indeterminate_form_misconception = "indeterminate_form_misconception"
@@ -165,6 +166,20 @@ class ClassifyResponse(BaseModel):
     error_code_E: ErrorCodeEnum
 
     @field_validator("difficulty", "discrimination", mode="before")
+
+    @field_validator(
+        "error_code_A", "error_code_B", "error_code_C", "error_code_D", "error_code_E", 
+        mode="before"
+    )
+    @classmethod
+    def validate_error_codes(cls, v):
+        valid_errors = set(e.value for e in ErrorCodeEnum)
+        clean_v = str(v).strip()
+        if clean_v in valid_errors:
+            return clean_v
+        logger.warning(f"Gemini hallucinated an error code: {clean_v}. Defaulting to unclassified_error.")
+        return "unclassified_error"
+
     @classmethod
     def clamp_to_unit_interval(cls, v):
         try:
