@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { StatCard, DashboardCard, BloomBar, LineChartComponent } from '../components';
 import { useChapterStats } from '../hooks/useDashboard';
+import type { SkillTagMastery } from '../types/dashboard.types';
 import char1 from '../components/Excellent.png'
 import char2 from '../components/Good.png'
 import char3 from '../components/Developing.png'
@@ -69,6 +70,37 @@ export function ChapterDashboardPage() {
     })),
     [attempts],
   );
+
+  // --- Filtered Mastery Logic ---
+  // Strength: top 3 with accuracy > 50%
+  // Weakness: top 3 with accuracy < 50%
+  const { filteredStrengths, filteredWeaknesses } = useMemo(() => {
+    if (!stats) return { filteredStrengths: [], filteredWeaknesses: [] };
+
+    // Combine all skills from both to get the full set
+    const allSkills = [...stats.strengths, ...stats.weaknesses];
+    
+    // De-duplicate by skill_tag (just in case they overlap in the source)
+    const uniqueSkillsMap = new Map<string, SkillTagMastery>();
+    allSkills.forEach(s => {
+      if (!uniqueSkillsMap.has(s.skill_tag)) {
+        uniqueSkillsMap.set(s.skill_tag, s);
+      }
+    });
+    const uniqueSkills = Array.from(uniqueSkillsMap.values());
+
+    const strengths = uniqueSkills
+      .filter((s) => s.accuracy > 50)
+      .sort((a, b) => b.accuracy - a.accuracy)
+      .slice(0, 3);
+
+    const weaknesses = uniqueSkills
+      .filter((s) => s.accuracy < 50)
+      .sort((a, b) => a.accuracy - b.accuracy)
+      .slice(0, 3);
+
+    return { filteredStrengths: strengths, filteredWeaknesses: weaknesses };
+  }, [stats]);
 
   // --- Render Logic ---
 
@@ -179,7 +211,7 @@ export function ChapterDashboardPage() {
                 <span className="text-yellow-500">★</span> STRENGTHS
               </h4>
               <div className="flex flex-col gap-2">
-                {stats.strengths.length > 0 ? stats.strengths.map((s) => (
+                {filteredStrengths.length > 0 ? filteredStrengths.map((s) => (
                   <div key={s.skill_tag} className="flex items-center justify-between bg-yellow-50 px-2 py-1.5 rounded-lg border border-yellow-100">
                     <span className="text-[11px] text-gray-700 font-medium capitalize">
                       {s.skill_tag.replace(/_/g, ' ')}
@@ -197,7 +229,7 @@ export function ChapterDashboardPage() {
                 <span className="text-red-500">●</span> WEAKNESSES
               </h4>
               <div className="flex flex-col gap-2">
-                {stats.weaknesses.length > 0 ? stats.weaknesses.map((w) => (
+                {filteredWeaknesses.length > 0 ? filteredWeaknesses.map((w) => (
                   <div key={w.skill_tag} className="flex items-center justify-between bg-red-50 px-2 py-1.5 rounded-lg border border-red-100">
                     <span className="text-[11px] text-gray-700 font-medium capitalize">
                       {w.skill_tag.replace(/_/g, ' ')}
@@ -231,8 +263,8 @@ export function ChapterDashboardPage() {
             </thead>
             <tbody>
               {attempts.length > 0 ? attempts.map((attempt, idx) => {
-                const strengthObj = stats.strengths[idx % Math.max(stats.strengths.length, 1)];
-                const weaknessObj = stats.weaknesses[idx % Math.max(stats.weaknesses.length, 1)];
+                const strengthObj = filteredStrengths[idx % Math.max(filteredStrengths.length, 1)];
+                const weaknessObj = filteredWeaknesses[idx % Math.max(filteredWeaknesses.length, 1)];
                 
                 const strengthLabel = strengthObj && typeof strengthObj !== 'string' ? strengthObj.skill_tag.replace(/_/g, ' ') : (strengthObj || '-');
                 const weaknessLabel = weaknessObj && typeof weaknessObj !== 'string' ? weaknessObj.skill_tag.replace(/_/g, ' ') : (weaknessObj || '-');
