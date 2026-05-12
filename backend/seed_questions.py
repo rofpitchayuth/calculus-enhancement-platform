@@ -8,7 +8,23 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__)))
 
 from sqlalchemy.orm import Session
 from app.core.database import SessionLocal, engine
-from app.models.question import Question, ErrorCode
+from app.models.question import Question, ErrorCode, MainTopic, SubTopic
+
+# Mapping for main_topic from Excel values to Enum values
+MAIN_TOPIC_MAP = {
+    "limits_and_continuity": MainTopic.LIMIT,
+    "derivatives": MainTopic.DIFFERENTIAL,
+    "integrals": MainTopic.INTEGRAL,
+    "applications": MainTopic.APPLICATIONS,
+    "limit": MainTopic.LIMIT,
+    "differential": MainTopic.DIFFERENTIAL,
+    "integral": MainTopic.INTEGRAL,
+    "application": MainTopic.APPLICATIONS,
+    "Limit": MainTopic.LIMIT,
+    "Derivative": MainTopic.DIFFERENTIAL,
+    "Integral": MainTopic.INTEGRAL,
+    "Application": MainTopic.APPLICATIONS,
+}
 
 ERROR_CODES_DATA = [
     {"code": "correct_answer", "name": "Correct Answer", "category": "Success"},
@@ -110,12 +126,40 @@ def seed_db():
         except ValueError:
             disc_val = 1.0
             
+        # Handle Main Topic Mapping
+        raw_main_topic = row.get('main topic') if pd.notna(row.get('main topic')) else row.get('main_topic')
+        main_topic_enum = None
+        if pd.notna(raw_main_topic):
+            raw_main_str = str(raw_main_topic).strip().lower().replace(" ", "_")
+            # Try direct map or check if it matches enum value/name
+            main_topic_enum = MAIN_TOPIC_MAP.get(raw_main_str)
+            if not main_topic_enum:
+                # Fallback: check if raw string matches any enum value or name directly
+                for m in MainTopic:
+                    if raw_main_str.upper() == m.name or raw_main_str == m.value.lower():
+                        main_topic_enum = m
+                        break
+
+        # Handle Sub Topic Mapping
+        raw_sub_topic = str(row.get('sub_topic')).strip() if pd.notna(row.get('sub_topic')) else None
+        sub_topic_enum = None
+        if raw_sub_topic:
+            # Try to match by Enum Name (e.g., 'ADV_DERIVATIVE_RULES')
+            try:
+                sub_topic_enum = SubTopic[raw_sub_topic]
+            except KeyError:
+                # Try to match by Enum Value (e.g., 'advanced_derivative_rules')
+                for m in SubTopic:
+                    if raw_sub_topic == m.value or raw_sub_topic.lower() == m.value.lower():
+                        sub_topic_enum = m
+                        break
+
         q = Question(
             question_text=str(row['question_text']),
             correct_answer=correct_answer_id,
             choices=choices_list,
-            main_topic=str(row['main topic']) if pd.notna(row.get('main topic')) else (str(row['main_topic']) if pd.notna(row.get('main_topic')) else None),
-            sub_topic=str(row['sub_topic']) if pd.notna(row.get('sub_topic')) else None,
+            main_topic=main_topic_enum,
+            sub_topic=sub_topic_enum,
             skill_tags=skill_tags,
             bloom_level=str(row['bloom_level']) if row.get('bloom_level') else None,
             difficulty=diff_val,
