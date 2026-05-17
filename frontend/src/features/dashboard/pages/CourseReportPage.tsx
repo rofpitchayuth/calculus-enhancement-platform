@@ -1,6 +1,6 @@
 // src/features/dashboard/pages/CourseReportPage.tsx
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { DashboardCard, DonutChartComponent } from '../components';
 import { dashboardService } from '../services/dashboard.service';
@@ -58,6 +58,32 @@ export function CourseReportPage() {
   } = useSessionReport(chapterId, sessionId);
 
   const [showTable, setShowTable] = useState(false);
+
+  const { parsedStrengths, parsedWeaknesses } = useMemo(() => {
+    if (!report || !report.skillBreakdown) return { parsedStrengths: [], parsedWeaknesses: [] };
+
+    // Strengths: accuracy > 50%, sorted descending, top 3
+    const strengths = report.skillBreakdown
+      .filter((s) => s.accuracy > 50)
+      .map((s) => ({
+        skill: s.skill,
+        accuracy: Math.round(s.accuracy),
+      }))
+      .sort((a, b) => b.accuracy - a.accuracy)
+      .slice(0, 3);
+
+    // Weaknesses: accuracy < 50%, sorted ascending, top 3
+    const weaknesses = report.skillBreakdown
+      .filter((s) => s.accuracy < 50)
+      .map((s) => ({
+        skill: s.skill,
+        accuracy: Math.round(s.accuracy),
+      }))
+      .sort((a, b) => a.accuracy - b.accuracy)
+      .slice(0, 3);
+
+    return { parsedStrengths: strengths, parsedWeaknesses: weaknesses };
+  }, [report]);
 
   // --- Render Logic ---
 
@@ -153,44 +179,40 @@ export function CourseReportPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-md p-4 space-y-3">
-            <div className="flex items-start gap-3">
-              <span className="text-xs font-bold text-gray-700 w-24 mt-1">STRENGTHS</span>
-              <div className="flex gap-2 flex-wrap flex-1">
-                {report.strengths.map((s, i) => (
-                  <span key={i} className="px-3 py-1 bg-yellow-100 text-gray-700 rounded-full text-xs font-medium">{s}</span>
-                ))}
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <span className="text-xs font-bold text-gray-700 w-24 mt-1">WEAKNESSES</span>
-              <div className="flex gap-2 flex-wrap flex-1">
-                {report.weaknesses.map((w, i) => (
-                  <span key={i} className="px-3 py-1 bg-blue-100 text-gray-700 rounded-full text-xs font-medium">{w}</span>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-md p-4">
-            <h4 className="font-semibold text-gray-700 mb-3 uppercase text-xs">คะแนนในแต่ละทักษะ</h4>
-            <div className="space-y-3">
-              {report.skillBreakdown.map((skill) => {
-                const { label, color } = accuracyToLabel(skill.accuracy);
-                return (
-                  <div key={skill.skill}>
-                    <div className="flex justify-between text-xs mb-1">
-                      <span className="text-gray-700 font-medium">{skill.skill}</span>
-                      <span className={`text-xs font-semibold ${color}`}>{label}</span>
-                    </div>
-                    <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                      <div className="h-full bg-blue-500 transition-all" style={{ width: `${skill.accuracy}%` }} />
-                    </div>
+          <div className="bg-white rounded-2xl shadow-md p-5 space-y-4">
+            <div>
+              <h4 className="font-semibold text-xs text-gray-700 mb-3 uppercase flex items-center gap-1">
+                <span className="text-yellow-500">★</span> STRENGTHS
+              </h4>
+              <div className="flex flex-col gap-2">
+                {parsedStrengths.length > 0 ? parsedStrengths.slice(0, 3).map((s) => (
+                  <div key={s.skill} className="flex items-center justify-between bg-yellow-50 px-3 py-2 rounded-xl border border-yellow-100 shadow-sm">
+                    <span className="text-xs text-gray-700 font-medium capitalize">
+                      {s.skill.replace(/_/g, ' ')}
+                    </span>
+                    <span className="text-xs font-black text-yellow-600">{s.accuracy}%</span>
                   </div>
-                );
-              })}
+                )) : <p className="text-xs text-gray-400 italic text-center py-2 bg-gray-50 rounded-xl border border-dashed border-gray-200">ยังไม่มีข้อมูล</p>}
+              </div>
+            </div>
+
+            <div className="border-t pt-3">
+              <h4 className="font-semibold text-xs text-gray-700 mb-3 uppercase flex items-center gap-1">
+                <span className="text-red-500">●</span> WEAKNESSES
+              </h4>
+              <div className="flex flex-col gap-2">
+                {parsedWeaknesses.length > 0 ? parsedWeaknesses.slice(0, 3).map((w) => (
+                  <div key={w.skill} className="flex items-center justify-between bg-red-50 px-3 py-2 rounded-xl border border-red-100 shadow-sm">
+                    <span className="text-xs text-gray-700 font-medium capitalize">
+                      {w.skill.replace(/_/g, ' ')}
+                    </span>
+                    <span className="text-xs font-black text-red-500">{w.accuracy}%</span>
+                  </div>
+                )) : <p className="text-xs text-gray-400 italic text-center py-2 bg-gray-50 rounded-xl border border-dashed border-gray-200">ยังไม่มีข้อมูล</p>}
+              </div>
             </div>
           </div>
+          {/* Removed 'คะแนนในแต่ละทักษะ' section as requested */}
         </div>
       </div>
 

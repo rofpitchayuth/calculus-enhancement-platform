@@ -25,12 +25,25 @@ export function QuestionInputForm({ input, setInput, onGenerate, isLoading }: Qu
     setInput({ ...input, question_text: latex });
   };
 
+  const handleExtractedData = (data: { latex: string; choices: string[] }) => {
+    setInput({
+      ...input,
+      question_text: data.latex,
+      choice_a: data.choices[0] || "",
+      choice_b: data.choices[1] || "",
+      choice_c: data.choices[2] || "",
+      choice_d: data.choices[3] || "",
+      choice_e: data.choices[4] || "",
+    });
+  };
+
   return (
     <div className="space-y-8">
       <div className="grid grid-cols-1 gap-8">
         <div className="bg-slate-50 rounded-3xl p-8 border border-slate-100 shadow-inner">
           <MathImageUploader 
-            onLatexChange={handleMathChange} 
+            onLatexChange={handleMathChange}
+            onExtractedData={handleExtractedData}
             initialValue={input.question_text}
             label="Question Text (Auto-OCR or Visual Editor)"
           />

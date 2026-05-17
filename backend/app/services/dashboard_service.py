@@ -452,15 +452,41 @@ class DashboardService:
             ScoreDistributionItem(name="ผิด",  value=total_q - correct),
         ]
 
-        # Skill breakdown (group by skill_tag)
+        # Skill breakdown (group by real sub_topic and skill_tags)
         skill_stats: dict[str, dict] = {}
         for a in attempts:
-            tag = a.skill_tag or "Other"
-            if tag not in skill_stats:
-                skill_stats[tag] = {"correct": 0, "total": 0}
-            skill_stats[tag]["total"] += 1
-            if a.is_correct:
-                skill_stats[tag]["correct"] += 1
+            processed = False
+            if a.question:
+                # 1. Process sub_topic
+                if a.question.sub_topic:
+                    sub_topic_val = a.question.sub_topic.value if hasattr(a.question.sub_topic, 'value') else a.question.sub_topic
+                    if sub_topic_val:
+                        if sub_topic_val not in skill_stats:
+                            skill_stats[sub_topic_val] = {"correct": 0, "total": 0}
+                        skill_stats[sub_topic_val]["total"] += 1
+                        if a.is_correct:
+                            skill_stats[sub_topic_val]["correct"] += 1
+                        processed = True
+
+                # 2. Process skill_tags
+                if a.question.skill_tags and isinstance(a.question.skill_tags, list):
+                    for tag in a.question.skill_tags:
+                        if tag:
+                            if tag not in skill_stats:
+                                skill_stats[tag] = {"correct": 0, "total": 0}
+                            skill_stats[tag]["total"] += 1
+                            if a.is_correct:
+                                skill_stats[tag]["correct"] += 1
+                            processed = True
+
+            # Fallback to the broad skill_tag (MainTopic) if no sub_topic or skill_tags were found
+            if not processed:
+                tag = a.skill_tag or "Other"
+                if tag not in skill_stats:
+                    skill_stats[tag] = {"correct": 0, "total": 0}
+                skill_stats[tag]["total"] += 1
+                if a.is_correct:
+                    skill_stats[tag]["correct"] += 1
 
         skill_breakdown = [
             SkillBreakdown(skill=tag, accuracy=round((v["correct"] / v["total"]) * 100, 1))

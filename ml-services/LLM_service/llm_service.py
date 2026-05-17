@@ -246,7 +246,8 @@ class ClassifyResponse(BaseModel):
 @app.post("/api/v1/vision/extract-latex")
 async def extract_latex(request: ImageExtractRequest):
     """
-    Extracts LaTeX from a base64 encoded image using Gemini Flash Vision.
+    Extracts LaTeX and multiple choice options from a base64 encoded image using Gemini Flash Vision.
+    It cleans up question numbers and choice labels (ก, ข, ค, ง, A, B, C, etc.) programmatically.
     """
     if not GEMINI_API_KEY:
         raise HTTPException(status_code=500, detail="GEMINI_API_KEY is missing.")
@@ -259,18 +260,72 @@ async def extract_latex(request: ImageExtractRequest):
         gemini_client = genai.Client(api_key=GEMINI_API_KEY)
         
         image_part = types.Part.from_bytes(data=image_bytes, mime_type="image/jpeg")
-        prompt = "You are an expert Math OCR. Extract all mathematical equations and text from this image. Output ONLY the raw LaTeX code. Do NOT wrap the output in markdown blocks like ```latex or ```. Just the raw string."
+        
+        prompt = """You are an expert Math OCR. Extract all mathematical equations, text, and multiple-choice options from this image.
+Analyze the image to find the main question text and any multiple-choice options (usually labeled A, B, C, D, E or 1, 2, 3, 4 or ก, ข, ค, ง).
+Output strictly a JSON object with two fields:
+- "latex": The main question text, formulated in beautiful LaTeX. Do not include the choices here.
+- "choices": A list of strings containing the extracted choice texts (in raw text/LaTeX). If there are fewer than 5 choices, fill the remaining list elements with empty strings "" to make the list exactly 5 elements long.
+
+CRITICAL CLEANING RULES:
+1. Question Text: Completely strip off any leading question numbers or prefixes (e.g. "4.", "ข้อ 4.", "4. ", "12.", etc.) from the beginning of the "latex" string. It should start directly with the actual text of the question (e.g. "กำหนด f(x) = ...").
+2. Choices: Completely strip off any choice labels, letters, bullets, or prefixes from the beginning of each choice string.
+   - For example, if a choice is "ก. -\\frac{3}{(x+1)^2}", return only "-\\frac{3}{(x+1)^2}" (strip off "ก.", "ก. ", "ข.", "ข. ", "ค.", "ค. ", "ง.", "ง. ", etc.).
+   - Similarly, strip off English choice prefixes like "A.", "B.", "C.", "D.", "E.", "a)", "b)", "c)", "d)", "e)", etc.
+   - The choices should contain ONLY the mathematical options themselves.
+
+Example JSON output structure:
+{
+  "latex": "กำหนด f(x) = \\frac{3}{x+1} แล้ว f'(2) มีค่าตรงกับข้อใด",
+  "choices": [
+    "-\\frac{3}{(x+1)^2}",
+    "\\frac{-3}{x+1}",
+    "\\frac{3}{x+1}",
+    "\\frac{3}{(x+1)^2}",
+    ""
+  ]
+}"""
         
         response = gemini_client.models.generate_content(
             model='gemini-2.5-flash',
             contents=[image_part, prompt],
             config=types.GenerateContentConfig(
+                response_mime_type="application/json",
                 temperature=0.0,
             )
         )
         
-        extracted_string = response.text.strip()
-        return {"latex": extracted_string}
+        raw_json = response.text.strip()
+        parsed_json = json.loads(raw_json)
+        
+        import re
+        
+        raw_latex = parsed_json.get("latex", "")
+        # Strip question number prefixes like "4. ", "ข้อ 4. ", "ข้อ 4 ", "12. "
+        cleaned_latex = re.sub(r'^(?:ข้อ\s*)?\d+\s*[\.\-]?\s*', '', raw_latex).strip()
+
+        # Ensure choices is a list of exactly 5 elements
+        raw_choices = parsed_json.get("choices", [])
+        if not isinstance(raw_choices, list):
+            raw_choices = []
+            
+        cleaned_choices = []
+        for choice in raw_choices:
+            if not choice:
+                cleaned_choices.append("")
+                continue
+            # Strip choice prefix like "ก.", "ข. ", "A. ", "a) ", "1. "
+            cleaned = re.sub(r'^(?:[ก-จ]|[A-Ea-e]|\d+)\s*[\.\)\-]?\s*', '', str(choice).strip())
+            cleaned_choices.append(cleaned.strip())
+            
+        while len(cleaned_choices) < 5:
+            cleaned_choices.append("")
+        cleaned_choices = cleaned_choices[:5]
+        
+        return {
+            "latex": cleaned_latex,
+            "choices": cleaned_choices
+        }
         
     except Exception as e:
         logger.error(f"Vision processing failed: {e}")

@@ -234,7 +234,8 @@ export function ChapterDashboardPage() {
 
       {/* Visualization Row 2 */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
-        <div className="lg:col-span-2">
+        {/* Left Column: Chart + Strengths/Weaknesses */}
+        <div className="lg:col-span-2 flex flex-col gap-4">
           <DashboardCard title="กราฟเวลาเฉลี่ยต่อข้อ (วินาที)">
             {progressChartData.length > 0 ? (
               <LineChartComponent data={progressChartData} dataKey="avgTime" xAxisKey="attempt" stroke="#1D4ED8" height={260} />
@@ -242,8 +243,50 @@ export function ChapterDashboardPage() {
               <div className="h-[260px] flex items-center justify-center text-gray-400">ยังไม่มีข้อมูล</div>
             )}
           </DashboardCard>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <DashboardCard>
+              <h4 className="font-bold text-sm text-gray-700 mb-3 uppercase flex items-center gap-1.5 border-b pb-2">
+                <span className="text-yellow-500 text-base">★</span>STRENGTHS
+              </h4>
+              <div className="flex flex-col gap-2 mt-2">
+                {filteredStrengths.length > 0 ? filteredStrengths.map((s) => (
+                  <div key={s.skill_tag} className="flex items-center justify-between bg-yellow-50 px-3 py-2 rounded-xl border border-yellow-100 shadow-sm">
+                    <span className="text-xs text-gray-700 font-bold capitalize">
+                      {s.skill_tag.replace(/_/g, ' ')}
+                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs font-black text-yellow-600">{s.accuracy}%</span>
+                      <span className="text-[10px] text-gray-400 font-bold">({s.attempt_count}x)</span>
+                    </div>
+                  </div>
+                )) : <p className="text-xs text-gray-400 italic text-center py-4 bg-gray-50 rounded-xl border border-dashed border-gray-200">ยังไม่มีข้อมูล</p>}
+              </div>
+            </DashboardCard>
+
+            <DashboardCard>
+              <h4 className="font-bold text-sm text-gray-700 mb-3 uppercase flex items-center gap-1.5 border-b pb-2">
+                <span className="text-red-500 text-base">●</span>WEAKNESSES
+              </h4>
+              <div className="flex flex-col gap-2 mt-2">
+                {filteredWeaknesses.length > 0 ? filteredWeaknesses.map((w) => (
+                  <div key={w.skill_tag} className="flex items-center justify-between bg-red-50 px-3 py-2 rounded-xl border border-red-100 shadow-sm">
+                    <span className="text-xs text-gray-700 font-bold capitalize">
+                      {w.skill_tag.replace(/_/g, ' ')}
+                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs font-black text-red-500">{w.accuracy}%</span>
+                      <span className="text-[10px] text-gray-400 font-bold">({w.attempt_count}x)</span>
+                    </div>
+                  </div>
+                )) : <p className="text-xs text-gray-400 italic text-center py-4 bg-gray-50 rounded-xl border border-dashed border-gray-200">ยังไม่มีข้อมูล</p>}
+              </div>
+            </DashboardCard>
+          </div>
         </div>
-        <DashboardCard title="BLOOM'S LEVEL">
+
+        {/* Right Column: Bloom's Level & Insights */}
+        <DashboardCard title="BLOOM'S LEVEL & INSIGHTS">
           <div className="space-y-4">
             <div className="space-y-2">
               {stats.bloomLevels.map((level) => (
@@ -271,43 +314,6 @@ export function ChapterDashboardPage() {
                 </div>
               );
             })()}
-
-            <div className="border-t mt-4 pt-3">
-              <h4 className="font-semibold text-xs text-gray-700 mb-3 uppercase flex items-center gap-1">
-                <span className="text-yellow-500">★</span> STRENGTHS
-              </h4>
-              <div className="flex flex-col gap-2">
-                {filteredStrengths.length > 0 ? filteredStrengths.map((s) => (
-                  <div key={s.skill_tag} className="flex items-center justify-between bg-yellow-50 px-2 py-1.5 rounded-lg border border-yellow-100">
-                    <span className="text-[11px] text-gray-700 font-medium capitalize">
-                      {s.skill_tag.replace(/_/g, ' ')}
-                    </span>
-                    <div className="flex items-center gap-1">
-                      <span className="text-[11px] font-bold text-yellow-600">{s.accuracy}%</span>
-                      <span className="text-[9px] text-gray-400">({s.attempt_count}x)</span>
-                    </div>
-                  </div>
-                )) : <p className="text-[10px] text-gray-400 italic text-center">ยังไม่มีข้อมูล</p>}
-              </div>
-            </div>
-            <div className="pt-2">
-              <h4 className="font-semibold text-xs text-gray-700 mb-3 uppercase flex items-center gap-1">
-                <span className="text-red-500">●</span> WEAKNESSES
-              </h4>
-              <div className="flex flex-col gap-2">
-                {filteredWeaknesses.length > 0 ? filteredWeaknesses.map((w) => (
-                  <div key={w.skill_tag} className="flex items-center justify-between bg-red-50 px-2 py-1.5 rounded-lg border border-red-100">
-                    <span className="text-[11px] text-gray-700 font-medium capitalize">
-                      {w.skill_tag.replace(/_/g, ' ')}
-                    </span>
-                    <div className="flex items-center gap-1">
-                      <span className="text-[11px] font-bold text-red-500">{w.accuracy}%</span>
-                      <span className="text-[9px] text-gray-400">({w.attempt_count}x)</span>
-                    </div>
-                  </div>
-                )) : <p className="text-[10px] text-gray-400 italic text-center">ยังไม่มีข้อมูล</p>}
-              </div>
-            </div>
           </div>
         </DashboardCard>
       </div>
