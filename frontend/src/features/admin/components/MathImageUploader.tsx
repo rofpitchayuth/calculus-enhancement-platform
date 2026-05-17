@@ -11,6 +11,7 @@ import "mathlive";
 
 interface MathImageUploaderProps {
   onLatexChange: (latex: string) => void;
+  onExtractedData?: (data: { latex: string; choices: string[] }) => void;
   initialValue?: string;
   label?: string;
 }
@@ -18,7 +19,8 @@ interface MathImageUploaderProps {
 import { API_BASE_URL as API_BASE } from '../../../shared/api/config';
 
 const MathImageUploader: React.FC<MathImageUploaderProps> = ({ 
-  onLatexChange, 
+  onLatexChange,
+  onExtractedData,
   initialValue = "",
   label = "Question Math / Equation"
 }) => {
@@ -106,9 +108,14 @@ const MathImageUploader: React.FC<MathImageUploaderProps> = ({
 
         const data = await response.json();
         const extractedLatex = data.latex;
+        const extractedChoices = data.choices || [];
         
         setLatex(extractedLatex);
         onLatexChange(extractedLatex);
+        
+        if (onExtractedData) {
+          onExtractedData({ latex: extractedLatex, choices: extractedChoices });
+        }
       } catch (err: any) {
         setError(err.message);
       } finally {

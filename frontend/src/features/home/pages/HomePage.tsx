@@ -64,8 +64,8 @@ export function HomePage() {
   const isLoading = overviewLoading || topicsLoading;
 
   const sortedChapters = [...chapterList].sort((a, b) => b.score - a.score);
-  const avgScore = chapterList.length > 0
-    ? Math.round(chapterList.reduce((sum, c) => sum + c.score, 0) / chapterList.length)
+  const avgScore = overviewStats
+    ? parseInt(overviewStats.averageScore, 10) || 0
     : 0;
 
   const courses = topics.map((t) => {

@@ -64,9 +64,9 @@ async def auto_tag_question(
         logger.error(f"Unexpected error in auto_tag_question: {str(e)}")
         return "LLM Microservice is currently unreachable."
 
-async def extract_latex_from_image(base64_image: str) -> str:
+async def extract_latex_from_image(base64_image: str) -> dict:
     """
-    Calls the LLM Vision microservice to extract LaTeX from an image.
+    Calls the LLM Vision microservice to extract LaTeX and choices from an image.
     """
     url = f"{settings.LLM_SERVICE_URL}/api/v1/vision/extract-latex"
     payload = {"base64_image": base64_image}
@@ -77,8 +77,7 @@ async def extract_latex_from_image(base64_image: str) -> str:
             response = await client.post(url, json=payload)
             response.raise_for_status()
             data = response.json()
-            return data.get("latex", "")
+            return data
     except Exception as e:
         logger.error(f"Failed to extract LaTeX from image: {e}")
-        # Return a clear error message that the backend route can handle
-        return "ERROR: ML Service Vision pipeline is unreachable."
+        return {"error": "ERROR: ML Service Vision pipeline is unreachable."}

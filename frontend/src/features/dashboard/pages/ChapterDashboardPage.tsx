@@ -2,12 +2,11 @@ import { useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { StatCard, DashboardCard, BloomBar, LineChartComponent } from '../components';
 import { useChapterStats } from '../hooks/useDashboard';
-import type { SkillTagMastery } from '../types/dashboard.types';
+import type { SkillTagMastery, BloomLevel } from '../types/dashboard.types';
 import char1 from '../components/Excellent.png'
 import char2 from '../components/Good.png'
 import char3 from '../components/Developing.png'
 import char4 from '../components/Beginner.png'
-// --- Constants & Config ---
 
 const CHAPTERS_MAP: Record<string, string> = {
   'LIMIT': 'LIMIT',
@@ -22,7 +21,53 @@ const proficiencyImageMap: Record<string, string> = {
   Developing: char3,
   Beginner: char4,
 }
-// --- Local Presentation Components ---
+
+function generateBloomInsights(bloomLevels: BloomLevel[]): string | null {
+  if (!bloomLevels || bloomLevels.length === 0) return null;
+
+  const map = new Map<string, BloomLevel>();
+  bloomLevels.forEach(b => map.set(b.label, b));
+
+  const remembering = map.get("Remembering");
+  const understanding = map.get("Understanding");
+  const applying = map.get("Applying");
+  const analyzing = map.get("Analyzing");
+  const evaluating = map.get("Evaluating");
+  const creating = map.get("Creating");
+
+  const hasData = (level?: BloomLevel) => level && level.total_attempts > 0;
+  const isGood = (level?: BloomLevel) => hasData(level) && level!.accuracy >= 65; // เกณฑ์ทำได้ดี
+  const isWeak = (level?: BloomLevel) => hasData(level) && level!.accuracy <= 50; // เกณฑ์ที่ต้องระวัง
+
+  if (isGood(analyzing) && (isWeak(applying) || isWeak(understanding))) {
+    return "⚠️ ข้อสังเกต: นักเรียนสามารถวิเคราะห์โจทย์ได้ (Analyzing) แต่กลับมีปัญหาในการคำนวณ (Applying) หรือความเข้าใจพื้นฐาน อาจเกิดจากความสะเพร่าในขั้นตอนการทำ แนะนำให้ตรวจสอบการทดเลขหรือทบทวนพื้นฐาน";
+  }
+
+  if (isGood(applying) && (isWeak(understanding) || isWeak(remembering))) {
+    return "⚠️ ข้อสังเกต: นักเรียนจำสูตรและคำนวณได้ดี (Applying) แต่ยังขาดความเข้าใจในนิยามหรือทฤษฎี (Understanding) หากเจอโจทย์พลิกแพลงอาจทำไม่ได้ แนะนำให้ทบทวนที่มาของสูตรเพิ่มเติม";
+  }
+
+  if ((isGood(remembering) || isGood(understanding)) && isWeak(applying)) {
+    return "💡 ข้อแนะนำ: นักเรียนมีความเข้าใจทฤษฎีและนิยาม (Understanding) แต่ยังนำไปประยุกต์ใช้ในการแก้โจทย์ไม่ได้ (Applying) แนะนำให้ฝึกทำโจทย์คำนวณให้หลากหลายขึ้น";
+  }
+
+  if (isGood(applying) && isWeak(analyzing)) {
+    return "💡 ข้อแนะนำ: นักเรียนมีทักษะการคำนวณที่มั่นคง (Applying) แต่ยังต้องการการฝึกฝนทักษะการตีความและวิเคราะห์โจทย์ที่ซับซ้อน (Analyzing) แนะนำให้ฝึกทำโจทย์ปัญหาเพิ่มเติม";
+  }
+
+  const activeLevels = bloomLevels.filter(b => b.total_attempts >= 3);
+  if (activeLevels.length >= 3 && activeLevels.every(b => b.accuracy >= 70)) {
+    return "🌟 ยอดเยี่ยม: นักเรียนมีทักษะและความเข้าใจตามลำดับขั้นของ Bloom เป็นอย่างดีเยี่ยม แนะนำให้ท้าทายด้วยโจทย์ระดับวิเคราะห์ขั้นสูง (Evaluating/Creating) ต่อไป";
+  }
+
+  for (const b of bloomLevels) {
+    if (b.accuracy === 100 && b.total_attempts > 0 && b.total_attempts <= 2) {
+      return `💡 ข้อมูลในระดับ ${b.label} ยังมีจำนวนน้อย (ทำไป ${b.total_attempts} ข้อ) แนะนำให้ฝึกโจทย์ในระดับนี้เพิ่มเติมเพื่อการวิเคราะห์ที่แม่นยำขึ้น`;
+    }
+  }
+
+  return null;
+}
 
 function TrendBadge({ delta, positiveIsGood = true, unit = '' }: {
   delta: number; positiveIsGood?: boolean; unit?: string;
@@ -102,7 +147,6 @@ export function ChapterDashboardPage() {
     return { filteredStrengths: strengths, filteredWeaknesses: weaknesses };
   }, [stats]);
 
-  // --- Render Logic ---
 
   if (isLoading) {
     return (
@@ -190,7 +234,8 @@ export function ChapterDashboardPage() {
 
       {/* Visualization Row 2 */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
-        <div className="lg:col-span-2">
+        {/* Left Column: Chart + Strengths/Weaknesses */}
+        <div className="lg:col-span-2 flex flex-col gap-4">
           <DashboardCard title="กราฟเวลาเฉลี่ยต่อข้อ (วินาที)">
             {progressChartData.length > 0 ? (
               <LineChartComponent data={progressChartData} dataKey="avgTime" xAxisKey="attempt" stroke="#1D4ED8" height={260} />
@@ -198,50 +243,77 @@ export function ChapterDashboardPage() {
               <div className="h-[260px] flex items-center justify-center text-gray-400">ยังไม่มีข้อมูล</div>
             )}
           </DashboardCard>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <DashboardCard>
+              <h4 className="font-bold text-sm text-gray-700 mb-3 uppercase flex items-center gap-1.5 border-b pb-2">
+                <span className="text-yellow-500 text-base">★</span>STRENGTHS
+              </h4>
+              <div className="flex flex-col gap-2 mt-2">
+                {filteredStrengths.length > 0 ? filteredStrengths.map((s) => (
+                  <div key={s.skill_tag} className="flex items-center justify-between bg-yellow-50 px-3 py-2 rounded-xl border border-yellow-100 shadow-sm">
+                    <span className="text-xs text-gray-700 font-bold capitalize">
+                      {s.skill_tag.replace(/_/g, ' ')}
+                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs font-black text-yellow-600">{s.accuracy}%</span>
+                      <span className="text-[10px] text-gray-400 font-bold">({s.attempt_count}x)</span>
+                    </div>
+                  </div>
+                )) : <p className="text-xs text-gray-400 italic text-center py-4 bg-gray-50 rounded-xl border border-dashed border-gray-200">ยังไม่มีข้อมูล</p>}
+              </div>
+            </DashboardCard>
+
+            <DashboardCard>
+              <h4 className="font-bold text-sm text-gray-700 mb-3 uppercase flex items-center gap-1.5 border-b pb-2">
+                <span className="text-red-500 text-base">●</span>WEAKNESSES
+              </h4>
+              <div className="flex flex-col gap-2 mt-2">
+                {filteredWeaknesses.length > 0 ? filteredWeaknesses.map((w) => (
+                  <div key={w.skill_tag} className="flex items-center justify-between bg-red-50 px-3 py-2 rounded-xl border border-red-100 shadow-sm">
+                    <span className="text-xs text-gray-700 font-bold capitalize">
+                      {w.skill_tag.replace(/_/g, ' ')}
+                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs font-black text-red-500">{w.accuracy}%</span>
+                      <span className="text-[10px] text-gray-400 font-bold">({w.attempt_count}x)</span>
+                    </div>
+                  </div>
+                )) : <p className="text-xs text-gray-400 italic text-center py-4 bg-gray-50 rounded-xl border border-dashed border-gray-200">ยังไม่มีข้อมูล</p>}
+              </div>
+            </DashboardCard>
+          </div>
         </div>
-        <DashboardCard title="BLOOM'S LEVEL">
+
+        {/* Right Column: Bloom's Level & Insights */}
+        <DashboardCard title="BLOOM'S LEVEL & INSIGHTS">
           <div className="space-y-4">
             <div className="space-y-2">
               {stats.bloomLevels.map((level) => (
-                <BloomBar key={level.label} label={level.label} percent={level.percent} />
+                <BloomBar key={level.label} {...level} />
               ))}
             </div>
-            <div className="border-t pt-3">
-              <h4 className="font-semibold text-xs text-gray-700 mb-3 uppercase flex items-center gap-1">
-                <span className="text-yellow-500">★</span> STRENGTHS
-              </h4>
-              <div className="flex flex-col gap-2">
-                {filteredStrengths.length > 0 ? filteredStrengths.map((s) => (
-                  <div key={s.skill_tag} className="flex items-center justify-between bg-yellow-50 px-2 py-1.5 rounded-lg border border-yellow-100">
-                    <span className="text-[11px] text-gray-700 font-medium capitalize">
-                      {s.skill_tag.replace(/_/g, ' ')}
-                    </span>
-                    <div className="flex items-center gap-1">
-                      <span className="text-[11px] font-bold text-yellow-600">{s.accuracy}%</span>
-                      <span className="text-[9px] text-gray-400">({s.attempt_count}x)</span>
-                    </div>
-                  </div>
-                )) : <p className="text-[10px] text-gray-400 italic text-center">ยังไม่มีข้อมูล</p>}
-              </div>
-            </div>
-            <div className="pt-2">
-              <h4 className="font-semibold text-xs text-gray-700 mb-3 uppercase flex items-center gap-1">
-                <span className="text-red-500">●</span> WEAKNESSES
-              </h4>
-              <div className="flex flex-col gap-2">
-                {filteredWeaknesses.length > 0 ? filteredWeaknesses.map((w) => (
-                  <div key={w.skill_tag} className="flex items-center justify-between bg-red-50 px-2 py-1.5 rounded-lg border border-red-100">
-                    <span className="text-[11px] text-gray-700 font-medium capitalize">
-                      {w.skill_tag.replace(/_/g, ' ')}
-                    </span>
-                    <div className="flex items-center gap-1">
-                      <span className="text-[11px] font-bold text-red-500">{w.accuracy}%</span>
-                      <span className="text-[9px] text-gray-400">({w.attempt_count}x)</span>
-                    </div>
-                  </div>
-                )) : <p className="text-[10px] text-gray-400 italic text-center">ยังไม่มีข้อมูล</p>}
-              </div>
-            </div>
+
+            {/* Smart Insights Component */}
+            {(() => {
+              const insight = generateBloomInsights(stats.bloomLevels);
+              if (!insight) return null;
+              
+              const isWarning = insight.startsWith("⚠️");
+              const isInfo = insight.startsWith("💡");
+              const isSuccess = insight.startsWith("🌟");
+
+              return (
+                <div className={`mt-4 p-3 rounded-xl border text-xs leading-relaxed font-medium ${
+                  isWarning ? "bg-orange-50 border-orange-200 text-orange-800" :
+                  isInfo ? "bg-blue-50 border-blue-200 text-blue-800" :
+                  isSuccess ? "bg-green-50 border-green-200 text-green-800" :
+                  "bg-gray-50 border-gray-200 text-gray-800"
+                }`}>
+                  {insight}
+                </div>
+              );
+            })()}
           </div>
         </DashboardCard>
       </div>

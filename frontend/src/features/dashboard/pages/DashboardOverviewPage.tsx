@@ -189,6 +189,48 @@ export function DashboardOverviewPage() {
       return { skill, value: 0 };
     });
   }, [radarData]);
+  
+  // --- Filtered Mastery Logic ---
+  // Sub Topics and Skill Tags:
+  // Strength: accuracy > 50%, sorted descending, top 3
+  // Weakness: accuracy < 50%, sorted ascending, top 3
+  const { filteredSubTopics, filteredSkillTags } = useMemo(() => {
+    if (!skillMastery) {
+      return {
+        filteredSubTopics: { strengths: [], weaknesses: [] },
+        filteredSkillTags: { strengths: [], weaknesses: [] },
+      };
+    }
+
+    // Helper to process a list of items
+    const processItems = (strengthsList: any[] = [], weaknessesList: any[] = []) => {
+      const allItems = [...strengthsList, ...weaknessesList];
+      const uniqueItemsMap = new Map<string, any>();
+      allItems.forEach((item) => {
+        if (item && item.skill_tag && !uniqueItemsMap.has(item.skill_tag)) {
+          uniqueItemsMap.set(item.skill_tag, item);
+        }
+      });
+      const uniqueItems = Array.from(uniqueItemsMap.values());
+
+      const strengths = uniqueItems
+        .filter((item) => item.accuracy > 50)
+        .sort((a, b) => b.accuracy - a.accuracy)
+        .slice(0, 3);
+
+      const weaknesses = uniqueItems
+        .filter((item) => item.accuracy < 50)
+        .sort((a, b) => a.accuracy - b.accuracy)
+        .slice(0, 3);
+
+      return { strengths, weaknesses };
+    };
+
+    return {
+      filteredSubTopics: processItems(skillMastery.strengths?.subTopics, skillMastery.weaknesses?.subTopics),
+      filteredSkillTags: processItems(skillMastery.strengths?.skillTags, skillMastery.weaknesses?.skillTags),
+    };
+  }, [skillMastery]);
 
   // --- Render Logic ---
 
@@ -247,13 +289,13 @@ export function DashboardOverviewPage() {
               <MasterySection title="STRENGTHS" icon={<span className="text-yellow-400">★</span>}>
                 <MasteryColumn 
                   title="Sub Topics"
-                  items={(skillMastery.strengths?.subTopics || []).slice(0, 3)}
+                  items={filteredSubTopics.strengths}
                   labelColorClass="text-yellow-600"
                   emptyMsg="No data"
                 />
                 <MasteryColumn 
                   title="Skill Tags"
-                  items={(skillMastery.strengths?.skillTags || []).slice(0, 3)}
+                  items={filteredSkillTags.strengths}
                   labelColorClass="text-yellow-600"
                   emptyMsg="No data"
                 />
@@ -263,13 +305,13 @@ export function DashboardOverviewPage() {
               <MasterySection title="WEAKNESSES" icon={<span className="text-red-500 text-[8px]">●</span>}>
                 <MasteryColumn 
                   title="Sub Topics"
-                  items={(skillMastery.weaknesses?.subTopics || []).slice(0, 3)}
+                  items={filteredSubTopics.weaknesses}
                   labelColorClass="text-red-600"
                   emptyMsg="No data"
                 />
                 <MasteryColumn 
                   title="Skill Tags"
-                  items={(skillMastery.weaknesses?.skillTags || []).slice(0, 3)}
+                  items={filteredSkillTags.weaknesses}
                   labelColorClass="text-red-600"
                   emptyMsg="No data"
                 />

@@ -44,58 +44,97 @@ class MainTopicEnum(str, Enum):
     APPLICATIONS = "APPLICATIONS"
 
 class SubTopicEnum(str, Enum):
-    evaluating_limits = "evaluating_limits"
-    limits_at_infinity = "limits_at_infinity"
-    continuity = "continuity"
-    definition_of_derivative = "definition_of_derivative"
-    basic_derivative_rules = "basic_derivative_rules"
-    advanced_derivative_rules = "advanced_derivative_rules"
-    implicit_differentiation = "implicit_differentiation"
-    curve_sketching_analysis = "curve_sketching_analysis"
-    related_rates = "related_rates"
-    indefinite_integrals = "indefinite_integrals"
-    definite_integrals = "definite_integrals"
-    integration_techniques = "integration_techniques"
-    kinematics = "kinematics"
-    optimization = "optimization"
-    area_and_volume = "area_and_volume"
-    algebraic_manipulation = "algebraic_manipulation"
-    functions_and_graphs = "functions_and_graphs"
-    trigonometry = "trigonometry"
-    exponents_and_logarithms = "exponents_and_logarithms"
+    # Limits and Continuity
+    LIMIT_LAWS = "limit_laws"
+    EVALUATING_LIMITS = "evaluating_limits"
+    ALGEBRAIC_LIMITS = "algebraic_limits"
+    LIMITS_INFINITY = "limits_at_infinity"
+    TRIG_LIMITS = "trigonometric_limits"
+    CONTINUITY = "continuity"
+
+    # Derivatives
+    DEFINITION_OF_DERIVATIVE = "definition_of_derivative"
+    DERIVATIVE_RULES = "derivative_rules"
+    PRODUCT_RULE = "product_rule"
+    CHAIN_RULE = "chain_rule"
+    ADV_DERIVATIVE_RULES = "advanced_derivative_rules"
+    IMPLICIT_DIFFERENTIATION = "implicit_differentiation"
+    IMPLICIT_FUNCTIONS = "implicit_functions"
+    SECOND_DERIVATIVE = "second_derivative"
+    HIGHER_ORDER_DERIVATIVES = "higher_order_derivatives"
+
+    # Applications of Derivatives
+    APPLICATIONS_OF_DERIVATIVES = "applications_of_derivatives"
+    CURVE_SKETCHING_ANALYSIS = "curve_sketching_analysis"
+    OPTIMIZATION = "optimization"
+    RELATED_RATES = "related_rates"
+    KINEMATICS = "kinematics"
+
+    # Integrals and Techniques
+    INDEFINITE_INTEGRALS = "indefinite_integrals"
+    DEFINITE_INTEGRALS = "definite_integrals"
+    INTEGRATION_TECHNIQUES = "integration_techniques"
+    SUBSTITUTION_AND_TECHNIQUES = "substitution_and_techniques"
+    INTEGRATION_BY_PARTS = "integration_by_parts"
+    ADV_INTEGRATION = "advanced_integration"
+
+    # Applications of Integration
+    AREA_AND_VOLUME = "area_and_volume"
+
+    # Functions and Miscellaneous
+    TRIGONOMETRIC_FUNCTIONS = "trigonometric_functions"
+    TRIG_IDENTITIES = "trig_identities"
+    INVERSE_FUNCTIONS = "inverse_functions"
+    APPLICATIONS = "applications"
+    OTHER = "other"
+
+import enum
 
 class SkillTagEnum(str, Enum):
-    direct_substitution = "direct_substitution"
-    factoring_and_canceling = "factoring_and_canceling"
-    special_trig_limits = "special_trig_limits"
-    conjugate_method = "conjugate_method"
-    lhopitals_rule = "lhopitals_rule"
-    power_rule = "power_rule"
-    product_rule = "product_rule"
-    quotient_rule = "quotient_rule"
-    chain_rule = "chain_rule"
-    trig_derivatives = "trig_derivatives"
-    second_derivative = "second_derivative"
-    first_derivative_test = "first_derivative_test"
-    second_derivative_test = "second_derivative_test"
-    setting_up_optimization = "setting_up_optimization"
-    exponential_log_derivatives = "exponential_log_derivatives"
-    power_rule_integration = "power_rule_integration"
-    u_substitution = "u_substitution"
-    integration_by_parts = "integration_by_parts"
-    partial_fractions = "partial_fractions"
-    ftc_evaluation = "ftc_evaluation"
-    setting_up_area_integral = "setting_up_area_integral"
-    composite_functions = "composite_functions"
-    inverse_functions = "inverse_functions"
-    factoring_polynomials = "factoring_polynomials"
-    evaluating_functions = "evaluating_functions"
-    logarithm_properties = "logarithm_properties"
-    solving_inequalities = "solving_inequalities"
-    rationalizing_denominators = "rationalizing_denominators"
-    trig_identities = "trig_identities"
-    other_pre_calculus_skill = "other_pre_calculus_skill"
-    other_calculus_skill = "other_calculus_skill"
+    # Algebraic and Pre-calculus skills used in simplification
+    DIRECT_SUBSTITUTION = "direct_substitution"
+    FACTORING_AND_CANCELING = "factoring_and_canceling"
+    CONJUGATE_METHOD = "conjugate_method"
+    ALGEBRAIC_MANIPULATION = "algebraic_manipulation"
+    COMPOSITE_FUNCTIONS = "composite_functions"
+    FACTORING_POLYNOMIALS = "factoring_polynomials"
+    EVALUATING_FUNCTIONS = "evaluating_functions"
+    LOGARITHM_PROPERTIES = "logarithm_properties"
+    SOLVING_INEQUALITIES = "solving_inequalities"
+    RATIONALIZING_DENOMINATORS = "rationalizing_denominators"
+
+    # Specific techniques for solving limits
+    SPECIAL_TRIG_LIMITS = "special_trig_limits"
+    LHOPITALS_RULE = "lhopitals_rule"
+
+    # Core differentiation rules and techniques
+    POWER_RULE = "power_rule"
+    PRODUCT_RULE = "product_rule"
+    QUOTIENT_RULE = "quotient_rule"
+    CHAIN_RULE = "chain_rule"
+    TRIG_DERIVATIVES = "trig_derivatives"
+    EXPONENTIAL_LOG_DERIVATIVES = "exponential_log_derivatives"
+    IMPLICIT_DIFFERENTIATION = "implicit_differentiation"
+    SECOND_DERIVATIVE = "second_derivative"
+
+    # Skills for applying derivatives to problems
+    FIRST_DERIVATIVE_TEST = "first_derivative_test"
+    SECOND_DERIVATIVE_TEST = "second_derivative_test"
+    SETTING_UP_OPTIMIZATION = "setting_up_optimization"
+    RELATED_RATES = "related_rates"
+    CURVE_SKETCHING_ANALYSIS = "curve_sketching_analysis"
+
+    # Core integration techniques and evaluations
+    POWER_RULE_INTEGRATION = "power_rule_integration"
+    U_SUBSTITUTION = "u_substitution"
+    INTEGRATION_BY_PARTS = "integration_by_parts"
+    PARTIAL_FRACTIONS = "partial_fractions"
+    FTC_EVALUATION = "ftc_evaluation"
+    SETTING_UP_AREA_INTEGRAL = "setting_up_area_integral"
+
+    # Fallback skills
+    OTHER_PRE_CALCULUS_SKILL = "other_pre_calculus_skill"
+    OTHER_CALCULUS_SKILL = "other_calculus_skill"
 
 class BloomLevelEnum(str, Enum):
     remembering = "Remembering"
@@ -207,7 +246,8 @@ class ClassifyResponse(BaseModel):
 @app.post("/api/v1/vision/extract-latex")
 async def extract_latex(request: ImageExtractRequest):
     """
-    Extracts LaTeX from a base64 encoded image using Gemini Flash Vision.
+    Extracts LaTeX and multiple choice options from a base64 encoded image using Gemini Flash Vision.
+    It cleans up question numbers and choice labels (ก, ข, ค, ง, A, B, C, etc.) programmatically.
     """
     if not GEMINI_API_KEY:
         raise HTTPException(status_code=500, detail="GEMINI_API_KEY is missing.")
@@ -220,18 +260,72 @@ async def extract_latex(request: ImageExtractRequest):
         gemini_client = genai.Client(api_key=GEMINI_API_KEY)
         
         image_part = types.Part.from_bytes(data=image_bytes, mime_type="image/jpeg")
-        prompt = "You are an expert Math OCR. Extract all mathematical equations and text from this image. Output ONLY the raw LaTeX code. Do NOT wrap the output in markdown blocks like ```latex or ```. Just the raw string."
+        
+        prompt = """You are an expert Math OCR. Extract all mathematical equations, text, and multiple-choice options from this image.
+Analyze the image to find the main question text and any multiple-choice options (usually labeled A, B, C, D, E or 1, 2, 3, 4 or ก, ข, ค, ง).
+Output strictly a JSON object with two fields:
+- "latex": The main question text, formulated in beautiful LaTeX. Do not include the choices here.
+- "choices": A list of strings containing the extracted choice texts (in raw text/LaTeX). If there are fewer than 5 choices, fill the remaining list elements with empty strings "" to make the list exactly 5 elements long.
+
+CRITICAL CLEANING RULES:
+1. Question Text: Completely strip off any leading question numbers or prefixes (e.g. "4.", "ข้อ 4.", "4. ", "12.", etc.) from the beginning of the "latex" string. It should start directly with the actual text of the question (e.g. "กำหนด f(x) = ...").
+2. Choices: Completely strip off any choice labels, letters, bullets, or prefixes from the beginning of each choice string.
+   - For example, if a choice is "ก. -\\frac{3}{(x+1)^2}", return only "-\\frac{3}{(x+1)^2}" (strip off "ก.", "ก. ", "ข.", "ข. ", "ค.", "ค. ", "ง.", "ง. ", etc.).
+   - Similarly, strip off English choice prefixes like "A.", "B.", "C.", "D.", "E.", "a)", "b)", "c)", "d)", "e)", etc.
+   - The choices should contain ONLY the mathematical options themselves.
+
+Example JSON output structure:
+{
+  "latex": "กำหนด f(x) = \\frac{3}{x+1} แล้ว f'(2) มีค่าตรงกับข้อใด",
+  "choices": [
+    "-\\frac{3}{(x+1)^2}",
+    "\\frac{-3}{x+1}",
+    "\\frac{3}{x+1}",
+    "\\frac{3}{(x+1)^2}",
+    ""
+  ]
+}"""
         
         response = gemini_client.models.generate_content(
             model='gemini-2.5-flash',
             contents=[image_part, prompt],
             config=types.GenerateContentConfig(
+                response_mime_type="application/json",
                 temperature=0.0,
             )
         )
         
-        extracted_string = response.text.strip()
-        return {"latex": extracted_string}
+        raw_json = response.text.strip()
+        parsed_json = json.loads(raw_json)
+        
+        import re
+        
+        raw_latex = parsed_json.get("latex", "")
+        # Strip question number prefixes like "4. ", "ข้อ 4. ", "ข้อ 4 ", "12. "
+        cleaned_latex = re.sub(r'^(?:ข้อ\s*)?\d+\s*[\.\-]?\s*', '', raw_latex).strip()
+
+        # Ensure choices is a list of exactly 5 elements
+        raw_choices = parsed_json.get("choices", [])
+        if not isinstance(raw_choices, list):
+            raw_choices = []
+            
+        cleaned_choices = []
+        for choice in raw_choices:
+            if not choice:
+                cleaned_choices.append("")
+                continue
+            # Strip choice prefix like "ก.", "ข. ", "A. ", "a) ", "1. "
+            cleaned = re.sub(r'^(?:[ก-จ]|[A-Ea-e]|\d+)\s*[\.\)\-]?\s*', '', str(choice).strip())
+            cleaned_choices.append(cleaned.strip())
+            
+        while len(cleaned_choices) < 5:
+            cleaned_choices.append("")
+        cleaned_choices = cleaned_choices[:5]
+        
+        return {
+            "latex": cleaned_latex,
+            "choices": cleaned_choices
+        }
         
     except Exception as e:
         logger.error(f"Vision processing failed: {e}")

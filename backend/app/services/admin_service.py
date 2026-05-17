@@ -10,12 +10,12 @@ class AdminService:
 
     async def extract_math_image(self, base64_image: str) -> dict:
         result = await extract_latex_from_image(base64_image)
-        if result.startswith("ERROR:"):
+        if "error" in result:
             raise HTTPException(
                 status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-                detail=result
+                detail=result["error"]
             )
-        return {"latex": result}
+        return result
 
     async def draft_question(self, request: QuestionDraftRequest) -> QuestionAnalysisResponse:
         result = await auto_tag_question(

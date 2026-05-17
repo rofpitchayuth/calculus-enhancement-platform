@@ -273,15 +273,60 @@ class DashboardService:
         avg_time = sum(times) / len(times) if times else 0.0
 
         # Bloom levels breakdown
-        bloom_counts: dict[str, int] = {}
+        bloom_stats: dict[str, dict] = {}
+        BLOOM_LEVELS_LIST = [
+            "Remembering",
+            "Understanding",
+            "Applying",
+            "Analyzing",
+            "Evaluating",
+            "Creating"
+        ]
+        
+        DB_TO_BLOOM_MAP: dict[str, str] = {
+            "Remember":    "Remembering",
+            "Remembering": "Remembering",
+            "Understand":  "Understanding",
+            "Understanding": "Understanding",
+            "Apply":       "Applying",
+            "Applying":    "Applying",
+            "Analyze":     "Analyzing",
+            "Analyzing":   "Analyzing",
+            "Evaluate":    "Evaluating",
+            "Evaluating":  "Evaluating",
+            "Create":      "Creating",
+            "Creating":    "Creating",
+        }
+
+        for level in BLOOM_LEVELS_LIST:
+            bloom_stats[level] = {"total": 0, "correct": 0}
+
         for a in attempts:
             if a.question and a.question.bloom_level:
-                bloom_counts[a.question.bloom_level] = bloom_counts.get(a.question.bloom_level, 0) + 1
+                raw_bloom = a.question.bloom_level
+                radar_skill = DB_TO_BLOOM_MAP.get(raw_bloom, raw_bloom)
+                if radar_skill in bloom_stats:
+                    bloom_stats[radar_skill]["total"] += 1
+                    if a.is_correct:
+                        bloom_stats[radar_skill]["correct"] += 1
+
         total = len(attempts)
-        bloom_levels = [
-            BloomLevel(label=label, percent=round((count / total) * 100, 1))
-            for label, count in bloom_counts.items()
-        ]
+        bloom_levels = []
+        for label in BLOOM_LEVELS_LIST:
+            stats = bloom_stats[label]
+            count = stats["total"]
+            correct = stats["correct"]
+            percent = round((count / total) * 100, 1) if total > 0 else 0.0
+            accuracy = round((correct / count) * 100, 1) if count > 0 else 0.0
+            bloom_levels.append(
+                BloomLevel(
+                    label=label,
+                    percent=percent,
+                    total_attempts=count,
+                    correct_attempts=correct,
+                    accuracy=accuracy
+                )
+            )
 
         # Strengths / weaknesses from sub_topic granularity
         skill_stats: dict[str, dict] = {}
@@ -407,15 +452,41 @@ class DashboardService:
             ScoreDistributionItem(name="ผิด",  value=total_q - correct),
         ]
 
-        # Skill breakdown (group by skill_tag)
+        # Skill breakdown (group by real sub_topic and skill_tags)
         skill_stats: dict[str, dict] = {}
         for a in attempts:
-            tag = a.skill_tag or "Other"
-            if tag not in skill_stats:
-                skill_stats[tag] = {"correct": 0, "total": 0}
-            skill_stats[tag]["total"] += 1
-            if a.is_correct:
-                skill_stats[tag]["correct"] += 1
+            processed = False
+            if a.question:
+                # 1. Process sub_topic
+                if a.question.sub_topic:
+                    sub_topic_val = a.question.sub_topic.value if hasattr(a.question.sub_topic, 'value') else a.question.sub_topic
+                    if sub_topic_val:
+                        if sub_topic_val not in skill_stats:
+                            skill_stats[sub_topic_val] = {"correct": 0, "total": 0}
+                        skill_stats[sub_topic_val]["total"] += 1
+                        if a.is_correct:
+                            skill_stats[sub_topic_val]["correct"] += 1
+                        processed = True
+
+                # 2. Process skill_tags
+                if a.question.skill_tags and isinstance(a.question.skill_tags, list):
+                    for tag in a.question.skill_tags:
+                        if tag:
+                            if tag not in skill_stats:
+                                skill_stats[tag] = {"correct": 0, "total": 0}
+                            skill_stats[tag]["total"] += 1
+                            if a.is_correct:
+                                skill_stats[tag]["correct"] += 1
+                            processed = True
+
+            # Fallback to the broad skill_tag (MainTopic) if no sub_topic or skill_tags were found
+            if not processed:
+                tag = a.skill_tag or "Other"
+                if tag not in skill_stats:
+                    skill_stats[tag] = {"correct": 0, "total": 0}
+                skill_stats[tag]["total"] += 1
+                if a.is_correct:
+                    skill_stats[tag]["correct"] += 1
 
         skill_breakdown = [
             SkillBreakdown(skill=tag, accuracy=round((v["correct"] / v["total"]) * 100, 1))

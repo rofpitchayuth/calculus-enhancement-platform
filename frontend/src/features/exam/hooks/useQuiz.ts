@@ -62,6 +62,14 @@ export const useQuiz = () => {
         return false;
     };
 
+    const prevQuestion = () => {
+        if (currentIndex > 0) {
+            setCurrentIndex(currentIndex - 1);
+            return true;
+        }
+        return false;
+    };
+
     const endQuizSession = async (userId: number): Promise<QuizEndResponse | null> => {
         if (!quiz) return null;
         try {
@@ -85,11 +93,13 @@ export const useQuiz = () => {
     return {
         quiz,
         currentIndex,
+        setCurrentIndex,
         loading,
         error,
         startQuiz,
         submitAnswer,
         nextQuestion,
+        prevQuestion,
         endQuizSession,
         resetQuiz,
     };

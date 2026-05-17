@@ -134,11 +134,18 @@ def seed_db():
             # Try direct map or check if it matches enum value/name
             main_topic_enum = MAIN_TOPIC_MAP.get(raw_main_str)
             if not main_topic_enum:
-                # Fallback: check if raw string matches any enum value or name directly
-                for m in MainTopic:
-                    if raw_main_str.upper() == m.name or raw_main_str == m.value.lower():
-                        main_topic_enum = m
-                        break
+                # Extra fallbacks for common variations
+                if "limit" in raw_main_str: main_topic_enum = MainTopic.LIMIT
+                elif "deriv" in raw_main_str or "diff" in raw_main_str: main_topic_enum = MainTopic.DIFFERENTIAL
+                elif "integ" in raw_main_str: main_topic_enum = MainTopic.INTEGRAL
+                elif "app" in raw_main_str: main_topic_enum = MainTopic.APPLICATIONS
+                
+                if not main_topic_enum:
+                    # Fallback: check if raw string matches any enum value or name directly
+                    for m in MainTopic:
+                        if raw_main_str.upper() == m.name or raw_main_str == m.value.lower():
+                            main_topic_enum = m
+                            break
 
         # Handle Sub Topic Mapping
         raw_sub_topic = str(row.get('sub_topic')).strip() if pd.notna(row.get('sub_topic')) else None
@@ -158,8 +165,8 @@ def seed_db():
             question_text=str(row['question_text']),
             correct_answer=correct_answer_id,
             choices=choices_list,
-            main_topic=main_topic_enum,
-            sub_topic=sub_topic_enum,
+            main_topic=main_topic_enum.value if main_topic_enum else None,
+            sub_topic=sub_topic_enum.value if sub_topic_enum else None,
             skill_tags=skill_tags,
             bloom_level=str(row['bloom_level']) if row.get('bloom_level') else None,
             difficulty=diff_val,

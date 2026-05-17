@@ -29,11 +29,13 @@ export function useQuizFlow(onFinish: () => void): UseQuizFlowReturn {
   const {
     quiz,
     currentIndex,
+    setCurrentIndex,
     loading: quizLoading,
     error: quizError,
     startQuiz: startQuizSession,
     submitAnswer,
     nextQuestion,
+    prevQuestion,
     endQuizSession,
     resetQuiz,
   } = useQuiz();
@@ -43,24 +45,28 @@ export function useQuizFlow(onFinish: () => void): UseQuizFlowReturn {
   const [graderStatus, setGraderStatus] = useState<GraderStatus>("idle");
   const [graderResult, setGraderResult] = useState<GraderResponse | null>(null);
   const [graderError, setGraderError]   = useState<string | null>(null);
-  const [selectedChoice, setSelectedChoiceState] = useState<string>("");
+  const [answers, setAnswers] = useState<Record<number, string>>({});
   const [quizEndResult, setQuizEndResult] = useState<QuizEndResponse | null>(null);
 
   const currentQuestion = quiz?.questions[currentIndex] ?? null;
   const totalQuestions  = quiz?.total_questions ?? 0;
 
+  // The local selection state is now derived from answers
+  const selectedChoice = currentQuestion ? answers[currentQuestion.id] || "" : "";
+
   const setSelectedChoice = useCallback(
     (choice: string) => {
       if (graderStatus === "loading" || graderStatus === "done") return;
-      setSelectedChoiceState(choice);
+      if (currentQuestion) {
+         setAnswers(prev => ({ ...prev, [currentQuestion.id]: choice }));
+      }
     },
-    [graderStatus]
+    [graderStatus, currentQuestion]
   );
 
-  // รับ topic เป็น string แทน numQuestions ที่เป็น number
   const startQuiz = useCallback(
     async (userId: number, topic: string, numQuestions = 10, difficultyLevel?: string) => {
-      setSelectedChoiceState("");
+      setAnswers({});
       setGraderStatus("idle");
       setGraderResult(null);
       setGraderError(null);
@@ -70,67 +76,62 @@ export function useQuizFlow(onFinish: () => void): UseQuizFlowReturn {
     [startQuizSession]
   );
 
-  const handleSubmit = useCallback(
+  const handleNext = useCallback(() => {
+    if (!quiz) return;
+    nextQuestion();
+  }, [quiz, nextQuestion]);
+
+  const handlePrev = useCallback(() => {
+    if (!quiz) return;
+    prevQuestion();
+  }, [quiz, prevQuestion]);
+
+  const handleSubmitAll = useCallback(
     async (userId: number) => {
-      if (!quiz || !currentQuestion || !selectedChoice) return;
+      if (!quiz) return;
       if (graderStatus !== "idle") return;
 
-      const latency = stopTimer();
+      const latency = stopTimer(); // Use total time or basic latency
       setGraderStatus("loading");
       setGraderError(null);
 
       try {
-        const result = await submitAnswer(
-          userId,
-          currentQuestion.id,
-          selectedChoice,
-          currentQuestion.skill_id,
-          latency
-        );
-
-        if (result) {
-          setGraderResult({
-            student_id:      userId,
-            question_id:     currentQuestion.id,
-            selected_choice: selectedChoice,
-            is_correct:      result.is_correct,
-            error_code:      result.error_code,
-            feedback_text:   result.feedback_text,
-          });
-          setGraderStatus("done");
-        } else {
-          throw new Error("ไม่สามารถส่งคำตอบได้");
+        // Submit all answers sequentially to maintain BKT flow properly
+        for (const question of quiz.questions) {
+            const userAnswer = answers[question.id] || "";
+            // Even if empty, we submit something, though typically we'd force answering all
+            if (userAnswer) {
+                await submitAnswer(
+                  userId,
+                  question.id,
+                  userAnswer,
+                  question.skill_id,
+                  latency / quiz.questions.length // approximate per-question latency
+                );
+            }
         }
-      } catch {
-        setGraderError("ไม่สามารถส่งคำตอบได้ กรุณาลองใหม่อีกครั้ง");
-        setGraderStatus("idle");
-      }
-    },
-    [quiz, currentQuestion, selectedChoice, graderStatus, stopTimer, submitAnswer]
-  );
-
-  const handleNext = useCallback(
-    async (userId: number) => {
-      if (!quiz) return;
-      const hasNext = nextQuestion();
-      if (hasNext) {
-        setSelectedChoiceState("");
-        setGraderStatus("idle");
-        setGraderResult(null);
-        setGraderError(null);
-        resetTimer();
-      } else {
+        
+        // After all submissions, end the session
         const endResult = await endQuizSession(userId);
-        if (endResult) setQuizEndResult(endResult);
+        if (endResult) {
+            setQuizEndResult(endResult);
+        }
+        setGraderStatus("done");
+      } catch (err) {
+        setGraderError("ไม่สามารถส่งคำตอบทั้งหมดได้ กรุณาลองใหม่อีกครั้ง");
+        setGraderStatus("idle");
       }
     },
-    [quiz, nextQuestion, endQuizSession, resetTimer]
+    [quiz, answers, graderStatus, stopTimer, submitAnswer, endQuizSession]
   );
 
   const handleFinish = useCallback(() => {
     resetQuiz();
     onFinish();
   }, [resetQuiz, onFinish]);
+
+  // Keep handleSubmit for compatibility, but make it do what handleSubmitAll does
+  const handleSubmit = handleSubmitAll;
 
   return {
     quizLoading,
@@ -141,12 +142,15 @@ export function useQuizFlow(onFinish: () => void): UseQuizFlowReturn {
     quizEndResult,
     selectedChoice,
     setSelectedChoice,
+    answers,
     graderStatus,
     graderResult,
     graderError,
     startQuiz,
     handleSubmit,
+    handleSubmitAll,
     handleNext,
+    handlePrev,
     handleFinish,
   };
 }
