@@ -2,12 +2,11 @@ import { useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { StatCard, DashboardCard, BloomBar, LineChartComponent } from '../components';
 import { useChapterStats } from '../hooks/useDashboard';
-import type { SkillTagMastery } from '../types/dashboard.types';
+import type { SkillTagMastery, BloomLevel } from '../types/dashboard.types';
 import char1 from '../components/Excellent.png'
 import char2 from '../components/Good.png'
 import char3 from '../components/Developing.png'
 import char4 from '../components/Beginner.png'
-// --- Constants & Config ---
 
 const CHAPTERS_MAP: Record<string, string> = {
   'LIMIT': 'LIMIT',
@@ -22,7 +21,53 @@ const proficiencyImageMap: Record<string, string> = {
   Developing: char3,
   Beginner: char4,
 }
-// --- Local Presentation Components ---
+
+function generateBloomInsights(bloomLevels: BloomLevel[]): string | null {
+  if (!bloomLevels || bloomLevels.length === 0) return null;
+
+  const map = new Map<string, BloomLevel>();
+  bloomLevels.forEach(b => map.set(b.label, b));
+
+  const remembering = map.get("Remembering");
+  const understanding = map.get("Understanding");
+  const applying = map.get("Applying");
+  const analyzing = map.get("Analyzing");
+  const evaluating = map.get("Evaluating");
+  const creating = map.get("Creating");
+
+  const hasData = (level?: BloomLevel) => level && level.total_attempts > 0;
+  const isGood = (level?: BloomLevel) => hasData(level) && level!.accuracy >= 65; // เกณฑ์ทำได้ดี
+  const isWeak = (level?: BloomLevel) => hasData(level) && level!.accuracy <= 50; // เกณฑ์ที่ต้องระวัง
+
+  if (isGood(analyzing) && (isWeak(applying) || isWeak(understanding))) {
+    return "⚠️ ข้อสังเกต: นักเรียนสามารถวิเคราะห์โจทย์ได้ (Analyzing) แต่กลับมีปัญหาในการคำนวณ (Applying) หรือความเข้าใจพื้นฐาน อาจเกิดจากความสะเพร่าในขั้นตอนการทำ แนะนำให้ตรวจสอบการทดเลขหรือทบทวนพื้นฐาน";
+  }
+
+  if (isGood(applying) && (isWeak(understanding) || isWeak(remembering))) {
+    return "⚠️ ข้อสังเกต: นักเรียนจำสูตรและคำนวณได้ดี (Applying) แต่ยังขาดความเข้าใจในนิยามหรือทฤษฎี (Understanding) หากเจอโจทย์พลิกแพลงอาจทำไม่ได้ แนะนำให้ทบทวนที่มาของสูตรเพิ่มเติม";
+  }
+
+  if ((isGood(remembering) || isGood(understanding)) && isWeak(applying)) {
+    return "💡 ข้อแนะนำ: นักเรียนมีความเข้าใจทฤษฎีและนิยาม (Understanding) แต่ยังนำไปประยุกต์ใช้ในการแก้โจทย์ไม่ได้ (Applying) แนะนำให้ฝึกทำโจทย์คำนวณให้หลากหลายขึ้น";
+  }
+
+  if (isGood(applying) && isWeak(analyzing)) {
+    return "💡 ข้อแนะนำ: นักเรียนมีทักษะการคำนวณที่มั่นคง (Applying) แต่ยังต้องการการฝึกฝนทักษะการตีความและวิเคราะห์โจทย์ที่ซับซ้อน (Analyzing) แนะนำให้ฝึกทำโจทย์ปัญหาเพิ่มเติม";
+  }
+
+  const activeLevels = bloomLevels.filter(b => b.total_attempts >= 3);
+  if (activeLevels.length >= 3 && activeLevels.every(b => b.accuracy >= 70)) {
+    return "🌟 ยอดเยี่ยม: นักเรียนมีทักษะและความเข้าใจตามลำดับขั้นของ Bloom เป็นอย่างดีเยี่ยม แนะนำให้ท้าทายด้วยโจทย์ระดับวิเคราะห์ขั้นสูง (Evaluating/Creating) ต่อไป";
+  }
+
+  for (const b of bloomLevels) {
+    if (b.accuracy === 100 && b.total_attempts > 0 && b.total_attempts <= 2) {
+      return `💡 ข้อมูลในระดับ ${b.label} ยังมีจำนวนน้อย (ทำไป ${b.total_attempts} ข้อ) แนะนำให้ฝึกโจทย์ในระดับนี้เพิ่มเติมเพื่อการวิเคราะห์ที่แม่นยำขึ้น`;
+    }
+  }
+
+  return null;
+}
 
 function TrendBadge({ delta, positiveIsGood = true, unit = '' }: {
   delta: number; positiveIsGood?: boolean; unit?: string;
@@ -102,7 +147,6 @@ export function ChapterDashboardPage() {
     return { filteredStrengths: strengths, filteredWeaknesses: weaknesses };
   }, [stats]);
 
-  // --- Render Logic ---
 
   if (isLoading) {
     return (
@@ -203,10 +247,32 @@ export function ChapterDashboardPage() {
           <div className="space-y-4">
             <div className="space-y-2">
               {stats.bloomLevels.map((level) => (
-                <BloomBar key={level.label} label={level.label} percent={level.percent} />
+                <BloomBar key={level.label} {...level} />
               ))}
             </div>
-            <div className="border-t pt-3">
+
+            {/* Smart Insights Component */}
+            {(() => {
+              const insight = generateBloomInsights(stats.bloomLevels);
+              if (!insight) return null;
+              
+              const isWarning = insight.startsWith("⚠️");
+              const isInfo = insight.startsWith("💡");
+              const isSuccess = insight.startsWith("🌟");
+
+              return (
+                <div className={`mt-4 p-3 rounded-xl border text-xs leading-relaxed font-medium ${
+                  isWarning ? "bg-orange-50 border-orange-200 text-orange-800" :
+                  isInfo ? "bg-blue-50 border-blue-200 text-blue-800" :
+                  isSuccess ? "bg-green-50 border-green-200 text-green-800" :
+                  "bg-gray-50 border-gray-200 text-gray-800"
+                }`}>
+                  {insight}
+                </div>
+              );
+            })()}
+
+            <div className="border-t mt-4 pt-3">
               <h4 className="font-semibold text-xs text-gray-700 mb-3 uppercase flex items-center gap-1">
                 <span className="text-yellow-500">★</span> STRENGTHS
               </h4>

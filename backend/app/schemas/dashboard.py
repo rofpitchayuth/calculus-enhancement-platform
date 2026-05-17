@@ -59,6 +59,9 @@ class DashboardRecentAttemptsResponse(BaseModel):
 class BloomLevel(BaseModel):
     label: str
     percent: float
+    total_attempts: int = 0
+    correct_attempts: int = 0
+    accuracy: float = 0.0
 
 class SkillTagMastery(BaseModel):
     skill_tag: str        # sub_topic label e.g. "chain_rule"

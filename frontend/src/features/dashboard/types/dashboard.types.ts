@@ -60,6 +60,9 @@ export interface DashboardRecentAttemptsResponse {
 export interface BloomLevel {
   label: string;
   percent: number;
+  total_attempts: number;
+  correct_attempts: number;
+  accuracy: number;
 }
 
 export interface ChapterStatsResponse {

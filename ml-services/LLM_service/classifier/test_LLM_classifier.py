@@ -17,64 +17,101 @@ def _dbg(msg: str) -> None:
 load_dotenv()
 
 class MainTopicEnum(str, Enum):
-    derivatives = "derivatives"
-    integrals = "integrals"
-    limits_and_continuity = "limits_and_continuity"
-    applications = "applications"
+    LIMIT = "LIMIT"
+    DIFFERENTIAL = "DIFFERENTIAL"
+    INTEGRAL = "INTEGRAL"
+    APPLICATIONS = "APPLICATIONS"
 
 class SubTopicEnum(str, Enum):
+    # Limits and Continuity
+    limit_laws = "limit_laws"
     evaluating_limits = "evaluating_limits"
+    algebraic_limits = "algebraic_limits"
     limits_at_infinity = "limits_at_infinity"
+    trigonometric_limits = "trigonometric_limits"
     continuity = "continuity"
+
+    # Derivatives
     definition_of_derivative = "definition_of_derivative"
-    basic_derivative_rules = "basic_derivative_rules"
+    derivative_rules = "derivative_rules"
+    product_rule = "product_rule"
+    chain_rule = "chain_rule"
     advanced_derivative_rules = "advanced_derivative_rules"
     implicit_differentiation = "implicit_differentiation"
+    implicit_functions = "implicit_functions"
+    second_derivative = "second_derivative"
+    higher_order_derivatives = "higher_order_derivatives"
+
+    # Applications of Derivatives
+    applications_of_derivatives = "applications_of_derivatives"
     curve_sketching_analysis = "curve_sketching_analysis"
+    optimization = "optimization"
     related_rates = "related_rates"
+    kinematics = "kinematics"
+
+    # Integrals and Techniques
     indefinite_integrals = "indefinite_integrals"
     definite_integrals = "definite_integrals"
     integration_techniques = "integration_techniques"
-    kinematics = "kinematics"
-    optimization = "optimization"
-    area_and_volume = "area_and_volume"
-    algebraic_manipulation = "algebraic_manipulation"
-    functions_and_graphs = "functions_and_graphs"
-    trigonometry = "trigonometry"
-    exponents_and_logarithms = "exponents_and_logarithms"
-
-class SkillTagEnum(str, Enum):
-    direct_substitution = "direct_substitution"
-    factoring_and_canceling = "factoring_and_canceling"
-    special_trig_limits = "special_trig_limits"
-    conjugate_method = "conjugate_method"
-    lhopitals_rule = "lhopitals_rule"
-    power_rule = "power_rule"
-    product_rule = "product_rule"
-    quotient_rule = "quotient_rule"
-    chain_rule = "chain_rule"
-    trig_derivatives = "trig_derivatives"
-    second_derivative = "second_derivative"
-    first_derivative_test = "first_derivative_test"
-    second_derivative_test = "second_derivative_test"
-    setting_up_optimization = "setting_up_optimization"
-    exponential_log_derivatives = "exponential_log_derivatives"
-    power_rule_integration = "power_rule_integration"
-    u_substitution = "u_substitution"
+    substitution_and_techniques = "substitution_and_techniques"
     integration_by_parts = "integration_by_parts"
-    partial_fractions = "partial_fractions"
-    ftc_evaluation = "ftc_evaluation"
-    setting_up_area_integral = "setting_up_area_integral"
-    composite_functions = "composite_functions"
-    inverse_functions = "inverse_functions"
-    factoring_polynomials = "factoring_polynomials"
-    evaluating_functions = "evaluating_functions"
-    logarithm_properties = "logarithm_properties"
-    solving_inequalities = "solving_inequalities"
-    rationalizing_denominators = "rationalizing_denominators"
+    advanced_integration = "advanced_integration"
+
+    # Applications of Integration
+    area_and_volume = "area_and_volume"
+
+    # Functions and Miscellaneous
+    trigonometric_functions = "trigonometric_functions"
     trig_identities = "trig_identities"
-    other_pre_calculus_skill = "other_pre_calculus_skill"
-    other_calculus_skill = "other_calculus_skill"
+    inverse_functions = "inverse_functions"
+    applications = "applications"
+    other = "other"
+
+class SkillTag(str, Enum):
+    # Algebraic and Pre-calculus skills used in simplification
+    DIRECT_SUBSTITUTION = "direct_substitution"
+    FACTORING_AND_CANCELING = "factoring_and_canceling"
+    CONJUGATE_METHOD = "conjugate_method"
+    ALGEBRAIC_MANIPULATION = "algebraic_manipulation"
+    COMPOSITE_FUNCTIONS = "composite_functions"
+    FACTORING_POLYNOMIALS = "factoring_polynomials"
+    EVALUATING_FUNCTIONS = "evaluating_functions"
+    LOGARITHM_PROPERTIES = "logarithm_properties"
+    SOLVING_INEQUALITIES = "solving_inequalities"
+    RATIONALIZING_DENOMINATORS = "rationalizing_denominators"
+
+    # Specific techniques for solving limits
+    SPECIAL_TRIG_LIMITS = "special_trig_limits"
+    LHOPITALS_RULE = "lhopitals_rule"
+
+    # Core differentiation rules and techniques
+    POWER_RULE = "power_rule"
+    PRODUCT_RULE = "product_rule"
+    QUOTIENT_RULE = "quotient_rule"
+    CHAIN_RULE = "chain_rule"
+    TRIG_DERIVATIVES = "trig_derivatives"
+    EXPONENTIAL_LOG_DERIVATIVES = "exponential_log_derivatives"
+    IMPLICIT_DIFFERENTIATION = "implicit_differentiation"
+    SECOND_DERIVATIVE = "second_derivative"
+
+    # Skills for applying derivatives to problems
+    FIRST_DERIVATIVE_TEST = "first_derivative_test"
+    SECOND_DERIVATIVE_TEST = "second_derivative_test"
+    SETTING_UP_OPTIMIZATION = "setting_up_optimization"
+    RELATED_RATES = "related_rates"
+    CURVE_SKETCHING_ANALYSIS = "curve_sketching_analysis"
+
+    # Core integration techniques and evaluations
+    POWER_RULE_INTEGRATION = "power_rule_integration"
+    U_SUBSTITUTION = "u_substitution"
+    INTEGRATION_BY_PARTS = "integration_by_parts"
+    PARTIAL_FRACTIONS = "partial_fractions"
+    FTC_EVALUATION = "ftc_evaluation"
+    SETTING_UP_AREA_INTEGRAL = "setting_up_area_integral"
+
+    # Fallback skills
+    OTHER_PRE_CALCULUS_SKILL = "other_pre_calculus_skill"
+    OTHER_CALCULUS_SKILL = "other_calculus_skill"
 
 class BloomLevelEnum(str, Enum):
     remembering = "Remembering"

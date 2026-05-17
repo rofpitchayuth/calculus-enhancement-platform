@@ -12,7 +12,7 @@ class Settings(BaseSettings):
         default="your-super-secret-key-minimum-32-characters-long-for-jwt-security"
     )
 
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(default=30)
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(default=1440)
     ALGORITHM: str = Field(default="HS256")
     PROJECT_NAME: str = Field(default="Calculus Enhancement Platform")
     API_V1_STR: str = "/api/v1"

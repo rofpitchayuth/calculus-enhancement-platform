@@ -35,9 +35,9 @@ export default function QuizPage() {
   const {
     quizLoading, quizError,
     currentQuestion, currentIndex, totalQuestions, quizEndResult,
-    selectedChoice, setSelectedChoice,
-    graderStatus, graderResult, graderError,
-    startQuiz, handleSubmit, handleNext, handleFinish,
+    selectedChoice, setSelectedChoice, answers,
+    graderStatus, graderError,
+    startQuiz, handleSubmitAll, handleNext, handlePrev, handleFinish,
   } = useQuizFlow(onFinish);
 
   const [isConfiguring, setIsConfiguring] = useState(true);
@@ -62,8 +62,8 @@ export default function QuizPage() {
   };
 
   const isLastQuestion = currentIndex === totalQuestions - 1;
+  const isFirstQuestion = currentIndex === 0;
   const isGrading      = graderStatus === "loading";
-  const hasResult      = graderStatus === "done" && graderResult !== null;
   const topicName      = formatTopicName(courseId);
 
   // ── Configuration ────────────────────────────────────────────────────────
@@ -234,42 +234,82 @@ export default function QuizPage() {
           </div>
 
           {/* Per-question summary */}
-          <div className="space-y-4">
-            <h3 className="text-xl font-semibold text-gray-800 border-b pb-2">รายละเอียดแต่ละข้อ</h3>
-            {quizEndResult.session_summary.map((item, idx) => {
-              const isItemCorrect = item.is_correct || item.error_code === 'correct_answer';
-              return (
-                <div
-                  key={idx}
-                  className={`p-4 rounded-lg border-l-4 ${
-                    isItemCorrect ? "border-emerald-500 bg-emerald-50" : "border-rose-500 bg-rose-50"
-                  }`}
-                >
-                  <div className="flex justify-between items-start">
-                    <span className="font-semibold text-gray-700 ">ข้อที่ {item.question_number}</span>
-                    {isItemCorrect
-                      ? <span className="text-emerald-600 font-bold">✓ ถูกต้อง</span>
-                      : <span className="text-rose-600 font-bold">✗ ผิด</span>}
-                  </div>
-                  <div className="mt-2 text-sm text-gray-600">
-                    <p><span className="font-medium">เรื่อง:</span> {item.main_topic ?? "-"} / {item.sub_topic ?? "-"}</p>
-                    {item.error_code && (
-                      <div className={`mt-3 p-3 bg-white rounded border ${isItemCorrect ? 'border-emerald-200' : 'border-rose-200'}`}>
-                        <p className={`${isItemCorrect ? 'text-emerald-700' : 'text-rose-700'} font-medium mb-1`}>
-                          {mapErrorCodeToThai(item.error_code)}
-                        </p>
-                        <p className="text-gray-500 text-xs">คำตอบที่เลือก: {item.user_answer}</p>
-                        {item.feedback_text && (
-                          <div className="mt-2 pt-2 border-t border-gray-100 text-gray-700 leading-relaxed">
-                            {renderMathText(item.feedback_text)}
-                          </div>
-                        )}
+          {/* Per-question summary */}
+          <div className="space-y-6">
+            <div className="flex items-center gap-3 border-b border-gray-100 pb-4">
+              <div className="w-2 h-8 bg-[#003B62] rounded-full"></div>
+              <h3 className="text-2xl font-bold text-[#003B62]">รายละเอียดแต่ละข้อ</h3>
+            </div>
+            
+            <div className="grid gap-4">
+              {quizEndResult.session_summary.map((item, idx) => {
+                const isItemCorrect = item.is_correct || item.error_code === 'correct_answer';
+                return (
+                  <div
+                    key={idx}
+                    className={`group p-6 rounded-2xl border-2 transition-all duration-300 ${
+                      isItemCorrect 
+                        ? "border-emerald-100 bg-white hover:border-emerald-200 hover:shadow-md" 
+                        : "border-rose-100 bg-white hover:border-rose-200 hover:shadow-md"
+                    }`}
+                  >
+                    <div className="flex justify-between items-center mb-4">
+                      <div className="flex items-center gap-3">
+                        <span className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-50 text-[#003B62] font-bold text-sm">
+                          {item.question_number}
+                        </span>
+                        <span className="font-bold text-gray-700 text-lg">ข้อที่ {item.question_number}</span>
                       </div>
-                    )}
+                      
+                      <div className={`px-4 py-1.5 rounded-full font-bold text-sm flex items-center gap-2 ${
+                        isItemCorrect ? "bg-emerald-100 text-emerald-700" : "bg-rose-100 text-rose-700"
+                      }`}>
+                        <span>{isItemCorrect ? "✓" : "✗"}</span>
+                        <span>{isItemCorrect ? "ถูกต้อง" : "ยังไม่ถูกต้อง"}</span>
+                      </div>
+                    </div>
+
+                    <div className="pl-13 space-y-3">
+                      <div className="flex flex-wrap gap-2 text-sm">
+                        <span className="bg-gray-100 text-gray-600 px-3 py-1 rounded-md font-medium">
+                          {item.main_topic ?? "-"}
+                        </span>
+                        <span className="text-gray-300">/</span>
+                        <span className="bg-blue-50 text-blue-600 px-3 py-1 rounded-md font-medium">
+                          {item.sub_topic ?? "-"}
+                        </span>
+                      </div>
+
+                      {item.error_code && (
+                        <div className={`mt-4 p-5 rounded-xl border ${
+                          isItemCorrect ? 'border-emerald-50 bg-emerald-50/30' : 'border-rose-50 bg-rose-50/30'
+                        }`}>
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className={`text-m font-bold ${isItemCorrect ? 'text-emerald-700 ' : 'text-rose-700 '}`}>
+                              {isItemCorrect ? "สิ่งที่ทำได้ดี:" : "ข้อเสนอแนะ:"}
+                            </span>
+                            <p className={`${isItemCorrect ? 'text-emerald-800' : 'text-rose-800'} font-bold`}>
+                              {mapErrorCodeToThai(item.error_code)}
+                            </p>
+                          </div>
+                          
+                          <div className="text-gray-500 text-xs mb-3 flex items-center gap-1">
+                            <span className="font-medium text-lg">คำตอบของคุณ:</span>
+                            <span className="bg-white px-2 py-0.5 rounded border border-gray-100 font-bold text-lg">{item.user_answer.toUpperCase()}</span>
+                          </div>
+
+                          {item.feedback_text && (
+                            <div className="mt-3 pt-3 border-t border-gray-100/50 text-gray-700 leading-relaxed text-sm bg-white/50 p-3 rounded-lg">
+                              {renderMathText(item.feedback_text)}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
 
           {/* Adaptive Next Steps */}
@@ -330,45 +370,62 @@ export default function QuizPage() {
           totalQuestions={totalQuestions}
           selectedChoice={selectedChoice}
           onChoiceSelect={setSelectedChoice}
-          disabled={isGrading || hasResult}
+          disabled={isGrading}
         />
 
         {isGrading && <GraderLoadingOverlay />}
 
-        {graderError && !isGrading && !hasResult && (
+        {graderError && !isGrading && (
           <div className="mt-4 rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-800">
-            <p className="font-semibold">⚠️ ไม่สามารถรับผลจาก AI Grader:</p>
+            <p className="font-semibold">⚠️ ไม่สามารถส่งคำตอบได้:</p>
             <p className="mt-1">{graderError}</p>
           </div>
         )}
 
-        {hasResult && (
-          <div className="mt-8 flex justify-center">
-            <button
-              onClick={() => user?.id && handleNext(user.id)}
-              className="px-12 py-3 bg-blue-600 text-white rounded-full font-semibold text-lg shadow-lg hover:bg-blue-700 transition-all active:scale-95"
-            >
-              {isLastQuestion ? "ดูสรุปผลการสอบ" : "ทำข้อถัดไป"}
-            </button>
+        <div className="mt-8 flex items-center justify-between gap-4">
+          <button
+            onClick={handlePrev}
+            disabled={isFirstQuestion || isGrading}
+            className={[
+              "px-8 py-3 rounded-full font-bold transition-all duration-200",
+              isFirstQuestion || isGrading
+                ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                : "bg-white text-[#003B62] border-2 border-[#003B62] hover:bg-blue-50 hover:shadow-md",
+            ].join(" ")}
+          >
+            ← ย้อนกลับ
+          </button>
+          
+          <div className="flex gap-4">
+            {isLastQuestion ? (
+              <button
+                onClick={() => user?.id && handleSubmitAll(user.id)}
+                disabled={isGrading || Object.keys(answers).length < totalQuestions}
+                className={[
+                  "px-12 py-3 rounded-full font-semibold text-lg shadow-lg transition-all duration-200 active:scale-95",
+                  isGrading || Object.keys(answers).length < totalQuestions
+                    ? "bg-gray-300 text-gray-400 cursor-not-allowed"
+                    : "bg-yellow-400 text-[#003B62] hover:bg-yellow-500",
+                ].join(" ")}
+              >
+                {isGrading ? "กำลังวิเคราะห์…" : "ส่งคำตอบทั้งหมด"}
+              </button>
+            ) : (
+              <button
+                onClick={handleNext}
+                disabled={isGrading}
+                className={[
+                  "px-12 py-3 rounded-full font-semibold text-lg shadow-lg transition-all duration-200 active:scale-95",
+                  isGrading
+                    ? "bg-gray-300 text-gray-400 cursor-not-allowed"
+                    : "bg-[#003B62] text-white hover:bg-[#0a2a4a]",
+                ].join(" ")}
+              >
+                ถัดไป →
+              </button>
+            )}
           </div>
-        )}
-
-        {!hasResult && (
-          <div className="mt-8 flex items-center justify-center gap-4">
-            <button
-              onClick={() => user?.id && handleSubmit(user.id)}
-              disabled={isGrading || !selectedChoice}
-              className={[
-                "px-12 py-3 rounded-full font-semibold text-lg shadow-lg transition-all duration-200 active:scale-95",
-                isGrading || !selectedChoice
-                  ? "bg-gray-300 text-gray-400 cursor-not-allowed"
-                  : "bg-yellow-400 text-gray-800 hover:bg-yellow-500",
-              ].join(" ")}
-            >
-              {isGrading ? "AI กำลังวิเคราะห์…" : isLastQuestion ? "ส่งคำตอบทั้งหมด" : "ส่งคำตอบ"}
-            </button>
-          </div>
-        )}
+        </div>
       </div>
     </div>
   );
