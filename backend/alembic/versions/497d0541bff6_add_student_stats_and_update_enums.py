@@ -34,6 +34,7 @@ def upgrade() -> None:
     op.create_index(op.f('ix_student_stats_id'), 'student_stats', ['id'], unique=False)
     op.create_index(op.f('ix_student_stats_last_updated'), 'student_stats', ['last_updated'], unique=False)
     op.create_index(op.f('ix_student_stats_user_id'), 'student_stats', ['user_id'], unique=True)
+    op.execute("DROP TABLE IF EXISTS bkt_results CASCADE")
     op.create_table('bkt_results',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('quiz_attempt_id', sa.Integer(), nullable=False),
