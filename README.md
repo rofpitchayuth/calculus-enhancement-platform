@@ -73,18 +73,19 @@ Copy the configuration template files and input your custom credentials:
 
 ---
 
-### 3. Run the Services via Docker Compose
+### 3. Run the Services
+
+Choose one of the two options below to run the application services:
+
+#### Option A: Run via Docker Compose (Containerized Setup)
 Build and run all services in the background:
 ```bash
 docker-compose up --build -d
 ```
 This builds and starts the PostgreSQL database, FastAPI backend, React frontend, KT microservice, and LLM microservice containerized.
 
----
-
-### 4. Initialize Database (Migration & Seeding)
-Once the containers are running, run the following commands to create the database schema and populate it with initial calculus questions:
-
+##### Initialize Database (Migration & Seeding) for Docker:
+Once the containers are running, run the following commands to create the database schema and populate it:
 ```bash
 # 1. Run Alembic database migrations
 docker-compose exec backend alembic upgrade head
@@ -93,7 +94,69 @@ docker-compose exec backend alembic upgrade head
 docker-compose exec backend python scripts/seed.py
 ```
 
-The database is now fully set up and populated with the questions!
+---
+
+#### Option B: Run Manually (Local/Non-Docker Setup)
+If you cannot build with Docker, you can run all components locally on your host machine.
+
+##### 1. Start PostgreSQL Database
+Make sure you have PostgreSQL running. You can install it on your machine, or run a lightweight Docker container just for the database (highly recommended as it avoids any Python/Node build issues):
+```bash
+docker run --name postgres_db -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=password -e POSTGRES_DB=calculus_db -d postgres:15-alpine
+```
+*(Make sure the credentials in your `backend/.env` match: `DATABASE_URL=postgresql://postgres:password@localhost:5432/calculus_db`)*
+
+##### 2. Start Backend Service
+```bash
+cd backend
+python -m venv venv
+
+# On Windows:
+venv\Scripts\activate
+# On macOS/Linux:
+source venv/bin/activate
+
+# Install dependencies, run migrations, seed data, and start server
+pip install -r requirements.txt
+alembic upgrade head
+python scripts/seed.py
+uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
+```
+
+##### 3. Start KT (Knowledge Tracing) Service
+```bash
+cd ml-services/KT_service
+python -m venv venv
+
+# On Windows:
+venv\Scripts\activate
+# On macOS/Linux:
+source venv/bin/activate
+
+pip install -r requirements.txt
+uvicorn main:app --host 127.0.0.1 --port 8001 --reload
+```
+
+##### 4. Start LLM Service
+```bash
+cd ml-services/LLM_service
+python -m venv venv
+
+# On Windows:
+venv\Scripts\activate
+# On macOS/Linux:
+source venv/bin/activate
+
+pip install -r requirements.txt
+uvicorn llm_service:app --host 127.0.0.1 --port 8002 --reload
+```
+
+##### 5. Start Frontend Web App
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
 ---
 
