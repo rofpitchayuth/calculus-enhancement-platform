@@ -111,7 +111,7 @@ describe("FeedbackPanel", () => {
     expect(screen.getByText("ลืมบวก +C")).toBeInTheDocument();
   });
 
-  it("maps 'correct_answer' to '✅ คำตอบถูกต้อง'", () => {
+  it("maps 'correct_answer' to 'คำตอบถูกต้อง'", () => {
     const result = buildResult({
       is_correct: true,
       error_code: "correct_answer",
@@ -121,7 +121,7 @@ describe("FeedbackPanel", () => {
       <FeedbackPanel result={result} onNext={() => {}} isLastQuestion={false} />
     );
 
-    expect(screen.getByText("✅ คำตอบถูกต้อง")).toBeInTheDocument();
+    expect(screen.getByText("คำตอบถูกต้อง")).toBeInTheDocument();
   });
 
   it("maps 'sign_error' to its Thai label containing 'เครื่องหมายผิด'", () => {

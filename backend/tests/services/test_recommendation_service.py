@@ -8,13 +8,14 @@ Validates the ZPD (Zone of Proximal Development) logic:
     harder  → [mastery + 0.2, mastery + 0.4]
     easier  → [mastery - 0.2, mastery]
 
-The KTService.predict_mastery call is mocked to return a fixed mastery of 0.5.
 All database interactions are fully mocked.
 """
 
 import pytest
-from unittest.mock import MagicMock, AsyncMock, patch
-
+from unittest.mock import MagicMock
+from app.models.question import Question
+from app.models.result import QuizAttempt, StudentStats
+from app.services.recommendation_service import RecommendationService
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -38,6 +39,28 @@ def mock_question():
     return q
 
 
+def _setup_db(mock_db, mock_question, mastery=0.5, recent_correct_ids=None):
+    """Sets up query side effects for SQLAlchemy models used in RecommendationService."""
+    if recent_correct_ids is None:
+        recent_correct_ids = []
+        
+    mock_stats = MagicMock()
+    mock_stats.skill_mastery = {"integration": mastery}
+    
+    def query_side_effect(model):
+        chain = MagicMock()
+        if model is StudentStats:
+            chain.filter.return_value.first.return_value = mock_stats
+        elif model is QuizAttempt.question_id:
+            chain.filter.return_value.all.return_value = [(qid,) for qid in recent_correct_ids]
+        elif model is Question:
+            # We want to return mock_question on query
+            chain.filter.return_value.order_by.return_value.first.return_value = mock_question
+        return chain
+        
+    mock_db.query.side_effect = query_side_effect
+
+
 # ---------------------------------------------------------------------------
 # Tests
 # ---------------------------------------------------------------------------
@@ -49,162 +72,152 @@ class TestZPDLogic:
     """
 
     @pytest.mark.asyncio
-    @patch("app.services.recommendation_service.KTService.predict_mastery", new_callable=AsyncMock)
-    async def test_normal_difficulty_range(self, mock_mastery, mock_db, mock_question):
+    async def test_normal_difficulty_range(self, mock_db, mock_question):
         """
         With mastery=0.5 and adjustment='normal':
         target_min = 0.5, target_max = 0.7
         """
-        mock_mastery.return_value = 0.5
-        mock_db.query.return_value.filter.return_value.all.return_value = []
-        mock_db.query.return_value.filter.return_value.order_by.return_value.first.return_value = mock_question
-
-        from app.services.recommendation_service import RecommendationService
+        _setup_db(mock_db, mock_question, mastery=0.5)
 
         result = await RecommendationService.get_next_adaptive_question(
             db=mock_db, user_id=1, sub_topic="integration",
             difficulty_adjustment="normal",
         )
 
-        # Verify predict_mastery was called with correct params
-        mock_mastery.assert_called_once_with(
-            student_id="1", history=[], target_skill_id="integration"
-        )
-
-        # Verify db.query was called (question lookup)
+        assert result == mock_question
         assert mock_db.query.called
 
     @pytest.mark.asyncio
-    @patch("app.services.recommendation_service.KTService.predict_mastery", new_callable=AsyncMock)
-    async def test_harder_difficulty_range(self, mock_mastery, mock_db, mock_question):
+    async def test_harder_difficulty_range(self, mock_db, mock_question):
         """
         With mastery=0.5 and adjustment='harder':
         target_min = min(0.8, 0.5+0.2) = 0.7
         target_max = min(1.0, 0.5+0.4) = 0.9
         """
-        mock_mastery.return_value = 0.5
-        mock_db.query.return_value.filter.return_value.all.return_value = []
-        mock_db.query.return_value.filter.return_value.order_by.return_value.first.return_value = mock_question
-
-        from app.services.recommendation_service import RecommendationService
+        _setup_db(mock_db, mock_question, mastery=0.5)
 
         result = await RecommendationService.get_next_adaptive_question(
             db=mock_db, user_id=1, sub_topic="integration",
             difficulty_adjustment="harder",
         )
 
-        mock_mastery.assert_called_once()
+        assert result == mock_question
         assert mock_db.query.called
 
     @pytest.mark.asyncio
-    @patch("app.services.recommendation_service.KTService.predict_mastery", new_callable=AsyncMock)
-    async def test_easier_difficulty_range(self, mock_mastery, mock_db, mock_question):
+    async def test_easier_difficulty_range(self, mock_db, mock_question):
         """
         With mastery=0.5 and adjustment='easier':
         target_min = max(0.0, 0.5-0.2) = 0.3
         target_max = 0.5
         """
-        mock_mastery.return_value = 0.5
-        mock_db.query.return_value.filter.return_value.all.return_value = []
-        mock_db.query.return_value.filter.return_value.order_by.return_value.first.return_value = mock_question
-
-        from app.services.recommendation_service import RecommendationService
+        _setup_db(mock_db, mock_question, mastery=0.5)
 
         result = await RecommendationService.get_next_adaptive_question(
             db=mock_db, user_id=1, sub_topic="integration",
             difficulty_adjustment="easier",
         )
 
-        mock_mastery.assert_called_once()
+        assert result == mock_question
         assert mock_db.query.called
 
     @pytest.mark.asyncio
-    @patch("app.services.recommendation_service.KTService.predict_mastery", new_callable=AsyncMock)
-    async def test_mastery_none_defaults_to_half(self, mock_mastery, mock_db, mock_question):
+    async def test_mastery_none_defaults_to_half(self, mock_db, mock_question):
         """
-        When predict_mastery returns None, mastery should default to 0.5.
+        When StudentStats does not exist, mastery should default to 0.5.
         The function should still return a question without crashing.
         """
-        mock_mastery.return_value = None
-        mock_db.query.return_value.filter.return_value.all.return_value = []
-        mock_db.query.return_value.filter.return_value.order_by.return_value.first.return_value = mock_question
-
-        from app.services.recommendation_service import RecommendationService
+        # Set setup_db to return None for StudentStats
+        def query_side_effect(model):
+            chain = MagicMock()
+            if model is StudentStats:
+                chain.filter.return_value.first.return_value = None
+            elif model is QuizAttempt.question_id:
+                chain.filter.return_value.all.return_value = []
+            elif model is Question:
+                chain.filter.return_value.order_by.return_value.first.return_value = mock_question
+            return chain
+        mock_db.query.side_effect = query_side_effect
 
         result = await RecommendationService.get_next_adaptive_question(
             db=mock_db, user_id=1, sub_topic="integration",
             difficulty_adjustment="normal",
         )
 
-        # Should not crash; should still attempt to query
+        assert result == mock_question
         assert mock_db.query.called
 
     @pytest.mark.asyncio
-    @patch("app.services.recommendation_service.KTService.predict_mastery", new_callable=AsyncMock)
-    async def test_fallback_when_no_zpd_question(self, mock_mastery, mock_db):
+    async def test_fallback_when_no_zpd_question(self, mock_db):
         """
         When no question exists in the ZPD range, the fallback query
         should be attempted (ordered by difficulty ascending).
         """
-        mock_mastery.return_value = 0.5
-
-        mock_db.query.return_value.filter.return_value.all.return_value = []
-        # First call returns None (no ZPD match), second returns a fallback
+        mock_stats = MagicMock()
+        mock_stats.skill_mastery = {"integration": 0.5}
+        
         fallback_q = MagicMock()
         fallback_q.id = 99
-        mock_db.query.return_value.filter.return_value.order_by.return_value.first.side_effect = [
+        
+        # Instantiate the Question query chain once so the side_effect is preserved across multiple calls
+        question_chain = MagicMock()
+        question_chain.filter.return_value.order_by.return_value.first.side_effect = [
             None,       # ZPD query → no match
             fallback_q, # Fallback query → found one
         ]
-
-        from app.services.recommendation_service import RecommendationService
+        
+        def query_side_effect(model):
+            if model is StudentStats:
+                chain = MagicMock()
+                chain.filter.return_value.first.return_value = mock_stats
+                return chain
+            elif model is QuizAttempt.question_id:
+                chain = MagicMock()
+                chain.filter.return_value.all.return_value = []
+                return chain
+            elif model is Question:
+                return question_chain
+            return MagicMock()
+            
+        mock_db.query.side_effect = query_side_effect
 
         result = await RecommendationService.get_next_adaptive_question(
             db=mock_db, user_id=1, sub_topic="integration",
             difficulty_adjustment="normal",
         )
 
-        # The fallback path should have been reached
-        assert mock_db.query.return_value.filter.called
+        assert result == fallback_q
 
     @pytest.mark.asyncio
-    @patch("app.services.recommendation_service.KTService.predict_mastery", new_callable=AsyncMock)
-    async def test_harder_clamps_at_upper_bound(self, mock_mastery, mock_db, mock_question):
+    async def test_harder_clamps_at_upper_bound(self, mock_db, mock_question):
         """
         With mastery=0.9 and adjustment='harder':
         target_min = min(0.8, 0.9+0.2) = 0.8  (clamped)
         target_max = min(1.0, 0.9+0.4) = 1.0  (clamped)
         """
-        mock_mastery.return_value = 0.9
-        mock_db.query.return_value.filter.return_value.all.return_value = []
-        mock_db.query.return_value.filter.return_value.order_by.return_value.first.return_value = mock_question
-
-        from app.services.recommendation_service import RecommendationService
+        _setup_db(mock_db, mock_question, mastery=0.9)
 
         result = await RecommendationService.get_next_adaptive_question(
             db=mock_db, user_id=1, sub_topic="integration",
             difficulty_adjustment="harder",
         )
 
-        mock_mastery.assert_called_once()
+        assert result == mock_question
+        assert mock_db.query.called
 
     @pytest.mark.asyncio
-    @patch("app.services.recommendation_service.KTService.predict_mastery", new_callable=AsyncMock)
-    async def test_easier_clamps_at_lower_bound(self, mock_mastery, mock_db, mock_question):
+    async def test_easier_clamps_at_lower_bound(self, mock_db, mock_question):
         """
         With mastery=0.1 and adjustment='easier':
         target_min = max(0.0, 0.1-0.2) = 0.0  (clamped)
         target_max = 0.1
         """
-        mock_mastery.return_value = 0.1
-        mock_db.query.return_value.filter.return_value.all.return_value = []
-        mock_db.query.return_value.filter.return_value.order_by.return_value.first.return_value = mock_question
-
-        from app.services.recommendation_service import RecommendationService
+        _setup_db(mock_db, mock_question, mastery=0.1)
 
         result = await RecommendationService.get_next_adaptive_question(
             db=mock_db, user_id=1, sub_topic="integration",
             difficulty_adjustment="easier",
         )
 
-        mock_mastery.assert_called_once()
+        assert result == mock_question
+        assert mock_db.query.called
