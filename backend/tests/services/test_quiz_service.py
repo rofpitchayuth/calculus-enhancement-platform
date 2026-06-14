@@ -50,13 +50,19 @@ CHOICES = [
 ]
 
 
-def _setup_db(mock_db, MockQuestion, MockQuizSession, question, session):
+def _setup_db(mock_db, MockQuestion, MockQuizSession, question, session, MockBktResult=None, bkt_posterior=None):
     def side_effect(model):
         chain = MagicMock()
         if model is MockQuestion:
             chain.filter.return_value.first.return_value = question
         elif model is MockQuizSession:
             chain.filter.return_value.first.return_value = session
+        elif MockBktResult and model is MockBktResult:
+            # We mock the chained calls for BKTResult:
+            # db.query(BKTResult).filter(...).join(...).filter(...).order_by(...).first()
+            mock_bkt = MagicMock()
+            mock_bkt.p_posterior = bkt_posterior if bkt_posterior is not None else 0.5
+            chain.filter.return_value.join.return_value.filter.return_value.order_by.return_value.first.return_value = mock_bkt
         return chain
     mock_db.query.side_effect = side_effect
 
@@ -100,22 +106,24 @@ class TestSubmitAnswer:
         assert r.is_correct is False
         assert r.error_code == "sign_error"
 
+    @patch("app.services.quiz_service.BKTResult")
     @patch("app.services.quiz_service.QuizSession")
     @patch("app.services.quiz_service.Question")
     @patch("app.services.quiz_service.QuizAttempt")
-    def test_mastery_increases_on_correct(self, _Att, MQ, MS, mock_db):
+    def test_mastery_increases_on_correct(self, _Att, MQ, MS, MBkt, mock_db):
         """p_mastery_after > p_mastery_before when correct."""
-        _setup_db(mock_db, MQ, MS, _make_question(2, CHOICES), _make_session(200, 2))
+        _setup_db(mock_db, MQ, MS, _make_question(2, CHOICES), _make_session(200, 2), MBkt, 0.5)
         from app.services.quiz_service import QuizService
         r = QuizService(mock_db).submit_answer(2, 200, 2, "A", "limits", 3.0)
         assert r.p_mastery_after > r.p_mastery_before
 
+    @patch("app.services.quiz_service.BKTResult")
     @patch("app.services.quiz_service.QuizSession")
     @patch("app.services.quiz_service.Question")
     @patch("app.services.quiz_service.QuizAttempt")
-    def test_mastery_decreases_on_wrong(self, _Att, MQ, MS, mock_db):
+    def test_mastery_decreases_on_wrong(self, _Att, MQ, MS, MBkt, mock_db):
         """p_mastery_after < p_mastery_before when wrong."""
-        _setup_db(mock_db, MQ, MS, _make_question(2, CHOICES), _make_session(200, 2))
+        _setup_db(mock_db, MQ, MS, _make_question(2, CHOICES), _make_session(200, 2), MBkt, 0.5)
         from app.services.quiz_service import QuizService
         r = QuizService(mock_db).submit_answer(2, 200, 2, "B", "limits", 3.0)
         assert r.p_mastery_after < r.p_mastery_before
